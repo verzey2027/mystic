@@ -192,7 +192,7 @@ export default function DailyCardPage() {
             {!flipped && (
               <div className="absolute inset-x-0 bottom-4 text-center">
                 <span
-                  className="rounded-full px-3 py-1 text-[11px] font-bold text-white"
+                  className="rounded-xl px-3 py-1 text-[11px] font-bold text-white"
                   style={{ background: "var(--purple-500)" }}
                 >
                   แตะเพื่อเปิด
@@ -238,7 +238,7 @@ export default function DailyCardPage() {
               {guidance.focus.map((kw) => (
                 <span
                   key={kw}
-                  className="rounded-full px-3 py-1 text-xs font-medium"
+                  className="rounded-xl px-3 py-1 text-xs font-medium"
                   style={{ background: "var(--purple-100)", color: "var(--purple-600)" }}
                 >
                   {kw}
@@ -249,7 +249,7 @@ export default function DailyCardPage() {
 
           {/* Guidance card */}
           <div className="rounded-2xl border p-4" style={{ borderColor: "var(--border)", background: "var(--bg-elevated)" }}>
-            <h3 className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--purple-500)" }}>
+            <h3 className="text-sm font-medium" style={{ color: "var(--purple-500)" }}>
               คำแนะนำ
             </h3>
             <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>
@@ -259,7 +259,7 @@ export default function DailyCardPage() {
 
           {/* Affirmation / Action */}
           <div className="rounded-2xl border p-4" style={{ borderColor: "var(--border)", background: "var(--bg-elevated)" }}>
-            <h3 className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--success)" }}>
+            <h3 className="text-sm font-medium" style={{ color: "var(--success)" }}>
               สิ่งที่ควรทำ
             </h3>
             <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>
@@ -269,7 +269,7 @@ export default function DailyCardPage() {
 
           {/* Avoid */}
           <div className="rounded-2xl border p-4" style={{ borderColor: "var(--border)", background: "var(--bg-elevated)" }}>
-            <h3 className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--rose)" }}>
+            <h3 className="text-sm font-medium" style={{ color: "var(--rose)" }}>
               สิ่งที่ควรเลี่ยง
             </h3>
             <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>
@@ -279,16 +279,16 @@ export default function DailyCardPage() {
 
           {/* Share buttons */}
           <div className="flex items-center justify-center gap-3 pt-2">
-            <button type="button" onClick={() => handleShare("line")} className="flex h-10 w-10 items-center justify-center rounded-full transition hover:scale-110" style={{ background: "#06C755" }} aria-label="Share LINE">
+            <button type="button" onClick={() => handleShare("line")} className="flex h-10 w-10 items-center justify-center rounded-xl transition hover:scale-110" style={{ background: "#06C755" }} aria-label="Share LINE">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 5.82 2 10.5c0 3.26 2.36 6.1 5.88 7.46-.08.72-.5 2.7-.57 3.12-.1.54.2.53.42.39.17-.11 2.4-1.63 3.38-2.3.28.03.58.05.89.05 5.52 0 10-3.82 10-8.5S17.52 2 12 2z" /></svg>
             </button>
-            <button type="button" onClick={() => handleShare("facebook")} className="flex h-10 w-10 items-center justify-center rounded-full transition hover:scale-110" style={{ background: "#1877F2" }} aria-label="Share Facebook">
+            <button type="button" onClick={() => handleShare("facebook")} className="flex h-10 w-10 items-center justify-center rounded-xl transition hover:scale-110" style={{ background: "#1877F2" }} aria-label="Share Facebook">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" /></svg>
             </button>
-            <button type="button" onClick={() => handleShare("twitter")} className="flex h-10 w-10 items-center justify-center rounded-full transition hover:scale-110" style={{ background: "#000" }} aria-label="Share X">
+            <button type="button" onClick={() => handleShare("twitter")} className="flex h-10 w-10 items-center justify-center rounded-xl transition hover:scale-110" style={{ background: "#000" }} aria-label="Share X">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
             </button>
-            <button type="button" onClick={() => handleShare("copy")} className="flex h-10 w-10 items-center justify-center rounded-full border transition hover:scale-110" style={{ borderColor: "var(--border-strong)", background: "var(--bg-elevated)" }} aria-label="Copy link">
+            <button type="button" onClick={() => handleShare("copy")} className="flex h-10 w-10 items-center justify-center rounded-xl border transition hover:scale-110" style={{ borderColor: "var(--border-strong)", background: "var(--bg-elevated)" }} aria-label="Copy link">
               {copied ? (
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
               ) : (
@@ -302,8 +302,7 @@ export default function DailyCardPage() {
             <button
               type="button"
               onClick={handleSave}
-              className="flex-1 rounded-full py-3 text-sm font-semibold text-white transition"
-              style={{ background: "var(--purple-500)" }}
+              className="flex-1 rounded-2xl py-3 text-sm font-semibold text-accent-ink transition bg-accent hover:bg-accent-hover"
             >
               บันทึก
             </button>
@@ -316,8 +315,7 @@ export default function DailyCardPage() {
                 setAlreadyDrawn(false);
                 setDrawn(drawOneCard());
               }}
-              className="flex-1 rounded-full border py-3 text-sm font-semibold transition"
-              style={{ borderColor: "var(--border-strong)", color: "var(--text-muted)" }}
+              className="flex-1 rounded-2xl border border-border-strong py-3 text-sm font-semibold text-fg-muted transition hover:bg-surface"
             >
               เปิดใหม่
             </button>

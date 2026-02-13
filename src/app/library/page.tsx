@@ -21,7 +21,7 @@ export default function TarotLibraryPage() {
         <h1 className="text-2xl font-bold" style={{ color: "var(--text)" }}>ห้องสมุดไพ่ 78 ใบ</h1>
         <Link
           href="/library/saved"
-          className="rounded-full px-4 py-1.5 text-xs font-semibold transition"
+          className="rounded-xl px-4 py-1.5 text-xs font-semibold transition"
           style={{ background: "var(--purple-100)", color: "var(--purple-600)" }}
         >
           คลังของฉัน
@@ -34,10 +34,10 @@ export default function TarotLibraryPage() {
           <Link
             key={card.id}
             href={`/library/${card.id}`}
-            className="rounded-2xl border p-4 transition hover:shadow-md"
+            className="rounded-2xl border p-4 transition hover:bg-surface"
             style={{ borderColor: "var(--border)", background: "var(--bg-elevated)" }}
           >
-            <p className="text-[10px] uppercase tracking-[0.15em]" style={{ color: "var(--text-subtle)" }}>{card.id}</p>
+            <p className="text-xs font-medium" style={{ color: "var(--text-subtle)" }}>{card.id}</p>
             <h2 className="mt-1 text-sm font-semibold" style={{ color: "var(--text)" }}>{card.name}</h2>
             <p className="mt-1 text-xs text-fg-subtle">
               {card.arcana === "major" ? "Major Arcana" : `Minor Arcana • ${card.suit}`}

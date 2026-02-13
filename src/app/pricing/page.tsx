@@ -42,30 +42,30 @@ const plans = [
 
 export default function PricingPage() {
   return (
-    <main className="mx-auto w-full max-w-5xl px-4 py-10">
-      <h1 className="text-3xl font-semibold text-white md:text-4xl">แพ็กเกจดูดวงออนไลน์กับเรฟ</h1>
-      <p className="mt-2 text-sm text-slate-300">อัปเดตตามหน้าแพ็กเกจล่าสุดจาก REFFORTUNE</p>
+    <main className="mx-auto w-full max-w-lg px-5 py-6">
+      <h1 className="text-2xl font-bold text-fg">แพ็กเกจดูดวงออนไลน์กับเรฟ</h1>
+      <p className="mt-1 text-sm text-fg-muted">อัปเดตตามหน้าแพ็กเกจล่าสุดจาก REFFORTUNE</p>
 
-      <div className="mt-6 grid gap-4 md:grid-cols-2">
+      <div className="mt-5 grid gap-4 md:grid-cols-2">
         {plans.map((plan, i) => (
           <article
             key={`${plan.name}-${i}`}
-            className="rounded-2xl border border-white/10 bg-white/[0.03] p-5"
+            className="rounded-2xl border border-border bg-surface p-5"
           >
-            <p className="text-sm text-amber-200">{plan.name}</p>
-            <h2 className="mt-1 text-xl font-semibold text-white">{plan.price}</h2>
-            <p className="mt-2 text-sm text-slate-300">{plan.detail}</p>
+            <p className="text-sm font-medium text-accent">{plan.name}</p>
+            <h2 className="mt-1 text-lg font-semibold text-fg">{plan.price}</h2>
+            <p className="mt-2 text-sm text-fg-muted">{plan.detail}</p>
           </article>
         ))}
       </div>
 
-      <div className="mt-8 rounded-2xl border border-amber-300/40 bg-amber-200/10 p-5">
-        <p className="text-sm text-amber-100">ดูแพ็กเกจเต็มและอัปเดตล่าสุด</p>
+      <div className="mt-6 rounded-2xl border border-border bg-surface p-5">
+        <p className="text-sm text-fg-muted">ดูแพ็กเกจเต็มและอัปเดตล่าสุด</p>
         <a
           href="https://www.reffortune.com/packages.html"
           target="_blank"
           rel="noreferrer"
-          className="mt-3 inline-flex rounded-full bg-amber-300 px-5 py-2 text-sm font-semibold text-slate-900"
+          className="mt-3 inline-flex rounded-2xl bg-accent px-5 py-2.5 text-sm font-semibold text-accent-ink transition hover:bg-accent-hover"
         >
           เปิดหน้าแพ็กเกจ REFFORTUNE
         </a>

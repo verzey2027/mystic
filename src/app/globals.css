@@ -6,27 +6,27 @@
 */
 :root {
   /* Base */
-  --bg: #F8F7FC;
+  --bg: #FFFFFF;
   --bg-elevated: #FFFFFF;
 
   /* Surfaces */
-  --surface-1: #F3F0F9;
-  --surface-2: #EDE9FE;
-  --surface-3: #DDD6FE;
+  --surface-1: #F3F4F6;
+  --surface-2: #F9FAFB;
+  --surface-3: #EEF2FF;
 
   /* Borders */
-  --border: #E8E5F0;
-  --border-strong: #D4D0E0;
+  --border: #E5E7EB;
+  --border-strong: #D1D5DB;
 
   /* Text */
-  --text: #1A1A2E;
-  --text-muted: #6B6B80;
-  --text-subtle: #9B9BAD;
+  --text: #111827;
+  --text-muted: #6B7280;
+  --text-subtle: #9CA3AF;
 
-  /* Accents — purple only */
-  --accent: #8B5CF6;
-  --accent-hover: #7C3AED;
-  --accent-ink: #FFFFFF;
+  /* Accent — minimal purple */
+  --accent: #A78BFA;
+  --accent-hover: #8B5CF6;
+  --accent-ink: #111827;
 
   --rose: #F43F5E;
   --teal: #14B8A6;
@@ -37,14 +37,14 @@
   --danger: #EF4444;
 
   /* Focus */
-  --ring: rgba(139, 92, 246, 0.4);
+  --ring: rgba(167, 139, 250, 0.35);
 
-  /* Purple scale */
+  /* Purple scale (keep for illustrations only) */
   --purple-50: #F5F3FF;
   --purple-100: #EDE9FE;
   --purple-200: #DDD6FE;
   --purple-300: #C4B5FD;
-  --purple-400: #A78BFA;
+  --purple-400: #A78BFA; /* accent */
   --purple-500: #8B5CF6;
   --purple-600: #7C3AED;
   --purple-700: #6D28D9;

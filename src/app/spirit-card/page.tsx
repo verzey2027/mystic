@@ -117,7 +117,7 @@ export default function SpiritCardPage() {
       <p className="mt-1 text-sm" style={{ color: "var(--text-muted)" }}>รับข้อความจากจักรวาล ผ่านวันเกิดของคุณ</p>
 
       <form onSubmit={handleSubmit} className="mt-5 rounded-2xl border p-5" style={{ borderColor: "var(--border)", background: "var(--bg-elevated)" }}>
-        <label className="text-xs font-semibold uppercase tracking-widest" style={{ color: "var(--purple-500)" }}>วันเกิด</label>
+        <label className="text-sm font-medium" style={{ color: "var(--purple-500)" }}>วันเกิด</label>
         <input
           type="date"
           value={dob}
@@ -134,8 +134,7 @@ export default function SpiritCardPage() {
         <button
           type="submit"
           disabled={loading}
-          className="mt-4 w-full rounded-full py-3 text-sm font-semibold text-white transition disabled:opacity-50"
-          style={{ background: "var(--purple-500)" }}
+          className="mt-4 w-full rounded-2xl py-3 text-sm font-semibold text-accent-ink transition disabled:opacity-50 bg-accent hover:bg-accent-hover"
         >
           {loading ? "กำลังอ่าน..." : "เปิดไพ่จิตวิญญาณ"}
         </button>
@@ -160,8 +159,7 @@ export default function SpiritCardPage() {
 
           <button
             type="button"
-            className="w-full rounded-full py-3 text-sm font-semibold text-white transition"
-            style={{ background: "var(--purple-500)" }}
+            className="w-full rounded-2xl py-3 text-sm font-semibold text-accent-ink transition bg-accent hover:bg-accent-hover"
           >
             บันทึกผล
           </button>

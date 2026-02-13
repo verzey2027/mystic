@@ -1,6 +1,6 @@
 // Horoscope Engine for REFFORTUNE
 // Feature: popular-fortune-features
-// Generates horoscope readings for different time periods
+// Generates horoscope readings for different time periods with caching support
 
 import { ZodiacSign, TimePeriod, HoroscopeInput, HoroscopeReading } from './types';
 import { getBaselineHoroscope } from './baseline';
@@ -17,7 +17,7 @@ import { ReadingType } from '../reading/types';
 /**
  * Calculate date range for a given period
  * 
- * Daily: Single day (start and end are same day at 00:00 and 23:59)
+ * Daily: Single day (start and end are the same date)
  * Weekly: Monday to Sunday of the current week
  * Monthly: First to last day of the current month
  * 
@@ -29,58 +29,68 @@ import { ReadingType } from '../reading/types';
  * // For a date in the middle of the week
  * calculateDateRange(new Date('2024-01-10'), TimePeriod.WEEKLY)
  * // Returns: { start: Mon Jan 8, end: Sun Jan 14 }
+ * 
+ * // For any date in a month
+ * calculateDateRange(new Date('2024-01-15'), TimePeriod.MONTHLY)
+ * // Returns: { start: Mon Jan 1, end: Wed Jan 31 }
  */
 export function calculateDateRange(
-  date: Date, 
+  date: Date,
   period: TimePeriod
 ): { start: Date; end: Date } {
   const start = new Date(date);
   const end = new Date(date);
-  
+
   switch (period) {
     case TimePeriod.DAILY:
-      // Same day, start at 00:00, end at 23:59
+      // Daily: same day for start and end
       start.setHours(0, 0, 0, 0);
       end.setHours(23, 59, 59, 999);
       break;
-      
+
     case TimePeriod.WEEKLY:
-      // Monday to Sunday of current week
-      const dayOfWeek = date.getDay();
-      const daysToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // Sunday is 0
+      // Weekly: Monday to Sunday
+      // Get day of week (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+      const dayOfWeek = start.getDay();
       
-      start.setDate(date.getDate() + daysToMonday);
+      // Calculate days to subtract to get to Monday
+      // If Sunday (0), go back 6 days; if Monday (1), go back 0 days, etc.
+      const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+      
+      // Set start to Monday of current week
+      start.setDate(start.getDate() - daysToMonday);
       start.setHours(0, 0, 0, 0);
       
-      end.setDate(start.getDate() + 6); // Sunday
+      // Set end to Sunday of current week (6 days after Monday)
+      end.setDate(start.getDate() + 6);
       end.setHours(23, 59, 59, 999);
       break;
-      
+
     case TimePeriod.MONTHLY:
-      // First to last day of current month
+      // Monthly: First to last day of the month
       start.setDate(1);
       start.setHours(0, 0, 0, 0);
       
-      end.setMonth(date.getMonth() + 1, 0); // Last day of current month
+      // Set to last day of month
+      end.setMonth(end.getMonth() + 1, 0);
       end.setHours(23, 59, 59, 999);
       break;
   }
-  
+
   return { start, end };
 }
 
 /**
- * Get baseline horoscope reading (deterministic)
+ * Get baseline horoscope reading (deterministic, no AI)
  * 
- * Provides consistent interpretation based on zodiac sign and date
- * without AI enhancement. Used as fallback when AI is unavailable
- * or as base content for AI enhancement.
+ * Provides consistent interpretations based on zodiac sign and date.
+ * Uses seed-based randomization for variety while maintaining determinism.
  * 
  * @param input - Horoscope input parameters
- * @returns Complete horoscope reading with baseline content
+ * @returns Complete baseline horoscope reading
  * 
  * @example
- * const reading = getBaselineHoroscope({
+ * const baseline = getBaselineHoroscope({
  *   zodiacSign: ZodiacSign.ARIES,
  *   period: TimePeriod.DAILY,
  *   date: new Date()
@@ -89,13 +99,14 @@ export function calculateDateRange(
 export function getBaselineHoroscopeReading(input: HoroscopeInput): HoroscopeReading {
   const { zodiacSign, period, date } = input;
   
+  // Get baseline content from baseline.ts
+  const baseline = getBaselineHoroscope(zodiacSign, date);
+  
   // Calculate date range for the period
   const dateRange = calculateDateRange(date, period);
   
-  // Get baseline interpretation
-  const baseline = getBaselineHoroscope(zodiacSign, date);
-  
-  return {
+  // Build complete reading
+  const reading: HoroscopeReading = {
     zodiacSign,
     period,
     dateRange,
@@ -108,37 +119,22 @@ export function getBaselineHoroscopeReading(input: HoroscopeInput): HoroscopeRea
     luckyNumbers: baseline.luckyNumbers,
     luckyColors: baseline.luckyColors,
     advice: baseline.advice,
-    confidence: 70 // Baseline only, no AI enhancement
+    confidence: 70 // Baseline only = 70% confidence
   };
+  
+  return reading;
 }
 
 /**
- * Get TTL (time to live) for cache based on period
- * 
- * @param period - Time period
- * @param date - Reference date
- * @returns TTL in milliseconds
- */
-function getCacheTTL(period: TimePeriod, date: Date): number {
-  switch (period) {
-    case TimePeriod.DAILY:
-      return getMillisecondsUntilEndOfDay(date);
-    case TimePeriod.WEEKLY:
-      return getMillisecondsUntilEndOfWeek(date);
-    case TimePeriod.MONTHLY:
-      return getMillisecondsUntilEndOfMonth(date);
-    default:
-      return getMillisecondsUntilEndOfDay(date);
-  }
-}
-
-/**
- * Generate horoscope reading with caching
+ * Generate horoscope reading with caching support
  * 
  * Checks cache first, returns cached reading if valid.
  * Otherwise generates new baseline reading and caches it.
  * 
- * In future: Will integrate with AI enhancement API
+ * Cache TTL:
+ * - Daily: Until end of day (midnight)
+ * - Weekly: Until end of week (Sunday 23:59)
+ * - Monthly: Until end of month
  * 
  * @param input - Horoscope input parameters
  * @returns Complete horoscope reading
@@ -167,14 +163,26 @@ export async function generateHoroscope(input: HoroscopeInput): Promise<Horoscop
     return cached;
   }
   
-  // Generate baseline reading
+  // Generate new baseline reading
   const reading = getBaselineHoroscopeReading(input);
   
-  // TODO: Integrate with AI enhancement API
-  // For now, return baseline only
+  // Determine TTL based on period
+  let ttl: number;
+  switch (period) {
+    case TimePeriod.DAILY:
+      ttl = getMillisecondsUntilEndOfDay(date);
+      break;
+    case TimePeriod.WEEKLY:
+      ttl = getMillisecondsUntilEndOfWeek(date);
+      break;
+    case TimePeriod.MONTHLY:
+      ttl = getMillisecondsUntilEndOfMonth(date);
+      break;
+    default:
+      ttl = getMillisecondsUntilEndOfDay(date);
+  }
   
   // Cache the reading
-  const ttl = getCacheTTL(period, date);
   setCacheEntry(cacheKey, reading, {
     ttl,
     keyPrefix: 'horoscope'

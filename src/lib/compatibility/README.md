@@ -1,30 +1,43 @@
-# Compatibility Scoring System
+# Compatibility Module
 
 ## Overview
 
-The compatibility scoring algorithm calculates love compatibility between two people based on their zodiac signs. The system uses a deterministic, multi-factor approach combining element compatibility, quality compatibility, and traditional astrological aspects.
+The compatibility module calculates love compatibility between two people based on their zodiac signs. The system uses a deterministic, multi-factor approach combining element compatibility, quality compatibility, and traditional astrological aspects, with Thai language interpretations.
 
 ## Implementation
 
 ### Files Created
 
-1. **`scoring.ts`** - Core scoring algorithm with the following functions:
+1. **`types.ts`** - TypeScript interfaces for compatibility input/output
+
+2. **`scoring.ts`** - Core scoring algorithm with the following functions:
    - `calculateElementScore()` - Element compatibility (40% weight)
    - `calculateQualityScore()` - Quality compatibility (30% weight)
    - `getSignSpecificAdjustment()` - Traditional aspect adjustments
    - `calculateOverallScore()` - Combined compatibility score
    - `calculateDetailedScores()` - Detailed breakdown for all aspects
 
-2. **`scoring.test.ts`** - Comprehensive unit tests covering:
-   - Element compatibility rules
-   - Quality compatibility rules
-   - Sign-specific adjustments
-   - Overall score calculation
-   - Detailed score breakdown
-   - Determinism and symmetry
-   - Edge cases and known pairings
+3. **`baseline.ts`** - Thai language interpretations with functions:
+   - `getCompatibilityLevel()` - Categorize scores into levels
+   - `getBaselineStrengths()` - Strength descriptions by level
+   - `getBaselineChallenges()` - Challenge descriptions by level
+   - `getBaselineAdvice()` - Advice by compatibility level
+   - `getElementCompatibilityDescription()` - Element interaction descriptions
+   - `generateBaselineCompatibilityInterpretation()` - Complete interpretation
 
-3. **`scoring.verify.ts`** - Manual verification script for testing
+4. **`engine.ts`** - Main compatibility engine with functions:
+   - `calculateCompatibility()` - Full compatibility calculation (async)
+   - `getBaselineCompatibility()` - Deterministic baseline only
+
+5. **Test files** - Comprehensive unit tests for each module:
+   - `scoring.test.ts` - Scoring algorithm tests
+   - `baseline.test.ts` - Interpretation tests
+   - `engine.test.ts` - Engine integration tests
+
+6. **Verification scripts** - Manual testing utilities:
+   - `scoring.verify.ts` - Scoring verification
+   - `baseline.verify.ts` - Interpretation verification
+   - `engine.verify.ts` - Engine verification
 
 ## Scoring Rules
 
@@ -114,19 +127,38 @@ The implementation satisfies the following correctness properties:
 ## Usage Example
 
 ```typescript
-import { calculateDetailedScores } from './scoring';
-import { ZodiacSign } from '../horoscope/types';
+import { calculateCompatibility } from '@/lib/compatibility/engine';
 
-// Calculate compatibility between Aries and Leo
-const scores = calculateDetailedScores(ZodiacSign.ARIES, ZodiacSign.LEO);
+// Auto-calculate zodiac signs from birth dates
+const reading = await calculateCompatibility({
+  person1: { birthDate: new Date('1990-04-15') }, // Aries
+  person2: { birthDate: new Date('1992-08-10') }  // Leo
+});
 
-console.log(scores);
+console.log(reading.overallScore); // 95
+console.log(reading.scores);
 // {
 //   overall: 95,
 //   communication: 88,
 //   emotional: 85,
 //   longTerm: 90
 // }
+console.log(reading.strengths);
+// ['มีความเข้าใจกันอย่างลึกซึ้งและเป็นธรรมชาติ', ...]
+console.log(reading.challenges);
+// ['อาจคล้ายกันมากจนขาดมุมมองที่หลากหลาย', ...]
+console.log(reading.advice);
+// 'รักษาความสดใหม่ในความสัมพันธ์...'
+console.log(reading.elementCompatibility);
+// 'ไฟ + ไฟ = พลังงานที่เข้มข้นและความหลงใหล...'
+
+// Or use baseline only (no AI enhancement)
+import { getBaselineCompatibility } from '@/lib/compatibility/engine';
+
+const baseline = getBaselineCompatibility({
+  person1: { birthDate: new Date('1990-04-15') },
+  person2: { birthDate: new Date('1992-08-10') }
+});
 ```
 
 ## Testing
@@ -146,9 +178,25 @@ The test suite includes:
 
 ## Requirements Satisfied
 
+- ✅ Requirement 3.1: Accept two birth date inputs
 - ✅ Requirement 3.2: Compatibility score between 0-100
+- ✅ Requirement 3.3: Auto-derive zodiac signs from birth dates
+- ✅ Requirement 3.4: Provide insights on strengths and challenges
+- ✅ Requirement 3.5: Display all score categories (overall, communication, emotional, long-term)
 - ✅ Requirement 3.6: Deterministic scoring
 - ✅ Element compatibility rules implemented
 - ✅ Quality compatibility rules implemented
 - ✅ Sign-specific pairing rules implemented
+- ✅ Thai language interpretations
 - ✅ All scores properly weighted and clamped
+
+## Task Completion
+
+✅ **Task 3.3: Implement compatibility engine** - COMPLETED
+
+The engine successfully:
+- Auto-calculates zodiac signs from birth dates
+- Calculates all score categories (overall, communication, emotional, long-term)
+- Generates complete Thai language interpretations
+- Provides deterministic baseline compatibility readings
+- Integrates scoring algorithm and baseline interpretations

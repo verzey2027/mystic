@@ -27,7 +27,7 @@ The implementation is organized into logical phases: shared infrastructure first
     - Support TTL-based expiration
     - _Requirements: 10.3, 10.4, 10.5_
   
-  - [ ]* 1.4 Write property tests for cache manager
+  - [~]* 1.4 Write property tests for cache manager
     - **Property 3: Horoscope Cache Consistency**
     - Test that same key returns same data, different dates return different data
     - **Validates: Requirements 1.5, 10.3, 10.4, 10.5**
@@ -38,12 +38,12 @@ The implementation is organized into logical phases: shared infrastructure first
     - Define all 12 zodiac signs with Thai names, elements, qualities, date ranges
     - _Requirements: 1.1, 3.3_
   
-  - [ ]* 2.2 Write property test for zodiac calculation
+  - [~]* 2.2 Write property test for zodiac calculation
     - **Property 7: Zodiac Sign Calculation Correctness**
     - Test that any birth date maps to correct zodiac sign based on date ranges
     - **Validates: Requirements 3.3**
   
-  - [ ]* 2.3 Write unit tests for zodiac boundary dates
+  - [~]* 2.3 Write unit tests for zodiac boundary dates
     - Test zodiac sign boundaries (Mar 20/21, Apr 19/20, etc.)
     - Test leap year dates (Feb 29)
     - _Requirements: 3.3_
@@ -60,7 +60,7 @@ The implementation is organized into logical phases: shared infrastructure first
     - Integrate with cache manager
     - _Requirements: 1.2, 1.5, 2.2, 2.3, 2.5_
   
-  - [ ]* 2.6 Write property tests for horoscope engine
+  - [~]* 2.6 Write property tests for horoscope engine
     - **Property 1: Horoscope Generation Completeness**
     - Test that any zodiac/date produces complete reading with all aspects
     - **Property 2: Date Range Calculation Correctness**
@@ -85,13 +85,13 @@ The implementation is organized into logical phases: shared infrastructure first
     - Create element compatibility descriptions
     - _Requirements: 3.4, 3.5_
   
-  - [~] 3.3 Implement compatibility engine
+  - [x] 3.3 Implement compatibility engine
     - Create `src/lib/compatibility/engine.ts` with calculateCompatibility, getBaselineCompatibility functions
     - Auto-calculate zodiac signs from birth dates
     - Calculate all score categories (overall, communication, emotional, long-term)
     - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6_
   
-  - [ ]* 3.4 Write property tests for compatibility engine
+  - [~]* 3.4 Write property tests for compatibility engine
     - **Property 5: Compatibility Score Bounds**
     - Test that any two birth dates produce score in [0, 100]
     - **Property 6: Compatibility Score Determinism**
@@ -100,102 +100,102 @@ The implementation is organized into logical phases: shared infrastructure first
     - Test that result contains all four score categories, strengths, challenges, advice
     - **Validates: Requirements 3.2, 3.4, 3.5, 3.6**
 
-- [ ] 4. Implement Chinese zodiac engine
-  - [~] 4.1 Implement Chinese zodiac calculation
+- [x] 4. Implement Chinese zodiac engine
+  - [x] 4.1 Implement Chinese zodiac calculation
     - Create `src/lib/chinese-zodiac/animals.ts` with animal and element definitions, Thai names, Chinese names
     - Implement calculateChineseZodiac function using formula: (year - 4) % 12
     - Implement calculateChineseElement function using formula: floor((year - 4) % 10 / 2)
     - _Requirements: 4.1, 4.2_
   
-  - [ ]* 4.2 Write property test for Chinese zodiac calculation
+  - [~]* 4.2 Write property test for Chinese zodiac calculation
     - **Property 9: Chinese Zodiac Calculation Correctness**
     - Test that any birth year produces correct animal and element based on formulas
     - **Validates: Requirements 4.2**
   
-  - [ ]* 4.3 Write unit tests for known Chinese zodiac years
+  - [~]* 4.3 Write unit tests for known Chinese zodiac years
     - Test specific years: 2024=Dragon, 2025=Snake, 2020=Rat
     - Test element calculations for known years
     - _Requirements: 4.2_
   
-  - [~] 4.4 Implement baseline Chinese zodiac interpretations
+  - [x] 4.4 Implement baseline Chinese zodiac interpretations
     - Create `src/lib/chinese-zodiac/baseline.ts` with fortune templates for each animal
     - Implement lucky colors, numbers, directions based on element
     - Create fortune sections for overall, career, wealth, health, relationships
     - _Requirements: 4.4, 4.5, 4.6_
   
-  - [~] 4.5 Implement Chinese zodiac engine
+  - [x] 4.5 Implement Chinese zodiac engine
     - Create `src/lib/chinese-zodiac/engine.ts` with generateChineseZodiacReading, getBaselineChineseZodiacReading functions
     - Support daily, weekly, monthly, yearly periods
     - Integrate with cache manager
     - _Requirements: 4.2, 4.3, 4.5_
   
-  - [ ]* 4.6 Write property test for Chinese zodiac output
+  - [~]* 4.6 Write property test for Chinese zodiac output
     - **Property 10: Chinese Zodiac Output Completeness**
     - Test that result contains all fortune sections, lucky colors, numbers, directions
     - **Validates: Requirements 4.5**
 
 - [ ] 5. Implement name numerology engine
-  - [~] 5.1 Implement Thai character to number mapping
+  - [x] 5.1 Implement Thai character to number mapping
     - Create `src/lib/name-numerology/thai-mapping.ts` with thaiCharToNumber function
     - Define mapping for Thai consonants (ก=1, ข=2, ค=3, ง=4, จ=5, ฉ=6, ช=7, ซ=8, ฌ=9, cycling)
     - Define mapping for Thai vowels
     - _Requirements: 6.3_
   
-  - [ ]* 5.2 Write property test for Thai character mapping
+  - [~]* 5.2 Write property test for Thai character mapping
     - **Property 13: Thai Character to Number Mapping Consistency**
     - Test that any Thai character always maps to same number in range [1, 9]
     - **Validates: Requirements 6.3**
   
-  - [~] 5.3 Implement name score calculation
+  - [x] 5.3 Implement name score calculation
     - Create `src/lib/name-numerology/engine.ts` with calculateNameScore, isValidThaiName functions
     - Implement score reduction to single digit (preserve 11, 22 as master numbers)
     - Calculate firstName, lastName, fullName, destiny scores
     - _Requirements: 6.2, 6.4_
   
-  - [ ]* 5.4 Write property tests for name numerology
+  - [~]* 5.4 Write property tests for name numerology
     - **Property 11: Thai Name Validation**
     - Test that validation accepts only Thai characters (U+0E00-U+0E7F) and spaces
     - **Property 12: Name Score Calculation Structure**
     - Test that result contains four scores, each in range [1-9] or master numbers [11, 22]
     - **Validates: Requirements 6.2, 6.4, 6.6, 6.7**
   
-  - [ ]* 5.5 Write unit tests for Thai name validation
+  - [~]* 5.5 Write unit tests for Thai name validation
     - Test rejection of English characters
     - Test acceptance of Thai characters with spaces
     - Test known Thai names with expected scores
     - _Requirements: 6.6, 6.7_
   
-  - [~] 5.6 Implement baseline name numerology interpretations
+  - [x] 5.6 Implement baseline name numerology interpretations
     - Create `src/lib/name-numerology/baseline.ts` with interpretation templates for each destiny number (1-9, 11, 22)
     - Create personality, strengths, weaknesses, life path, career, relationships descriptions
     - _Requirements: 6.5_
   
-  - [~] 5.7 Complete name numerology engine
+  - [x] 5.7 Complete name numerology engine
     - Implement calculateNameNumerology, getBaselineNameNumerology functions
     - Generate lucky numbers based on destiny number
     - _Requirements: 6.1, 6.2, 6.5_
   
-  - [ ]* 5.8 Write property test for name numerology output
+  - [~]* 5.8 Write property test for name numerology output
     - **Property 14: Name Numerology Output Completeness**
     - Test that interpretation contains personality, strengths, weaknesses, life path, career, relationships
     - **Validates: Requirements 6.5**
 
-- [~] 6. Checkpoint - Ensure all engines pass tests
+- [x] 6. Checkpoint - Ensure all engines pass tests
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 7. Extend reading pipeline and integrate monetization
-  - [~] 7.1 Update reading pipeline for new features
+  - [x] 7.1 Update reading pipeline for new features
     - Update `src/lib/reading/pipeline.ts` to handle new ReadingType values
     - Implement processReading function routing for each new feature type
     - Integrate cache checking before engine execution
     - _Requirements: 7.1, 10.3_
   
-  - [~] 7.2 Implement credit cost configuration
+  - [-] 7.2 Implement credit cost configuration
     - Update `src/lib/monetization/paywall.ts` to define credit costs for new features
     - Implement getCreditCost function: daily=1, weekly=2, monthly=3, compatibility=2, Chinese zodiac=1, specialized=2, name numerology=2
     - _Requirements: 7.2_
   
-  - [ ]* 7.3 Write property test for credit costs
+  - [~]* 7.3 Write property test for credit costs
     - **Property 15: Credit Cost Consistency**
     - Test that any reading type returns correct credit cost
     - **Validates: Requirements 7.2**
@@ -207,7 +207,7 @@ The implementation is organized into logical phases: shared infrastructure first
     - Track free readings in local storage with key `free_readings_{feature_type}`
     - _Requirements: 7.1, 7.3, 7.5, 7.6_
   
-  - [ ]* 7.5 Write property tests for credit system
+  - [~]* 7.5 Write property tests for credit system
     - **Property 16: Credit Deduction Correctness**
     - Test that credits decrease by correct amount after reading
     - **Property 17: First Reading Free Policy**
@@ -230,7 +230,7 @@ The implementation is organized into logical phases: shared infrastructure first
     - Implement 50-entry limit with oldest-first eviction (preserve favorites)
     - _Requirements: 8.1, 8.2, 8.3, 8.6_
   
-  - [ ]* 8.3 Write property tests for library storage
+  - [~]* 8.3 Write property tests for library storage
     - **Property 4: Reading History Persistence**
     - Test that completed readings appear in history and remain retrievable
     - **Property 18: Reading History Size Limit**
@@ -239,7 +239,7 @@ The implementation is organized into logical phases: shared infrastructure first
     - Test that deleted reading disappears and count decreases
     - **Validates: Requirements 1.8, 3.7, 8.1, 8.2, 8.3, 8.5, 8.6**
   
-  - [ ]* 8.4 Write unit tests for library edge cases
+  - [~]* 8.4 Write unit tests for library edge cases
     - Test that favorite readings are not removed when at limit
     - Test that oldest non-favorite is removed first
     - _Requirements: 8.3_
@@ -250,7 +250,7 @@ The implementation is organized into logical phases: shared infrastructure first
     - Implement delete functionality
     - _Requirements: 8.4, 8.6_
   
-  - [ ]* 8.6 Write property test for library organization
+  - [~]* 8.6 Write property test for library organization
     - **Property 19: Reading History Organization**
     - Test that library view groups by feature type and shows date, type, preview
     - **Validates: Requirements 8.4, 8.7**
@@ -283,7 +283,7 @@ The implementation is organized into logical phases: shared infrastructure first
     - Generate personalized life path guidance
     - _Requirements: 11.1, 11.2, 11.3, 11.4, 11.5_
   
-  - [ ]* 9.5 Write property tests for AI integration
+  - [~]* 9.5 Write property tests for AI integration
     - **Property 23: API Fallback Behavior**
     - Test that API failure returns baseline interpretation
     - **Property 24: AI Response Validation**
@@ -294,7 +294,7 @@ The implementation is organized into logical phases: shared infrastructure first
     - Test that output indicates baseline vs AI sections with confidence
     - **Validates: Requirements 10.2, 11.1, 11.3, 11.4, 11.5, 11.6, 11.7**
   
-  - [ ]* 9.6 Write unit tests for API error handling
+  - [~]* 9.6 Write unit tests for API error handling
     - Test API timeout handling
     - Test rate limit handling
     - Test invalid response handling
@@ -312,7 +312,7 @@ The implementation is organized into logical phases: shared infrastructure first
     - Maintain zodiac selection when switching periods
     - _Requirements: 2.1, 2.6_
   
-  - [ ]* 10.3 Write property test for period switching
+  - [~]* 10.3 Write property test for period switching
     - **Property 31: Period Maintenance Across UI Changes**
     - Test that zodiac sign remains unchanged when switching periods
     - **Validates: Requirements 2.6**
@@ -341,7 +341,7 @@ The implementation is organized into logical phases: shared infrastructure first
     - Display post-reading options (view another, share, return to menu)
     - _Requirements: 9.5, 11.7_
   
-  - [ ]* 10.8 Write property test for post-reading options
+  - [~]* 10.8 Write property test for post-reading options
     - **Property 34: Post-Reading Options Completeness**
     - Test that result page offers all three options
     - **Validates: Requirements 9.5**
@@ -385,7 +385,7 @@ The implementation is organized into logical phases: shared infrastructure first
     - Menu should link to all fortune features
     - _Requirements: 9.2_
   
-  - [ ]* 11.7 Write property test for navigation presence
+  - [~]* 11.7 Write property test for navigation presence
     - **Property 32: Navigation Menu Presence**
     - Test that all feature pages include navigation menu
     - **Validates: Requirements 9.2**
@@ -394,7 +394,7 @@ The implementation is organized into logical phases: shared infrastructure first
     - Add floating action button with LINE add CTA to all feature pages
     - _Requirements: 9.4_
   
-  - [ ]* 11.9 Write property test for FAB presence
+  - [~]* 11.9 Write property test for FAB presence
     - **Property 33: FAB Presence on Feature Pages**
     - Test that all feature pages include FAB
     - **Validates: Requirements 9.4**
@@ -425,7 +425,7 @@ The implementation is organized into logical phases: shared infrastructure first
     - Display Thai error messages for invalid inputs
     - _Requirements: 6.6, 6.7, 10.6_
   
-  - [ ]* 13.3 Write property tests for error handling
+  - [~]* 13.3 Write property tests for error handling
     - **Property 27: Thai Language Output**
     - Test that all reading outputs contain Thai characters
     - **Property 28: Error Message Localization**
@@ -439,7 +439,7 @@ The implementation is organized into logical phases: shared infrastructure first
     - Remove all local storage keys on clear: readings, cache, personal data, free reading flags
     - _Requirements: 12.3, 12.4_
   
-  - [ ]* 14.2 Write property tests for data privacy
+  - [~]* 14.2 Write property tests for data privacy
     - **Property 29: Local Storage Only Policy**
     - Test that no external storage requests are made (except Gemini API)
     - **Property 30: Data Clearing Completeness**
@@ -454,7 +454,7 @@ The implementation is organized into logical phases: shared infrastructure first
     - Track display state in local storage per feature
     - _Requirements: 12.6_
   
-  - [ ]* 14.4 Write property test for privacy notice
+  - [~]* 14.4 Write property test for privacy notice
     - **Property 35: Privacy Notice on First Use**
     - Test that notice is shown on first use, not on subsequent uses
     - **Validates: Requirements 12.6**

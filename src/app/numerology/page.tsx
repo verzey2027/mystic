@@ -102,7 +102,7 @@ export default function NumerologyPage() {
       <p className="mt-1 text-sm" style={{ color: "var(--text-muted)" }}>วิเคราะห์เบอร์มงคล</p>
 
       <form onSubmit={onSubmit} className="mt-5 rounded-2xl border p-5" style={{ borderColor: "var(--border)", background: "var(--bg-elevated)" }}>
-        <label className="text-xs font-semibold uppercase tracking-widest" style={{ color: "var(--purple-500)" }}>
+        <label className="text-sm font-medium" style={{ color: "var(--purple-500)" }}>
           เบอร์โทรศัพท์
         </label>
         <input
@@ -122,8 +122,7 @@ export default function NumerologyPage() {
         />
         <button
           type="submit"
-          className="mt-4 w-full rounded-full py-3 text-sm font-semibold text-white transition hover:opacity-90"
-          style={{ background: "var(--purple-500)" }}
+          className="mt-4 w-full rounded-2xl py-3 text-sm font-semibold text-accent-ink transition bg-accent hover:bg-accent-hover"
         >
           วิเคราะห์เบอร์
         </button>

@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { AppBar } from "@/components/nav/AppBar";
+import { Chip } from "@/components/ui/Chip";
+import { Card } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
 
 export const metadata: Metadata = {
   title: "Tarot — เลือกสเปรดที่เหมาะกับคุณ",
@@ -22,7 +26,7 @@ const spreads = [
     description: "ดูดวงรายวัน โฟกัสพลังงานวันนี้",
     eta: "2 นาที",
     icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-fg-muted" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <rect x="6" y="3" width="12" height="18" rx="2" />
         <circle cx="12" cy="12" r="2" />
       </svg>
@@ -34,7 +38,7 @@ const spreads = [
     description: "อดีต ปัจจุบัน อนาคต เห็นภาพรวมชัดเจน",
     eta: "5 นาที",
     icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-fg-muted" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <rect x="2" y="4" width="8" height="12" rx="1.5" />
         <rect x="8" y="2" width="8" height="12" rx="1.5" />
         <rect x="14" y="4" width="8" height="12" rx="1.5" />
@@ -47,7 +51,7 @@ const spreads = [
     description: "วิเคราะห์เจาะลึกสำหรับคำถามซับซ้อน",
     eta: "10 นาที",
     icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-fg-muted" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <rect x="2" y="6" width="7" height="10" rx="1.5" />
         <rect x="8.5" y="2" width="7" height="10" rx="1.5" />
         <rect x="15" y="6" width="7" height="10" rx="1.5" />
@@ -62,7 +66,7 @@ const spreads = [
     description: "ดูภาพรวมชีวิตแบบเจาะลึกที่สุด",
     eta: "15 นาที",
     icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-fg-muted" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <rect x="3" y="3" width="18" height="18" rx="2" />
         <line x1="3" y1="9" x2="21" y2="9" />
         <line x1="3" y1="15" x2="21" y2="15" />
@@ -75,77 +79,51 @@ const spreads = [
 
 export default function TarotHomePage() {
   return (
-    <main className="mx-auto w-full max-w-lg px-5 py-6">
-      {/* ── Title ── */}
-      <h1 className="text-2xl font-bold" style={{ color: "var(--text)" }}>
-        ทาโรต์
-      </h1>
+    <main className="mx-auto w-full max-w-lg">
+      <AppBar title="ทาโรต์" />
 
-      {/* ── Category chips ── */}
-      <div className="mt-4 flex gap-2">
-        {categories.map((cat, i) => (
-          <button
-            key={cat}
-            type="button"
-            className="rounded-full px-4 py-1.5 text-sm font-medium transition"
-            style={{
-              background: i === 0 ? "var(--purple-500)" : "transparent",
-              color: i === 0 ? "#fff" : "var(--text-muted)",
-              border: i === 0 ? "none" : "1px solid var(--border)",
-            }}
-          >
-            {cat}
-          </button>
-        ))}
-      </div>
+      <div className="px-5 pb-6">
+        {/* ── Category chips ── */}
+        <div className="mt-2 flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }}>
+          {categories.map((cat, i) => (
+            <Chip key={cat} selected={i === 0}>
+              {cat}
+            </Chip>
+          ))}
+        </div>
 
-      {/* ── Spread cards ── */}
-      <div className="mt-5 flex flex-col gap-4">
-        {spreads.map((spread) => (
-          <article
-            key={spread.count}
-            className="rounded-2xl border p-5 transition hover:shadow-md"
-            style={{
-              borderColor: "var(--border)",
-              background: "var(--bg-elevated)",
-            }}
-          >
-            <div className="flex items-start gap-4">
-              <div
-                className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl"
-                style={{ background: "var(--surface-1)" }}
-              >
-                {spread.icon}
-              </div>
-              <div className="flex-1">
-                <h3 className="text-base font-semibold" style={{ color: "var(--text)" }}>
-                  {spread.title}
-                </h3>
-                <div className="mt-0.5 flex items-center gap-1.5 text-xs" style={{ color: "var(--text-subtle)" }}>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="10" />
-                    <polyline points="12 6 12 12 16 14" />
-                  </svg>
-                  {spread.eta}
+        {/* ── Spread cards ── */}
+        <div className="mt-5 flex flex-col gap-4">
+          {spreads.map((spread) => (
+            <Card key={spread.count} className="p-5 bg-bg">
+              <div className="flex items-start gap-4">
+                <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-surface">
+                  {spread.icon}
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-base font-semibold text-fg">{spread.title}</h3>
+                  <div className="mt-0.5 flex items-center gap-1.5 text-xs text-fg-subtle">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="10" />
+                      <polyline points="12 6 12 12 16 14" />
+                    </svg>
+                    {spread.eta}
+                  </div>
                 </div>
               </div>
-            </div>
-            <p className="mt-3 text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>
-              {spread.description}
-            </p>
-          </article>
-        ))}
-      </div>
+              <p className="mt-3 text-sm leading-relaxed text-fg-muted">{spread.description}</p>
+            </Card>
+          ))}
+        </div>
 
-      {/* ── Sticky CTA ── */}
-      <div className="sticky bottom-20 z-30 mt-6">
-        <Link
-          href="/tarot/pick?count=3"
-          className="flex w-full items-center justify-center rounded-full py-3.5 text-sm font-semibold text-white transition hover:opacity-90"
-          style={{ background: "var(--purple-500)" }}
-        >
-          เริ่มเปิดไพ่ 3 ใบ
-        </Link>
+        {/* ── Sticky CTA ── */}
+        <div className="sticky bottom-20 z-30 mt-6">
+          <Link href="/tarot/pick?count=3" className="block">
+            <Button className="w-full" size="lg">
+              เริ่มเปิดไพ่ 3 ใบ
+            </Button>
+          </Link>
+        </div>
       </div>
     </main>
   );
