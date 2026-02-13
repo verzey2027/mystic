@@ -1,9 +1,11 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { Card, CardDesc, CardTitle } from "@/components/ui/Card";
 import { useLibrary } from "@/lib/library/useLibrary";
+import { parseCardTokens } from "@/lib/tarot/engine";
 
 function formatDate(iso: string) {
   try {
@@ -73,6 +75,34 @@ export default function SavedClient() {
                     ลบ
                   </button>
                 </div>
+
+                {/* Card thumbnails */}
+                {(() => {
+                  const cards = parseCardTokens(r.cardsToken);
+                  return cards.length > 0 ? (
+                    <div className="mt-3 flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+                      {cards.map((dc) => (
+                        <div
+                          key={dc.card.id}
+                          className="relative flex-shrink-0 overflow-hidden rounded-lg border"
+                          style={{ width: "48px", height: "74px", borderColor: "rgba(212,175,55,0.25)" }}
+                        >
+                          {dc.card.image ? (
+                            <Image
+                              src={dc.card.image}
+                              alt={dc.card.nameTh ?? dc.card.name}
+                              fill
+                              sizes="48px"
+                              className="object-cover"
+                            />
+                          ) : (
+                            <div className="flex h-full w-full items-center justify-center bg-surface-2 text-xs">🔮</div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  ) : null;
+                })()}
 
                 {r.question ? (
                   <p className="mt-3 line-clamp-2 text-sm text-fg">คำถาม: {r.question}</p>

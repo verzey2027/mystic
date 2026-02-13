@@ -258,12 +258,26 @@ export default function DailyCardPage() {
             </div>
 
             <div className="overflow-y-auto px-5 pb-8 pt-2" style={{ maxHeight: "calc(85vh - 20px)" }}>
-              {/* Card name */}
+              {/* Card image + name */}
               <div className="text-center">
                 <p className="text-xs uppercase tracking-[0.2em]" style={{ color: "#d4af37" }}>
                   Your card today
                 </p>
-                <h2 className="mt-2 text-xl font-bold text-white">
+
+                {/* Card thumbnail */}
+                {drawn.card.image && (
+                  <div className="mx-auto mt-4 relative overflow-hidden rounded-xl border-2" style={{ width: "120px", height: "185px", borderColor: "rgba(212,175,55,0.3)" }}>
+                    <Image
+                      src={drawn.card.image}
+                      alt={drawn.card.name}
+                      fill
+                      sizes="120px"
+                      className="object-cover"
+                    />
+                  </div>
+                )}
+
+                <h2 className="mt-3 text-xl font-bold text-white">
                   {drawn.card.nameTh ?? drawn.card.name}
                 </h2>
                 <p className="mt-1 text-sm text-slate-400">
