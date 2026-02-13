@@ -9,6 +9,20 @@ export const metadata: Metadata = {
     title: "ไพ่รายวัน — REFFORTUNE",
     description: "จับไพ่ทาโรต์ประจำวัน รับพลังงานและคำแนะนำเริ่มต้นวันใหม่",
     url: "/daily-card",
+    images: [
+      {
+        url: "/daily.jpg",
+        width: 1200,
+        height: 630,
+        alt: "ไพ่รายวัน — REFFORTUNE จับไพ่ทาโรต์ประจำวัน",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "ไพ่รายวัน — REFFORTUNE",
+    description: "จับไพ่ทาโรต์ประจำวัน รับพลังงานและคำแนะนำเริ่มต้นวันใหม่",
+    images: ["/daily.jpg"],
   },
 };
 

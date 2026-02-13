@@ -65,7 +65,7 @@ export const metadata: Metadata = {
     url: SITE_URL,
     images: [
       {
-        url: "/og-image.png",
+        url: "/tarot.jpg",
         width: 1200,
         height: 630,
         alt: "REFFORTUNE — ดูดวงกับเรฟ ไพ่ทาโรต์ โหราศาสตร์",
@@ -77,7 +77,7 @@ export const metadata: Metadata = {
     title: DEFAULT_TITLE,
     description:
       "เปิดไพ่ดูดวงกับเรฟ! คำแนะนำแม่นยำ เข้าใจง่าย สไตล์ทันสมัย เชื่อถือได้ พร้อมวางแผนชีวิตในทุกด้าน",
-    images: ["/og-image.png"],
+    images: ["/tarot.jpg"],
   },
   robots: {
     index: true,
