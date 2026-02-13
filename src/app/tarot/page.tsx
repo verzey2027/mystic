@@ -1,5 +1,18 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "เปิดไพ่ทาโรต์ออนไลน์ — เลือกสเปรดที่เหมาะกับคุณ",
+  description:
+    "เปิดไพ่ทาโรต์ออนไลน์กับ REFFORTUNE เลือกสเปรด 1, 3 หรือ 10 ใบ รับคำทำนายแม่นยำ เข้าใจง่าย ใช้ได้จริง ครอบคลุมทุกด้านของชีวิต",
+  alternates: { canonical: "/tarot" },
+  openGraph: {
+    title: "เปิดไพ่ทาโรต์ออนไลน์ — REFFORTUNE",
+    description: "เลือกสเปรดไพ่ทาโรต์ที่เหมาะกับคำถามของคุณ รับคำทำนายแม่นยำจากหมอดูตัวจริง",
+    url: "/tarot",
+  },
+};
 
 const spreads = [
   {

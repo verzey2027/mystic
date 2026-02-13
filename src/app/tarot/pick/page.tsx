@@ -1,5 +1,13 @@
+import type { Metadata } from "next";
 import { Suspense } from "react";
 import PickClient from "./PickClient";
+
+export const metadata: Metadata = {
+  title: "เลือกไพ่ทาโรต์ — โฟกัสคำถามแล้วเปิดไพ่",
+  description:
+    "โฟกัสคำถามในใจ แล้วแตะเลือกไพ่ทาโรต์ที่ดึงดูดคุณ รับคำทำนายแม่นยำจาก REFFORTUNE",
+  robots: { index: false, follow: true },
+};
 
 export default function TarotPickPage() {
   return (

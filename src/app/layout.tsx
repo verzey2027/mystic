@@ -13,10 +13,19 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const SITE_URL = "https://www.reffortune.com";
+const SITE_NAME = "REFFORTUNE — ดูดวงกับเรฟ";
+const DEFAULT_TITLE = "ดูดวงกับเรฟ - REFFORTUNE | ไพ่ทาโรต์ โหราศาสตร์ และคำทำนายแม่นยำ";
+const DEFAULT_DESCRIPTION =
+  "ดูดวงกับเรฟ บริการดูดวงไพ่ทาโรต์ โหราศาสตร์ ไพ่เทพออราเคิล และมหาสัตตเลข รับคำแนะนำตรงจุด แม่นยำ ใช้งานได้จริง วางแผนชีวิตได้อย่างมั่นใจ พร้อมแพ็กเกจดูดวงที่เหมาะกับคุณ";
+
 export const metadata: Metadata = {
-  title: "ดูดวงกับเรฟ - REFFORTUNE | ไพ่ทาโรต์ โหราศาสตร์ และคำทำนายแม่นยำ",
-  description:
-    "ดูดวงกับเรฟ บริการดูดวงไพ่ทาโรต์ โหราศาสตร์ ไพ่เทพออราเคิล และมหาสัตตเลข รับคำแนะนำตรงจุด แม่นยำ ใช้งานได้จริง วางแผนชีวิตได้อย่างมั่นใจ พร้อมแพ็กเกจดูดวงที่เหมาะกับคุณ",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: DEFAULT_TITLE,
+    template: `%s | ${SITE_NAME}`,
+  },
+  description: DEFAULT_DESCRIPTION,
   keywords: [
     "ดูดวง",
     "ดูดวงออนไลน์",
@@ -25,21 +34,67 @@ export const metadata: Metadata = {
     "ไพ่ Oracle",
     "ดวงรายวัน",
     "วิเคราะห์เบอร์มงคล",
+    "ดูดวงไพ่",
+    "หมอดูออนไลน์",
+    "ดวงชะตา",
+    "เปิดไพ่ทาโรต์",
+    "ดูดวงความรัก",
+    "ดูดวงการเงิน",
+    "ดูดวงการงาน",
     "REFFORTUNE",
+    "ดูดวงกับเรฟ",
   ],
+  authors: [{ name: "REFFORTUNE", url: SITE_URL }],
+  creator: "REFFORTUNE",
+  publisher: "REFFORTUNE",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  alternates: {
+    canonical: SITE_URL,
+  },
   openGraph: {
     type: "website",
-    title: "ดูดวงกับเรฟ - REFFORTUNE | ไพ่ทาโรต์ โหราศาสตร์ และคำทำนายแม่นยำ",
+    siteName: SITE_NAME,
+    title: DEFAULT_TITLE,
     description:
       "รับคำทำนายแม่นๆ จากหมอดูตัวจริง ดูดวงไพ่ ไพ่ทาโรต์ ไพ่ Oracle โหราศาสตร์ และมหาสัตตเลข พร้อมภาพสวย เข้าใจง่าย ใช้ได้จริง",
     locale: "th_TH",
+    url: SITE_URL,
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "REFFORTUNE — ดูดวงกับเรฟ ไพ่ทาโรต์ โหราศาสตร์",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "ดูดวงกับเรฟ - REFFORTUNE | ไพ่ทาโรต์ โหราศาสตร์ และคำทำนายแม่นยำ",
+    title: DEFAULT_TITLE,
     description:
       "เปิดไพ่ดูดวงกับเรฟ! คำแนะนำแม่นยำ เข้าใจง่าย สไตล์ทันสมัย เชื่อถือได้ พร้อมวางแผนชีวิตในทุกด้าน",
+    images: ["/og-image.png"],
   },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/favicon.ico",
+  },
+  category: "lifestyle",
 };
 
 const bottomTabs = [

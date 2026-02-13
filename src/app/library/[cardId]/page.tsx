@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -5,6 +6,27 @@ import { getCardById, TAROT_DECK } from "@/lib/tarot/deck";
 
 export function generateStaticParams() {
   return TAROT_DECK.map((card) => ({ cardId: card.id }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ cardId: string }>;
+}): Promise<Metadata> {
+  const { cardId } = await params;
+  const card = getCardById(cardId);
+  if (!card) return {};
+  const arcanaLabel = card.arcana === "major" ? "Major Arcana" : `Minor Arcana • ${card.suit}`;
+  return {
+    title: `${card.name} — ความหมายไพ่ทาโรต์ (${arcanaLabel})`,
+    description: `ความหมายไพ่ ${card.name} ทั้งตั้งตรงและกลับหัว พร้อมคีย์เวิร์ดและแนวทางเชิงปฏิบัติ — REFFORTUNE`,
+    alternates: { canonical: `/library/${cardId}` },
+    openGraph: {
+      title: `${card.name} — ไพ่ทาโรต์ REFFORTUNE`,
+      description: `เรียนรู้ความหมายไพ่ ${card.name} (${arcanaLabel}) ทั้งด้านบวกและด้านท้าทาย`,
+      url: `/library/${cardId}`,
+    },
+  };
 }
 
 export default async function TarotCardDetailPage({

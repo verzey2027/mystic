@@ -1,3 +1,17 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "ราคาบริการดูดวง — แพ็กเกจดูดวงออนไลน์",
+  description:
+    "ราคาบริการดูดวงกับ REFFORTUNE ทั้งแบบสนทนาและพิมพ์ตอบ เริ่มต้น 45 บาท พร้อมแพ็กคำถามสุดคุ้ม เลือกแพ็กที่เหมาะกับคุณ",
+  alternates: { canonical: "/pricing" },
+  openGraph: {
+    title: "ราคาบริการดูดวง — REFFORTUNE",
+    description: "เปรียบเทียบแพ็กเกจดูดวงออนไลน์ เริ่มต้น 45 บาท/คำถาม",
+    url: "/pricing",
+  },
+};
+
 const plans = [
   {
     name: "คำถามผ่านการสนทนา",

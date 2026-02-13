@@ -1,5 +1,18 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { TAROT_DECK } from "@/lib/tarot/deck";
+
+export const metadata: Metadata = {
+  title: "ห้องสมุดไพ่ทาโรต์ 78 ใบ — ความหมายครบทุกใบ",
+  description:
+    "ค้นหาความหมายไพ่ทาโรต์ทั้ง 78 ใบ Major & Minor Arcana พร้อมคีย์เวิร์ดตั้งตรงและกลับหัว แนวทางเชิงปฏิบัติ เข้าใจง่าย",
+  alternates: { canonical: "/library" },
+  openGraph: {
+    title: "ห้องสมุดไพ่ทาโรต์ 78 ใบ — REFFORTUNE",
+    description: "ค้นหาความหมายไพ่ทาโรต์ทุกใบ พร้อมแนวทางเชิงปฏิบัติ",
+    url: "/library",
+  },
+};
 
 export default function TarotLibraryPage() {
   return (
