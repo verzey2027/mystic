@@ -1,10 +1,13 @@
-import type { ReadingVertical } from "@/lib/reading/types";
+import type { ReadingVertical, ReadingType } from "@/lib/reading/types";
+import { getCreditCost } from "@/lib/reading/pipeline";
 
 export interface PaywallContext {
   vertical: ReadingVertical;
   stage: "pre-result" | "result";
   sessionId?: string;
   hasQuestion?: boolean;
+  readingType?: ReadingType;
+  readingOptions?: any;
 }
 
 export interface PaywallDecision {
