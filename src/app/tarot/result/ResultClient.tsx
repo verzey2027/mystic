@@ -8,6 +8,10 @@ import { parseCardTokens } from "@/lib/tarot/engine";
 import { trackEvent } from "@/lib/analytics/tracking";
 import { evaluatePaywall, recordFreeReading } from "@/lib/monetization/paywall";
 import { runReadingPipeline } from "@/lib/reading/pipeline";
+import { Button } from "@/components/ui/Button";
+import { Alert } from "@/components/ui/Alert";
+import { Card, CardDesc, CardTitle } from "@/components/ui/Card";
+import { buildSavedTarotReading, upsertReading } from "@/lib/library/storage";
 
 function normalizeText(value: unknown): string {
   if (typeof value === "string") return value;
@@ -48,6 +52,9 @@ export default function ResultClient() {
     summary: string;
     cardStructure: string;
   }>(null);
+
+  const [savedId, setSavedId] = useState<string | null>(null);
+  const [saveToast, setSaveToast] = useState<string | null>(null);
   const [chatInput, setChatInput] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
   const [chatMessages, setChatMessages] = useState<Array<{ role: "user" | "assistant"; text: string }>>([]);
@@ -103,15 +110,30 @@ export default function ResultClient() {
       })
       .then((ai) => {
         if (!ai) return;
-        setAiReading({
+        const next = {
           summary: normalizeText(ai.summary),
           cardStructure: normalizeText(ai.cardStructure),
-        });
+        };
+        setAiReading(next);
+
+        // If user already saved, upsert AI fields to the same saved item.
+        if (savedId) {
+          upsertReading(
+            buildSavedTarotReading({
+              id: savedId,
+              count,
+              cardsToken,
+              question,
+              aiSummary: next.summary,
+              aiCardStructure: next.cardStructure,
+            })
+          );
+        }
       })
       .catch(() => {});
 
     return () => controller.abort();
-  }, [cardsToken, count, question, result]);
+  }, [cardsToken, count, question, result, savedId]);
 
   async function sendFollowUpQuestion() {
     const q = chatInput.trim();
@@ -157,30 +179,72 @@ export default function ResultClient() {
   if (!result) {
     return (
       <main className="mx-auto w-full max-w-5xl px-4 py-8 md:py-12">
-        <section className="mt-6 rounded-2xl border border-rose-300/30 bg-rose-400/10 p-5 text-sm text-rose-100">
+        <Alert tone="danger" className="mt-6">
           ไม่พบข้อมูลไพ่ที่สมบูรณ์ กรุณากลับไปเปิดไพ่ใหม่อีกครั้ง
-        </section>
+        </Alert>
       </main>
     );
   }
 
   return (
     <main className="mx-auto w-full max-w-5xl px-4 py-8 md:py-12">
-      <section className="rounded-3xl border border-white/10 bg-gradient-to-br from-violet-500/20 to-fuchsia-500/10 p-5 md:p-7">
+      <section className="rounded-3xl border border-border bg-gradient-to-br from-rose/15 to-teal/10 p-5 md:p-7">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-amber-200/90">Step 3 of 3</p>
-            <h1 className="mt-2 text-3xl font-semibold text-white md:text-4xl">ผลคำทำนาย</h1>
-            <p className="mt-2 text-sm text-slate-200">อ่านภาพรวมก่อน แล้วค่อยถามเจาะลึกในประเด็นที่คุณอยากรู้ต่อ</p>
+            <p className="text-xs uppercase tracking-[0.2em] text-accent/90">Step 3 of 3</p>
+            <h1 className="mt-2 text-3xl font-semibold text-fg md:text-4xl">ผลคำทำนาย</h1>
+            <p className="mt-2 text-sm text-fg-muted">อ่านภาพรวมก่อน แล้วค่อยถามเจาะลึกในประเด็นที่คุณอยากรู้ต่อ</p>
           </div>
-          <div className="flex gap-2">
-            <Link href="/tarot" className="inline-flex min-h-11 items-center rounded-full border border-white/20 px-4 py-2 text-sm text-slate-200 hover:bg-white/10">เปิดไพ่ใหม่</Link>
-            <Link href="/" className="inline-flex min-h-11 items-center rounded-full border border-white/20 px-4 py-2 text-sm text-slate-200 hover:bg-white/10">กลับหน้าแรก</Link>
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                const id = savedId ?? (typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : String(Date.now()));
+                setSavedId(id);
+                upsertReading(
+                  buildSavedTarotReading({
+                    id,
+                    count,
+                    cardsToken,
+                    question,
+                    aiSummary: aiReading?.summary,
+                    aiCardStructure: aiReading?.cardStructure,
+                  })
+                );
+                setSaveToast("บันทึกเรียบร้อย");
+                setTimeout(() => setSaveToast(null), 1800);
+              }}
+              className="inline-flex"
+            >
+              <Button variant={savedId ? "secondary" : "primary"}>
+                {savedId ? "บันทึกแล้ว" : "บันทึกผลนี้"}
+              </Button>
+            </button>
+            <Link href="/library/saved" className="inline-flex">
+              <Button variant="ghost">ไปที่คลังของฉัน</Button>
+            </Link>
+            <Link href="/tarot" className="inline-flex">
+              <Button variant="ghost">เปิดไพ่ใหม่</Button>
+            </Link>
+            <Link href="/" className="inline-flex">
+              <Button variant="ghost">กลับหน้าแรก</Button>
+            </Link>
           </div>
         </div>
       </section>
 
-      {question ? <section className="mt-4 rounded-2xl border border-white/10 bg-white/[0.03] p-5 text-sm text-slate-300">คำถาม: {question}</section> : null}
+      {saveToast ? (
+        <div className="mt-4">
+          <Alert tone="success">{saveToast}</Alert>
+        </div>
+      ) : null}
+
+      {question ? (
+        <Card className="mt-4">
+          <CardTitle>คำถาม</CardTitle>
+          <CardDesc className="mt-1">{question}</CardDesc>
+        </Card>
+      ) : null}
 
       {drawnCards.length > 0 ? (
         <section className="mt-4 rounded-2xl border border-white/10 bg-white/[0.03] p-4 md:p-5">

@@ -56,7 +56,7 @@ export const TAROT_DECK: TarotCard[] = FORTUNE_DECK.map((entry) => {
     keywordsReversed: ["ทบทวน", "ชะลอ", ...keywords],
     meaningUpright: entry.dailyAdvice,
     meaningReversed: `มุมเงา: ${entry.dailyAdvice}`,
-    image: `/fortune/${entry.img}`,
+    image: `https://www.reffortune.com/${entry.img}`,
     source: "fortune",
   };
 });

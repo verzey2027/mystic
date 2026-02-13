@@ -1,13 +1,78 @@
 @import "tailwindcss";
 
+/*
+  REFFORTUNE — Canonical theme tokens (Palette B: Midnight + Solar Gold)
+  Tailwind v4 theming via @theme inline.
+*/
 :root {
-  --background: #020617;
-  --foreground: #f8fafc;
+  /* Base */
+  --bg: #06070b;
+  --bg-elevated: #040a1d;
+
+  /* Surfaces */
+  --surface-1: rgba(255, 255, 255, 0.03);
+  --surface-2: rgba(255, 255, 255, 0.06);
+  --surface-3: rgba(255, 255, 255, 0.1);
+
+  /* Borders */
+  --border: rgba(255, 255, 255, 0.1);
+  --border-strong: rgba(255, 255, 255, 0.18);
+
+  /* Text */
+  --text: #f3f4f8;
+  --text-muted: rgba(243, 244, 248, 0.72);
+  --text-subtle: rgba(243, 244, 248, 0.55);
+
+  /* Accents */
+  --accent: #f4c86a; /* solar gold */
+  --accent-hover: #f9d65c;
+  --accent-ink: #0b1220;
+
+  --rose: #ff4aa2;
+  --teal: #2de2e6;
+
+  /* Status */
+  --success: #3ddb84;
+  --warning: #f9d65c;
+  --danger: #ff5b5b;
+
+  /* Focus */
+  --ring: rgba(244, 200, 106, 0.55);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  /* backgrounds & surfaces */
+  --color-bg: var(--bg);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-surface: var(--surface-1);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+
+  /* borders */
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+
+  /* text */
+  --color-fg: var(--text);
+  --color-fg-muted: var(--text-muted);
+  --color-fg-subtle: var(--text-subtle);
+
+  /* accents */
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-ink: var(--accent-ink);
+  --color-rose: var(--rose);
+  --color-teal: var(--teal);
+
+  /* status */
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+
+  /* focus */
+  --color-ring: var(--ring);
+
+  /* fonts (keep existing vars for now) */
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -21,9 +86,9 @@ body {
   min-height: 100vh;
   background:
     radial-gradient(circle at top right, rgba(148, 163, 184, 0.14), transparent 45%),
-    radial-gradient(circle at top left, rgba(251, 191, 36, 0.11), transparent 40%),
-    #020617;
-  color: var(--foreground);
+    radial-gradient(circle at top left, rgba(244, 200, 106, 0.11), transparent 40%),
+    var(--bg);
+  color: var(--text);
   font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
 }
 
