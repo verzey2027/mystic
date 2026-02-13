@@ -1,79 +1,83 @@
 @import "tailwindcss";
 
 /*
-  REFFORTUNE — Canonical theme tokens (Palette B: Midnight + Solar Gold)
+  MysticFlow — Clean White + Purple theme
   Tailwind v4 theming via @theme inline.
 */
 :root {
   /* Base */
-  --bg: #140f28;
-  --bg-elevated: #100c22;
+  --bg: #F8F7FC;
+  --bg-elevated: #FFFFFF;
 
   /* Surfaces */
-  --surface-1: rgba(255, 255, 255, 0.03);
-  --surface-2: rgba(255, 255, 255, 0.06);
-  --surface-3: rgba(255, 255, 255, 0.1);
+  --surface-1: #F3F0F9;
+  --surface-2: #EDE9FE;
+  --surface-3: #DDD6FE;
 
   /* Borders */
-  --border: rgba(255, 255, 255, 0.1);
-  --border-strong: rgba(255, 255, 255, 0.18);
-  --border-gold: rgba(212, 175, 55, 0.35);
+  --border: #E8E5F0;
+  --border-strong: #D4D0E0;
 
   /* Text */
-  --text: #f3f4f8;
-  --text-muted: rgba(243, 244, 248, 0.72);
-  --text-subtle: rgba(243, 244, 248, 0.55);
+  --text: #1A1A2E;
+  --text-muted: #6B6B80;
+  --text-subtle: #9B9BAD;
 
-  /* Accents */
-  --accent: #f4c86a; /* solar gold */
-  --accent-hover: #f9d65c;
-  --accent-ink: #0b1220;
+  /* Accents — purple only */
+  --accent: #8B5CF6;
+  --accent-hover: #7C3AED;
+  --accent-ink: #FFFFFF;
 
-  --rose: #ff4aa2;
-  --teal: #2de2e6;
+  --rose: #F43F5E;
+  --teal: #14B8A6;
 
   /* Status */
-  --success: #3ddb84;
-  --warning: #f9d65c;
-  --danger: #ff5b5b;
+  --success: #22C55E;
+  --warning: #F59E0B;
+  --danger: #EF4444;
 
   /* Focus */
-  --ring: rgba(244, 200, 106, 0.55);
+  --ring: rgba(139, 92, 246, 0.4);
+
+  /* Purple scale */
+  --purple-50: #F5F3FF;
+  --purple-100: #EDE9FE;
+  --purple-200: #DDD6FE;
+  --purple-300: #C4B5FD;
+  --purple-400: #A78BFA;
+  --purple-500: #8B5CF6;
+  --purple-600: #7C3AED;
+  --purple-700: #6D28D9;
+  --purple-800: #5B21B6;
+  --purple-900: #4C1D95;
 }
 
 @theme inline {
-  /* backgrounds & surfaces */
   --color-bg: var(--bg);
   --color-bg-elevated: var(--bg-elevated);
   --color-surface: var(--surface-1);
   --color-surface-2: var(--surface-2);
   --color-surface-3: var(--surface-3);
 
-  /* borders */
   --color-border: var(--border);
   --color-border-strong: var(--border-strong);
 
-  /* text */
   --color-fg: var(--text);
   --color-fg-muted: var(--text-muted);
   --color-fg-subtle: var(--text-subtle);
 
-  /* accents */
   --color-accent: var(--accent);
   --color-accent-hover: var(--accent-hover);
   --color-accent-ink: var(--accent-ink);
   --color-rose: var(--rose);
   --color-teal: var(--teal);
 
-  /* status */
   --color-success: var(--success);
   --color-warning: var(--warning);
   --color-danger: var(--danger);
 
-  /* focus */
   --color-ring: var(--ring);
 
-  /* fonts (keep existing vars for now) */
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -85,115 +89,10 @@
 body {
   margin: 0;
   min-height: 100vh;
-  background:
-    radial-gradient(ellipse 80% 60% at 20% 10%, rgba(139, 92, 246, 0.18), transparent 50%),
-    radial-gradient(ellipse 70% 50% at 80% 20%, rgba(109, 59, 189, 0.15), transparent 45%),
-    radial-gradient(ellipse 60% 80% at 50% 90%, rgba(76, 40, 137, 0.12), transparent 50%),
-    radial-gradient(circle at 70% 60%, rgba(167, 139, 250, 0.08), transparent 35%),
-    radial-gradient(circle at 30% 50%, rgba(244, 200, 106, 0.04), transparent 40%),
-    var(--bg);
+  background: var(--bg);
   color: var(--text);
   font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  position: relative;
   overflow-x: hidden;
-}
-
-/* ─── Floating Sparkle Particles Layer 1 (slow drift up-left) ─── */
-body::before {
-  content: "";
-  position: fixed;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  z-index: 0;
-  pointer-events: none;
-  background-image:
-    radial-gradient(2px 2px at 12% 18%, rgba(255, 255, 255, 0.5), transparent),
-    radial-gradient(1.5px 1.5px at 28% 42%, rgba(196, 181, 253, 0.45), transparent),
-    radial-gradient(2.5px 2.5px at 47% 11%, rgba(244, 200, 106, 0.4), transparent),
-    radial-gradient(1px 1px at 63% 38%, rgba(255, 255, 255, 0.35), transparent),
-    radial-gradient(3px 3px at 78% 15%, rgba(139, 92, 246, 0.5), transparent),
-    radial-gradient(1.5px 1.5px at 88% 52%, rgba(255, 255, 255, 0.3), transparent),
-    radial-gradient(2px 2px at 18% 68%, rgba(167, 139, 250, 0.4), transparent),
-    radial-gradient(1px 1px at 38% 82%, rgba(255, 255, 255, 0.35), transparent),
-    radial-gradient(2.5px 2.5px at 58% 62%, rgba(45, 226, 230, 0.25), transparent),
-    radial-gradient(1.5px 1.5px at 92% 78%, rgba(255, 255, 255, 0.3), transparent),
-    radial-gradient(2px 2px at 8% 48%, rgba(244, 200, 106, 0.3), transparent),
-    radial-gradient(1px 1px at 72% 28%, rgba(255, 255, 255, 0.4), transparent),
-    radial-gradient(3px 3px at 42% 55%, rgba(139, 92, 246, 0.35), transparent),
-    radial-gradient(1.5px 1.5px at 95% 22%, rgba(255, 255, 255, 0.25), transparent),
-    radial-gradient(2px 2px at 52% 35%, rgba(167, 139, 250, 0.3), transparent),
-    radial-gradient(1px 1px at 22% 92%, rgba(255, 255, 255, 0.35), transparent);
-  animation: sparkle-drift-1 60s linear infinite, twinkle 6s ease-in-out infinite alternate;
-}
-
-/* ─── Floating Sparkle Particles Layer 2 (slow drift down-right) ─── */
-body::after {
-  content: "";
-  position: fixed;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  z-index: 0;
-  pointer-events: none;
-  background-image:
-    radial-gradient(1.5px 1.5px at 15% 25%, rgba(255, 255, 255, 0.3), transparent),
-    radial-gradient(2px 2px at 35% 12%, rgba(196, 181, 253, 0.35), transparent),
-    radial-gradient(1px 1px at 55% 48%, rgba(255, 255, 255, 0.25), transparent),
-    radial-gradient(2.5px 2.5px at 72% 32%, rgba(244, 200, 106, 0.3), transparent),
-    radial-gradient(1.5px 1.5px at 85% 65%, rgba(139, 92, 246, 0.4), transparent),
-    radial-gradient(2px 2px at 25% 75%, rgba(255, 255, 255, 0.3), transparent),
-    radial-gradient(1px 1px at 45% 88%, rgba(45, 226, 230, 0.2), transparent),
-    radial-gradient(3px 3px at 65% 18%, rgba(255, 74, 162, 0.2), transparent),
-    radial-gradient(1.5px 1.5px at 8% 58%, rgba(255, 255, 255, 0.35), transparent),
-    radial-gradient(2px 2px at 48% 72%, rgba(167, 139, 250, 0.3), transparent);
-  background:
-    radial-gradient(1.5px 1.5px at 15% 25%, rgba(255, 255, 255, 0.3), transparent),
-    radial-gradient(2px 2px at 35% 12%, rgba(196, 181, 253, 0.35), transparent),
-    radial-gradient(1px 1px at 55% 48%, rgba(255, 255, 255, 0.25), transparent),
-    radial-gradient(2.5px 2.5px at 72% 32%, rgba(244, 200, 106, 0.3), transparent),
-    radial-gradient(1.5px 1.5px at 85% 65%, rgba(139, 92, 246, 0.4), transparent),
-    radial-gradient(2px 2px at 25% 75%, rgba(255, 255, 255, 0.3), transparent),
-    radial-gradient(1px 1px at 45% 88%, rgba(45, 226, 230, 0.2), transparent),
-    radial-gradient(3px 3px at 65% 18%, rgba(255, 74, 162, 0.2), transparent),
-    radial-gradient(1.5px 1.5px at 8% 58%, rgba(255, 255, 255, 0.35), transparent),
-    radial-gradient(2px 2px at 48% 72%, rgba(167, 139, 250, 0.3), transparent),
-    radial-gradient(ellipse 40% 35% at 15% 20%, rgba(139, 92, 246, 0.1), transparent),
-    radial-gradient(ellipse 35% 40% at 85% 75%, rgba(109, 59, 189, 0.08), transparent),
-    radial-gradient(ellipse 50% 30% at 50% 50%, rgba(76, 40, 137, 0.06), transparent);
-  animation: sparkle-drift-2 45s linear infinite, twinkle 8s ease-in-out 3s infinite alternate;
-}
-
-/* Ensure content sits above decorative layers */
-body > * {
-  position: relative;
-  z-index: 1;
-}
-
-/* ─── Home page light theme override ─── */
-.theme-light {
-  --bg: #faf7f2;
-  --bg-elevated: #ffffff;
-  --border: rgba(139, 92, 246, 0.12);
-  --border-strong: rgba(139, 92, 246, 0.22);
-  --border-gold: rgba(212, 175, 55, 0.35);
-  --text: #2d1b4e;
-  --text-muted: rgba(45, 27, 78, 0.7);
-  --text-subtle: rgba(45, 27, 78, 0.5);
-  background: #faf7f2;
-  color: #2d1b4e;
-}
-
-/* Hide body sparkle particles when light theme is active */
-body:has(.theme-light)::before,
-body:has(.theme-light)::after {
-  display: none;
-}
-
-body:has(.theme-light) {
-  background: #faf7f2;
 }
 
 a {
@@ -201,93 +100,24 @@ a {
   text-decoration: none;
 }
 
-/* ─── Tarot Purple Tokens ─── */
-:root {
-  --purple-deep: #110e22;
-  --purple-900: #1a1035;
-  --purple-800: #2d1b69;
-  --purple-700: #4c2889;
-  --purple-600: #6d3bbd;
-  --purple-500: #8b5cf6;
-  --purple-400: #a78bfa;
-  --purple-300: #c4b5fd;
-  --purple-200: #ddd6fe;
-  --purple-100: #ede9fe;
-  --purple-glow: rgba(139, 92, 246, 0.25);
-  --purple-glow-strong: rgba(139, 92, 246, 0.45);
+/* ─── Keyframes ─── */
+
+@keyframes tarot-fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* ─── Tarot Keyframes ─── */
-
-/* Slow gradient drift for hero backgrounds */
-@keyframes tarot-drift {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+@keyframes tarot-card-reveal {
+  0% { opacity: 0; transform: scale(0.9) rotateY(90deg); }
+  50% { opacity: 1; transform: scale(1.02) rotateY(0deg); }
+  100% { opacity: 1; transform: scale(1) rotateY(0deg); }
 }
 
-/* Subtle shimmer sweep across elements */
 @keyframes tarot-shimmer {
   0% { transform: translateX(-100%) rotate(15deg); }
   100% { transform: translateX(200%) rotate(15deg); }
 }
 
-/* Gentle floating for card imagery */
-@keyframes tarot-float {
-  0%, 100% { transform: translateY(0) rotate(var(--float-rotate, 0deg)); }
-  50% { transform: translateY(-12px) rotate(var(--float-rotate, 0deg)); }
-}
-
-/* Pulsing glow for selected/active states */
-@keyframes tarot-glow-pulse {
-  0%, 100% { box-shadow: 0 0 12px var(--purple-glow), 0 0 40px transparent; }
-  50% { box-shadow: 0 0 20px var(--purple-glow-strong), 0 0 60px var(--purple-glow); }
-}
-
-/* Fade + slide up for staggered reveals */
-@keyframes tarot-fade-up {
-  from { opacity: 0; transform: translateY(24px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* Card flip reveal */
-@keyframes tarot-card-reveal {
-  0% { opacity: 0; transform: scale(0.85) rotateY(90deg); }
-  50% { opacity: 1; transform: scale(1.02) rotateY(0deg); }
-  100% { opacity: 1; transform: scale(1) rotateY(0deg); }
-}
-
-/* Rotating subtle star/sparkle */
-@keyframes tarot-spin-slow {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-/* Twinkling stars */
-@keyframes twinkle {
-  0% { opacity: 0.4; }
-  33% { opacity: 0.9; }
-  66% { opacity: 0.55; }
-  100% { opacity: 0.85; }
-}
-
-/* Floating sparkle drift — slow diagonal movement */
-@keyframes sparkle-drift-1 {
-  0% { transform: translate(0, 0); }
-  25% { transform: translate(-2%, -3%); }
-  50% { transform: translate(-4%, -1%); }
-  75% { transform: translate(-1%, -4%); }
-  100% { transform: translate(0, 0); }
-}
-
-@keyframes sparkle-drift-2 {
-  0% { transform: translate(0, 0); }
-  25% { transform: translate(3%, 2%); }
-  50% { transform: translate(1%, 4%); }
-  75% { transform: translate(4%, 1%); }
-  100% { transform: translate(0, 0); }
-}
-
-/* Daily card animations */
 @keyframes daily-pulse {
   0%, 100% { opacity: 0.3; }
   50% { opacity: 0.7; }
@@ -296,6 +126,11 @@ a {
 @keyframes slide-up {
   from { transform: translateY(100%); }
   to { transform: translateY(0); }
+}
+
+@keyframes tarot-glow-pulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(139, 92, 246, 0.2); }
+  50% { box-shadow: 0 0 16px rgba(139, 92, 246, 0.35); }
 }
 
 /* Respect reduced motion */

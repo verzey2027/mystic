@@ -14,10 +14,10 @@ const geistMono = Geist_Mono({
 });
 
 const SITE_URL = "https://www.reffortune.com";
-const SITE_NAME = "REFFORTUNE — ดูดวงกับเรฟ";
-const DEFAULT_TITLE = "ดูดวงกับเรฟ - REFFORTUNE | ไพ่ทาโรต์ โหราศาสตร์ และคำทำนายแม่นยำ";
+const SITE_NAME = "MysticFlow";
+const DEFAULT_TITLE = "MysticFlow — Tarot, Daily Card & Spiritual Guidance";
 const DEFAULT_DESCRIPTION =
-  "ดูดวงกับเรฟ บริการดูดวงไพ่ทาโรต์ โหราศาสตร์ ไพ่เทพออราเคิล และมหาสัตตเลข รับคำแนะนำตรงจุด แม่นยำ ใช้งานได้จริง วางแผนชีวิตได้อย่างมั่นใจ พร้อมแพ็กเกจดูดวงที่เหมาะกับคุณ";
+  "ดูดวงกับ MysticFlow บริการดูดวงไพ่ทาโรต์ ไพ่ Oracle ไพ่รายวัน และ Numerology รับคำแนะนำแม่นยำ เข้าใจง่าย ใช้ได้จริง";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -30,23 +30,19 @@ export const metadata: Metadata = {
     "ดูดวง",
     "ดูดวงออนไลน์",
     "ไพ่ทาโรต์",
-    "โหราศาสตร์",
     "ไพ่ Oracle",
     "ดวงรายวัน",
-    "วิเคราะห์เบอร์มงคล",
+    "Numerology",
     "ดูดวงไพ่",
-    "หมอดูออนไลน์",
-    "ดวงชะตา",
     "เปิดไพ่ทาโรต์",
     "ดูดวงความรัก",
     "ดูดวงการเงิน",
     "ดูดวงการงาน",
-    "REFFORTUNE",
-    "ดูดวงกับเรฟ",
+    "MysticFlow",
   ],
-  authors: [{ name: "REFFORTUNE", url: SITE_URL }],
-  creator: "REFFORTUNE",
-  publisher: "REFFORTUNE",
+  authors: [{ name: "MysticFlow", url: SITE_URL }],
+  creator: "MysticFlow",
+  publisher: "MysticFlow",
   formatDetection: {
     email: false,
     address: false,
@@ -59,8 +55,7 @@ export const metadata: Metadata = {
     type: "website",
     siteName: SITE_NAME,
     title: DEFAULT_TITLE,
-    description:
-      "รับคำทำนายแม่นๆ จากหมอดูตัวจริง ดูดวงไพ่ ไพ่ทาโรต์ ไพ่ Oracle โหราศาสตร์ และมหาสัตตเลข พร้อมภาพสวย เข้าใจง่าย ใช้ได้จริง",
+    description: DEFAULT_DESCRIPTION,
     locale: "th_TH",
     url: SITE_URL,
     images: [
@@ -68,15 +63,14 @@ export const metadata: Metadata = {
         url: "/tarot.jpg",
         width: 1200,
         height: 630,
-        alt: "REFFORTUNE — ดูดวงกับเรฟ ไพ่ทาโรต์ โหราศาสตร์",
+        alt: "MysticFlow — Tarot & Spiritual Guidance",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
     title: DEFAULT_TITLE,
-    description:
-      "เปิดไพ่ดูดวงกับเรฟ! คำแนะนำแม่นยำ เข้าใจง่าย สไตล์ทันสมัย เชื่อถือได้ พร้อมวางแผนชีวิตในทุกด้าน",
+    description: DEFAULT_DESCRIPTION,
     images: ["/tarot.jpg"],
   },
   robots: {
@@ -98,42 +92,40 @@ export const metadata: Metadata = {
 };
 
 const bottomTabs = [
-  { label: "หน้าแรก", href: "/", icon: "home" },
-  { label: "บริการ", href: "/tarot", icon: "services" },
-  { label: "นัดหมาย", href: "#", icon: "calendar" },
-  { label: "โปรไฟล์", href: "#", icon: "profile" },
+  { label: "Home", href: "/", icon: "home" },
+  { label: "Tarot", href: "/tarot", icon: "tarot" },
+  { label: "Library", href: "/library", icon: "library" },
+  { label: "Profile", href: "#", icon: "profile" },
 ];
 
 function BottomTabIcon({ type }: { type: string }) {
   switch (type) {
     case "home":
       return (
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
           <polyline points="9 22 9 12 15 12 15 22" />
         </svg>
       );
-    case "services":
+    case "tarot":
       return (
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <rect x="3" y="3" width="7" height="7" />
-          <rect x="14" y="3" width="7" height="7" />
-          <rect x="3" y="14" width="7" height="7" />
-          <rect x="14" y="14" width="7" height="7" />
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="4" y="2" width="16" height="20" rx="2" />
+          <circle cx="12" cy="12" r="4" />
+          <line x1="12" y1="6" x2="12" y2="6.01" />
+          <line x1="12" y1="18" x2="12" y2="18.01" />
         </svg>
       );
-    case "calendar":
+    case "library":
       return (
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-          <line x1="16" y1="2" x2="16" y2="6" />
-          <line x1="8" y1="2" x2="8" y2="6" />
-          <line x1="3" y1="10" x2="21" y2="10" />
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
         </svg>
       );
     case "profile":
       return (
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
           <circle cx="12" cy="7" r="4" />
         </svg>
@@ -153,19 +145,18 @@ function BottomNav() {
         bottom: 0,
         width: "100%",
         borderTop: "1px solid var(--border)",
-        background: "#100c22",
-        boxShadow: "0 -2px 20px rgba(0,0,0,0.3)",
+        background: "#FFFFFF",
         zIndex: 9999,
         paddingBottom: "env(safe-area-inset-bottom, 0px)",
       }}
     >
-      <div className="flex items-center justify-around py-2">
+      <div className="mx-auto flex max-w-lg items-center justify-around py-1.5">
         {bottomTabs.map((tab) => (
           <Link
             key={tab.label}
             href={tab.href}
             className="flex flex-col items-center gap-0.5 px-3 py-1.5 text-[11px] transition-colors"
-            style={{ color: tab.icon === "home" ? "var(--purple-400)" : "var(--text-subtle)" }}
+            style={{ color: tab.icon === "home" ? "var(--purple-500)" : "var(--text-subtle)" }}
           >
             <BottomTabIcon type={tab.icon} />
             <span className="font-medium">{tab.label}</span>
@@ -186,7 +177,7 @@ export default function RootLayout({
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-bg pb-24 text-fg`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-bg pb-20 text-fg`}>
         {children}
         <BottomNav />
       </body>

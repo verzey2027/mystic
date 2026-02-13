@@ -44,3 +44,34 @@ export interface NumerologyReadingInput {
 }
 
 export type ReadingInput = TarotReadingInput | SpiritCardReadingInput | NumerologyReadingInput;
+
+// New reading types for popular fortune features
+export enum ReadingType {
+  // Existing types
+  TAROT = 'tarot',
+  SPIRIT_CARD = 'spirit_card',
+  NUMEROLOGY = 'numerology',
+  DAILY_CARD = 'daily_card',
+  // New types
+  HOROSCOPE = 'horoscope',
+  COMPATIBILITY = 'compatibility',
+  CHINESE_ZODIAC = 'chinese_zodiac',
+  SPECIALIZED = 'specialized',
+  NAME_NUMEROLOGY = 'name_numerology'
+}
+
+// Extended reading request interface
+export interface ReadingRequest {
+  type: ReadingType;
+  input: any; // Type-specific input
+  userId?: string; // Optional user identifier
+}
+
+// Extended reading result interface
+export interface ReadingResult {
+  type: ReadingType;
+  timestamp: Date;
+  data: any; // Type-specific result
+  creditCost: number;
+  cached: boolean;
+}

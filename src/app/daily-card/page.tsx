@@ -51,7 +51,7 @@ export default function DailyCardPage() {
   const [drawn, setDrawn] = useState<DrawnCard | null>(null);
   const [alreadyDrawn, setAlreadyDrawn] = useState(false);
   const [flipped, setFlipped] = useState(false);
-  const [showPopup, setShowPopup] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
@@ -60,7 +60,7 @@ export default function DailyCardPage() {
       setDrawn(saved);
       setAlreadyDrawn(true);
       setFlipped(true);
-      setShowPopup(true);
+      setShowDetails(true);
     } else {
       setDrawn(drawOneCard());
     }
@@ -71,10 +71,10 @@ export default function DailyCardPage() {
     saveTodayCard(drawn);
     setAlreadyDrawn(true);
     setFlipped(true);
-    setTimeout(() => setShowPopup(true), 600);
+    setTimeout(() => setShowDetails(true), 600);
   }, [flipped, drawn]);
 
-  const orientationLabel = drawn?.orientation === "upright" ? "ตั้งตรง" : "กลับหัว";
+  const orientationLabel = drawn?.orientation === "upright" ? "Upright" : "Reversed";
 
   const guidance = useMemo(() => {
     if (!drawn) return null;
@@ -97,7 +97,7 @@ export default function DailyCardPage() {
   }, [drawn]);
 
   const shareText = drawn
-    ? `ไพ่รายวันของฉัน: ${drawn.card.nameTh ?? drawn.card.name} (${orientationLabel}) — REFFORTUNE`
+    ? `ไพ่รายวันของฉัน: ${drawn.card.nameTh ?? drawn.card.name} (${orientationLabel}) — MysticFlow`
     : "";
   const shareUrl = "https://www.reffortune.com/daily-card";
 
@@ -108,7 +108,7 @@ export default function DailyCardPage() {
 
       if (platform === "native" && typeof navigator !== "undefined" && navigator.share) {
         try {
-          await navigator.share({ title: "ไพ่รายวัน — REFFORTUNE", text: shareText, url: shareUrl });
+          await navigator.share({ title: "Daily Card — MysticFlow", text: shareText, url: shareUrl });
         } catch {}
         return;
       }
@@ -118,7 +118,7 @@ export default function DailyCardPage() {
           window.open(`https://line.me/R/msg/text/?${text}%0A${url}`, "_blank");
           break;
         case "facebook":
-          window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${text}&hashtag=%23REFFORTUNE`, "_blank");
+          window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${text}`, "_blank");
           break;
         case "twitter":
           window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, "_blank");
@@ -137,68 +137,54 @@ export default function DailyCardPage() {
 
   if (!drawn) {
     return (
-      <main className="mx-auto w-full max-w-lg px-4 py-10">
-        <p className="text-center text-sm text-slate-400">กำลังเตรียมไพ่...</p>
+      <main className="mx-auto w-full max-w-lg px-5 py-10">
+        <p className="text-center text-sm" style={{ color: "var(--text-subtle)" }}>กำลังเตรียมไพ่...</p>
       </main>
     );
   }
 
   return (
-    <main className="mx-auto w-full max-w-lg px-4 py-10 md:py-14">
+    <main className="mx-auto w-full max-w-lg px-5 py-6">
+      {/* ── Header ── */}
       <div className="text-center">
-        <p
-          className="text-sm font-semibold tracking-[0.15em]"
-          style={{ color: "#d4af37", fontStyle: "italic" }}
-        >
-          REFFORTUNE
-        </p>
-        <h1 className="mt-2 text-2xl font-bold text-white">ไพ่รายวัน</h1>
-        <p className="mt-1 text-sm text-slate-400">
+        <h1 className="text-2xl font-bold" style={{ color: "var(--text)" }}>Daily Card</h1>
+        <p className="mt-1 text-sm" style={{ color: "var(--text-subtle)" }}>
           {alreadyDrawn
             ? "คุณเปิดไพ่วันนี้แล้ว กลับมาเปิดใหม่ได้พรุ่งนี้"
-            : "แตะที่ไพ่เพื่อเปิดพลังงานประจำวัน"}
+            : "Tap the card to reveal today's energy"}
         </p>
       </div>
 
       {/* ── Card with flip animation ── */}
-      <div className="mt-8 flex justify-center" style={{ perspective: "1000px" }}>
+      <div className="mt-6 flex justify-center" style={{ perspective: "1000px" }}>
         <button
           type="button"
           onClick={handleFlip}
           disabled={flipped}
           className="relative cursor-pointer transition-transform duration-700"
           style={{
-            width: "220px",
-            height: "340px",
+            width: "200px",
+            height: "310px",
             transformStyle: "preserve-3d",
             transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)",
           }}
           aria-label="เปิดไพ่รายวัน"
         >
-          {/* Back face (หลังไพ่) */}
+          {/* Back face */}
           <div
             className="absolute inset-0 overflow-hidden rounded-2xl border-2"
             style={{
               backfaceVisibility: "hidden",
-              borderColor: "rgba(212,175,55,0.4)",
-              boxShadow: !flipped
-                ? "0 0 30px rgba(212,175,55,0.3), 0 8px 32px rgba(0,0,0,0.4)"
-                : "none",
+              borderColor: "var(--purple-200)",
+              boxShadow: !flipped ? "0 4px 24px rgba(139,92,246,0.15)" : "none",
             }}
           >
-            <Image
-              src={BACK_IMAGE}
-              alt="หลังไพ่"
-              fill
-              sizes="220px"
-              className="object-cover"
-            />
-            {/* Pulsing glow hint */}
+            <Image src={BACK_IMAGE} alt="หลังไพ่" fill sizes="200px" className="object-cover" />
             {!flipped && (
               <div
                 className="absolute inset-0 rounded-2xl"
                 style={{
-                  background: "radial-gradient(circle, rgba(212,175,55,0.15) 0%, transparent 70%)",
+                  background: "radial-gradient(circle, rgba(139,92,246,0.1) 0%, transparent 70%)",
                   animation: "daily-pulse 2s ease-in-out infinite",
                 }}
               />
@@ -206,38 +192,29 @@ export default function DailyCardPage() {
             {!flipped && (
               <div className="absolute inset-x-0 bottom-4 text-center">
                 <span
-                  className="rounded-full px-3 py-1 text-[11px] font-bold"
-                  style={{ background: "rgba(0,0,0,0.6)", color: "#d4af37" }}
+                  className="rounded-full px-3 py-1 text-[11px] font-bold text-white"
+                  style={{ background: "var(--purple-500)" }}
                 >
-                  แตะเพื่อเปิด
+                  Tap to reveal
                 </span>
               </div>
             )}
           </div>
 
-          {/* Front face (หน้าไพ่) */}
+          {/* Front face */}
           <div
             className="absolute inset-0 overflow-hidden rounded-2xl border-2"
             style={{
               backfaceVisibility: "hidden",
               transform: "rotateY(180deg)",
-              borderColor: "rgba(139,92,246,0.4)",
-              boxShadow: "0 0 30px rgba(139,92,246,0.2), 0 8px 32px rgba(0,0,0,0.4)",
+              borderColor: "var(--purple-300)",
+              boxShadow: "0 4px 24px rgba(139,92,246,0.15)",
             }}
           >
             {drawn.card.image ? (
-              <Image
-                src={drawn.card.image}
-                alt={drawn.card.name}
-                fill
-                sizes="220px"
-                className="object-cover"
-              />
+              <Image src={drawn.card.image} alt={drawn.card.name} fill sizes="200px" className="object-cover" />
             ) : (
-              <div
-                className="flex h-full w-full items-center justify-center"
-                style={{ background: "linear-gradient(135deg, #1a0e3e, #4c2889)" }}
-              >
+              <div className="flex h-full w-full items-center justify-center" style={{ background: "var(--purple-100)" }}>
                 <span className="text-4xl">🔮</span>
               </div>
             )}
@@ -245,171 +222,112 @@ export default function DailyCardPage() {
         </button>
       </div>
 
-      {/* ── Popup overlay ── */}
-      {showPopup && guidance && (
-        <div
-          className="fixed inset-0 z-[9998] flex items-end justify-center"
-          style={{ background: "rgba(0,0,0,0.6)" }}
-          onClick={() => setShowPopup(false)}
-        >
-          <div
-            className="w-full max-w-lg overflow-hidden rounded-t-3xl"
-            style={{
-              background: "linear-gradient(180deg, #1a0e3e 0%, #0f0a1e 100%)",
-              maxHeight: "85vh",
-              animation: "slide-up 0.4s ease-out",
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Handle bar */}
-            <div className="flex justify-center pt-3 pb-1">
-              <div className="h-1 w-10 rounded-full bg-white/20" />
-            </div>
-
-            <div className="overflow-y-auto px-5 pb-8 pt-2" style={{ maxHeight: "calc(85vh - 20px)" }}>
-              {/* Card image + name */}
-              <div className="text-center">
-                <p className="text-xs uppercase tracking-[0.2em]" style={{ color: "#d4af37" }}>
-                  Your card today
-                </p>
-
-                {/* Card thumbnail */}
-                {drawn.card.image && (
-                  <div className="mx-auto mt-4 relative overflow-hidden rounded-xl border-2" style={{ width: "120px", height: "185px", borderColor: "rgba(212,175,55,0.3)" }}>
-                    <Image
-                      src={drawn.card.image}
-                      alt={drawn.card.name}
-                      fill
-                      sizes="120px"
-                      className="object-cover"
-                    />
-                  </div>
-                )}
-
-                <h2 className="mt-3 text-xl font-bold text-white">
-                  {drawn.card.nameTh ?? drawn.card.name}
-                </h2>
-                <p className="mt-1 text-sm text-slate-400">
-                  {drawn.card.name} • {orientationLabel}
-                </p>
-              </div>
-
-              {/* Guidance cards */}
-              <div className="mt-5 grid gap-3">
-                <article
-                  className="rounded-xl p-4"
-                  style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}
+      {/* ── Card details (shown after flip) ── */}
+      {showDetails && guidance && (
+        <div className="mt-6 space-y-4" style={{ animation: "tarot-fade-up 0.5s ease-out both" }}>
+          {/* Card name + orientation */}
+          <div className="text-center">
+            <h2 className="text-lg font-bold" style={{ color: "var(--text)" }}>
+              {drawn.card.nameTh ?? drawn.card.name}
+            </h2>
+            <p className="mt-0.5 text-sm" style={{ color: "var(--text-muted)" }}>
+              {drawn.card.name} • {orientationLabel}
+            </p>
+            {/* Theme/Energy pills */}
+            <div className="mt-2 flex flex-wrap justify-center gap-1.5">
+              {guidance.focus.map((kw) => (
+                <span
+                  key={kw}
+                  className="rounded-full px-3 py-1 text-xs font-medium"
+                  style={{ background: "var(--purple-100)", color: "var(--purple-600)" }}
                 >
-                  <h3 className="text-xs font-semibold" style={{ color: "#d4af37" }}>
-                    พลังวันนี้
-                  </h3>
-                  <p className="mt-1.5 text-sm leading-relaxed text-slate-300">{guidance.energy}</p>
-                </article>
-                <article
-                  className="rounded-xl p-4"
-                  style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}
-                >
-                  <h3 className="text-xs font-semibold" style={{ color: "#a78bfa" }}>
-                    โฟกัสหลัก
-                  </h3>
-                  <p className="mt-1.5 text-sm leading-relaxed text-slate-300">
-                    {guidance.focus.join(" • ")}
-                  </p>
-                </article>
-                <div className="grid grid-cols-2 gap-3">
-                  <article
-                    className="rounded-xl p-4"
-                    style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}
-                  >
-                    <h3 className="text-xs font-semibold text-emerald-400">Action</h3>
-                    <p className="mt-1.5 text-xs leading-relaxed text-slate-300">{guidance.action}</p>
-                  </article>
-                  <article
-                    className="rounded-xl p-4"
-                    style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}
-                  >
-                    <h3 className="text-xs font-semibold text-rose-400">ควรเลี่ยง</h3>
-                    <p className="mt-1.5 text-xs leading-relaxed text-slate-300">{guidance.avoid}</p>
-                  </article>
-                </div>
-              </div>
-
-              {/* Share buttons */}
-              <div className="mt-6">
-                <p className="text-center text-xs font-semibold text-slate-500">แชร์ผลไพ่ของคุณ</p>
-                <div className="mt-3 flex items-center justify-center gap-3">
-                  {/* LINE */}
-                  <button
-                    type="button"
-                    onClick={() => handleShare("line")}
-                    className="flex h-11 w-11 items-center justify-center rounded-full transition-transform hover:scale-110"
-                    style={{ background: "#06C755" }}
-                    aria-label="แชร์ไปยัง LINE"
-                  >
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="white">
-                      <path d="M12 2C6.48 2 2 5.82 2 10.5c0 3.26 2.36 6.1 5.88 7.46-.08.72-.5 2.7-.57 3.12-.1.54.2.53.42.39.17-.11 2.4-1.63 3.38-2.3.28.03.58.05.89.05 5.52 0 10-3.82 10-8.5S17.52 2 12 2z" />
-                    </svg>
-                  </button>
-                  {/* Facebook */}
-                  <button
-                    type="button"
-                    onClick={() => handleShare("facebook")}
-                    className="flex h-11 w-11 items-center justify-center rounded-full transition-transform hover:scale-110"
-                    style={{ background: "#1877F2" }}
-                    aria-label="แชร์ไปยัง Facebook"
-                  >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
-                      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                    </svg>
-                  </button>
-                  {/* Twitter/X */}
-                  <button
-                    type="button"
-                    onClick={() => handleShare("twitter")}
-                    className="flex h-11 w-11 items-center justify-center rounded-full transition-transform hover:scale-110"
-                    style={{ background: "#000" }}
-                    aria-label="แชร์ไปยัง X"
-                  >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
-                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                    </svg>
-                  </button>
-                  {/* Copy */}
-                  <button
-                    type="button"
-                    onClick={() => handleShare("copy")}
-                    className="flex h-11 w-11 items-center justify-center rounded-full transition-transform hover:scale-110"
-                    style={{ background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.15)" }}
-                    aria-label="คัดลอกลิงก์"
-                  >
-                    {copied ? (
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="20 6 9 17 4 12" />
-                      </svg>
-                    ) : (
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-                      </svg>
-                    )}
-                  </button>
-                </div>
-              </div>
-
-              {/* Close button */}
-              <button
-                type="button"
-                onClick={() => setShowPopup(false)}
-                className="mt-5 w-full rounded-full py-3 text-sm font-semibold text-white transition hover:bg-white/10"
-                style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}
-              >
-                ปิด
-              </button>
+                  {kw}
+                </span>
+              ))}
             </div>
+          </div>
+
+          {/* Guidance card */}
+          <div className="rounded-2xl border p-4" style={{ borderColor: "var(--border)", background: "var(--bg-elevated)" }}>
+            <h3 className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--purple-500)" }}>
+              Guidance
+            </h3>
+            <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>
+              {guidance.energy}
+            </p>
+          </div>
+
+          {/* Affirmation / Action */}
+          <div className="rounded-2xl border p-4" style={{ borderColor: "var(--border)", background: "var(--bg-elevated)" }}>
+            <h3 className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--success)" }}>
+              Action
+            </h3>
+            <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>
+              {guidance.action}
+            </p>
+          </div>
+
+          {/* Avoid */}
+          <div className="rounded-2xl border p-4" style={{ borderColor: "var(--border)", background: "var(--bg-elevated)" }}>
+            <h3 className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--rose)" }}>
+              Avoid
+            </h3>
+            <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>
+              {guidance.avoid}
+            </p>
+          </div>
+
+          {/* Share buttons */}
+          <div className="flex items-center justify-center gap-3 pt-2">
+            <button type="button" onClick={() => handleShare("line")} className="flex h-10 w-10 items-center justify-center rounded-full transition hover:scale-110" style={{ background: "#06C755" }} aria-label="Share LINE">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 5.82 2 10.5c0 3.26 2.36 6.1 5.88 7.46-.08.72-.5 2.7-.57 3.12-.1.54.2.53.42.39.17-.11 2.4-1.63 3.38-2.3.28.03.58.05.89.05 5.52 0 10-3.82 10-8.5S17.52 2 12 2z" /></svg>
+            </button>
+            <button type="button" onClick={() => handleShare("facebook")} className="flex h-10 w-10 items-center justify-center rounded-full transition hover:scale-110" style={{ background: "#1877F2" }} aria-label="Share Facebook">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" /></svg>
+            </button>
+            <button type="button" onClick={() => handleShare("twitter")} className="flex h-10 w-10 items-center justify-center rounded-full transition hover:scale-110" style={{ background: "#000" }} aria-label="Share X">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
+            </button>
+            <button type="button" onClick={() => handleShare("copy")} className="flex h-10 w-10 items-center justify-center rounded-full border transition hover:scale-110" style={{ borderColor: "var(--border-strong)", background: "var(--bg-elevated)" }} aria-label="Copy link">
+              {copied ? (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+              ) : (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" /></svg>
+              )}
+            </button>
+          </div>
+
+          {/* Bottom actions */}
+          <div className="flex gap-3 pt-2">
+            <button
+              type="button"
+              onClick={handleSave}
+              className="flex-1 rounded-full py-3 text-sm font-semibold text-white transition"
+              style={{ background: "var(--purple-500)" }}
+            >
+              Save
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                localStorage.removeItem(STORAGE_KEY);
+                setFlipped(false);
+                setShowDetails(false);
+                setAlreadyDrawn(false);
+                setDrawn(drawOneCard());
+              }}
+              className="flex-1 rounded-full border py-3 text-sm font-semibold transition"
+              style={{ borderColor: "var(--border-strong)", color: "var(--text-muted)" }}
+            >
+              Draw again
+            </button>
           </div>
         </div>
       )}
-
     </main>
   );
+
+  function handleSave() {
+    if (drawn) saveTodayCard(drawn);
+  }
 }

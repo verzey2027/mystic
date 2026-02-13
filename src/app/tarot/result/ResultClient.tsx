@@ -8,9 +8,6 @@ import { parseCardTokens } from "@/lib/tarot/engine";
 import { trackEvent } from "@/lib/analytics/tracking";
 import { evaluatePaywall, recordFreeReading } from "@/lib/monetization/paywall";
 import { runReadingPipeline } from "@/lib/reading/pipeline";
-import { Button } from "@/components/ui/Button";
-import { Alert } from "@/components/ui/Alert";
-import { Card, CardDesc, CardTitle } from "@/components/ui/Card";
 import { buildSavedTarotReading, upsertReading } from "@/lib/library/storage";
 
 function normalizeText(value: unknown): string {
@@ -116,7 +113,6 @@ export default function ResultClient() {
         };
         setAiReading(next);
 
-        // If user already saved, upsert AI fields to the same saved item.
         if (savedId) {
           upsertReading(
             buildSavedTarotReading({
@@ -176,260 +172,161 @@ export default function ResultClient() {
     }
   }
 
+  function handleSave() {
+    const id = savedId ?? (typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : String(Date.now()));
+    setSavedId(id);
+    upsertReading(
+      buildSavedTarotReading({
+        id,
+        count,
+        cardsToken,
+        question,
+        aiSummary: aiReading?.summary,
+        aiCardStructure: aiReading?.cardStructure,
+      })
+    );
+    setSaveToast("บันทึกเรียบร้อย");
+    setTimeout(() => setSaveToast(null), 1800);
+  }
+
   if (!result) {
     return (
-      <main className="mx-auto w-full max-w-5xl px-4 py-8 md:py-12">
-        <Alert tone="danger" className="mt-6">
-          ไม่พบข้อมูลไพ่ที่สมบูรณ์ กรุณากลับไปเปิดไพ่ใหม่อีกครั้ง
-        </Alert>
+      <main className="mx-auto w-full max-w-lg px-5 py-8">
+        <div className="rounded-2xl border p-4" style={{ borderColor: "var(--danger)", background: "rgba(239,68,68,0.06)" }}>
+          <p className="text-sm" style={{ color: "var(--danger)" }}>
+            ไม่พบข้อมูลไพ่ที่สมบูรณ์ กรุณากลับไปเปิดไพ่ใหม่อีกครั้ง
+          </p>
+        </div>
       </main>
     );
   }
 
   return (
-    <main className="mx-auto w-full max-w-5xl px-4 py-8 md:py-12">
+    <main className="mx-auto w-full max-w-lg px-5 py-6">
       {/* ── Header ── */}
-      <section
-        className="relative overflow-hidden rounded-3xl border p-5 md:p-7"
-        style={{
-          borderColor: "var(--purple-700)",
-          background: "linear-gradient(135deg, var(--purple-deep) 0%, var(--purple-900) 50%, var(--purple-800) 100%)",
-          backgroundSize: "200% 200%",
-          animation: "tarot-drift 14s ease-in-out infinite",
-        }}
-      >
-        <div
-          className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full opacity-25 blur-3xl"
-          style={{ background: "var(--purple-600)" }}
-        />
-        <div
-          className="pointer-events-none absolute -bottom-12 -left-12 h-40 w-40 rounded-full opacity-15 blur-3xl"
-          style={{ background: "var(--purple-500)" }}
-        />
+      <div className="flex items-center justify-between">
+        <h1 className="text-xl font-bold" style={{ color: "var(--text)" }}>
+          {count}-Card Insight
+        </h1>
+        <button
+          type="button"
+          onClick={handleSave}
+          className="rounded-full px-4 py-1.5 text-xs font-semibold transition"
+          style={{
+            background: savedId ? "var(--purple-100)" : "var(--purple-500)",
+            color: savedId ? "var(--purple-600)" : "#fff",
+          }}
+        >
+          {savedId ? "Saved ✓" : "Save"}
+        </button>
+      </div>
 
-        <div className="relative z-10 flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <p
-              className="text-xs font-semibold uppercase tracking-[0.2em]"
-              style={{ color: "var(--purple-400)" }}
-            >
-              Step 3 of 3
-            </p>
-            <h1 className="mt-2 text-3xl font-bold text-white md:text-4xl">ผลคำทำนาย</h1>
-            <p className="mt-2 text-sm" style={{ color: "var(--purple-200)" }}>
-              อ่านภาพรวมก่อน แล้วค่อยถามเจาะลึกในประเด็นที่คุณอยากรู้ต่อ
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <button
-              type="button"
-              onClick={() => {
-                const id = savedId ?? (typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : String(Date.now()));
-                setSavedId(id);
-                upsertReading(
-                  buildSavedTarotReading({
-                    id,
-                    count,
-                    cardsToken,
-                    question,
-                    aiSummary: aiReading?.summary,
-                    aiCardStructure: aiReading?.cardStructure,
-                  })
-                );
-                setSaveToast("บันทึกเรียบร้อย");
-                setTimeout(() => setSaveToast(null), 1800);
-              }}
-              className="inline-flex min-h-10 items-center justify-center rounded-full px-5 py-2 text-sm font-bold text-white transition-all duration-300 hover:scale-[1.03]"
+      {saveToast && (
+        <div className="mt-3 rounded-xl border p-3 text-sm" style={{ borderColor: "rgba(34,197,94,0.3)", background: "rgba(34,197,94,0.06)", color: "var(--success)" }}>
+          {saveToast}
+        </div>
+      )}
+
+      {/* ── Drawn Cards Row ── */}
+      {drawnCards.length > 0 && (
+        <div className="mt-5 flex justify-center gap-3 overflow-x-auto pb-2">
+          {drawnCards.map((drawn, index) => (
+            <div
+              key={`${drawn.card.id}-${index}`}
+              className="flex-shrink-0 overflow-hidden rounded-xl border text-center"
               style={{
-                background: savedId ? "var(--purple-800)" : "var(--purple-500)",
-                boxShadow: savedId ? "none" : "0 0 16px var(--purple-glow)",
-                borderWidth: savedId ? "1px" : "0",
-                borderColor: "var(--purple-600)",
+                width: count <= 3 ? "100px" : count <= 5 ? "80px" : "64px",
+                borderColor: "var(--purple-200)",
+                background: "var(--bg-elevated)",
               }}
             >
-              {savedId ? "บันทึกแล้ว ✓" : "บันทึกผลนี้"}
-            </button>
-            <Link href="/library/saved" className="inline-flex">
-              <Button variant="ghost">ไปที่คลังของฉัน</Button>
-            </Link>
-            <Link href="/tarot" className="inline-flex">
-              <Button variant="ghost">เปิดไพ่ใหม่</Button>
-            </Link>
-            <Link href="/" className="inline-flex">
-              <Button variant="ghost">กลับหน้าแรก</Button>
-            </Link>
-          </div>
+              {drawn.card.image ? (
+                <Image
+                  src={drawn.card.image}
+                  alt={drawn.card.name}
+                  width={180}
+                  height={270}
+                  className={`h-auto w-full object-cover ${drawn.orientation === "reversed" ? "rotate-180" : ""}`}
+                />
+              ) : (
+                <div className="flex h-24 items-center justify-center" style={{ background: "var(--surface-1)" }}>
+                  <span className="text-2xl">🔮</span>
+                </div>
+              )}
+              <p className="truncate px-1 py-1 text-[10px] font-medium" style={{ color: "var(--text-muted)" }}>
+                {drawn.card.nameTh ?? drawn.card.name}
+              </p>
+            </div>
+          ))}
         </div>
-      </section>
-
-      {saveToast ? (
-        <div className="mt-4">
-          <Alert tone="success">{saveToast}</Alert>
-        </div>
-      ) : null}
+      )}
 
       {/* ── Question ── */}
-      {question ? (
-        <div
-          className="mt-4 rounded-2xl border p-4"
-          style={{
-            borderColor: "var(--purple-800)",
-            background: "linear-gradient(160deg, rgba(139,92,246,0.06), rgba(13,10,26,0.9))",
-            animation: "tarot-fade-up 0.5s ease-out both",
-          }}
-        >
-          <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--purple-400)" }}>
-            คำถาม
+      {question && (
+        <div className="mt-4 rounded-2xl border p-4" style={{ borderColor: "var(--border)", background: "var(--bg-elevated)" }}>
+          <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--purple-500)" }}>
+            Question
           </p>
-          <p className="mt-1 text-sm text-white">{question}</p>
+          <p className="mt-1 text-sm" style={{ color: "var(--text)" }}>{question}</p>
         </div>
-      ) : null}
+      )}
 
-      {/* ── Drawn Cards ── */}
-      {drawnCards.length > 0 ? (
-        <section
-          className="mt-4 rounded-2xl border p-4 md:p-5"
-          style={{
-            borderColor: "var(--purple-800)",
-            background: "linear-gradient(160deg, rgba(139,92,246,0.05), rgba(13,10,26,0.95))",
-          }}
-        >
-          <h2 className="mb-4 text-base font-semibold text-white">ไพ่ที่เปิดได้</h2>
-
-          {count === 10 ? (
-            <div className="space-y-3">
-              {[drawnCards.slice(0, 5), drawnCards.slice(5, 10)].map((row, rowIndex) => (
-                <div key={rowIndex} className="grid grid-cols-5 gap-2 md:gap-3">
-                  {row.map((drawn, index) => {
-                    const globalIdx = rowIndex * 5 + index;
-                    return (
-                      <div
-                        key={`${rowIndex}-${drawn.card.id}-${index}`}
-                        className="overflow-hidden rounded-xl border p-1.5 text-center"
-                        style={{
-                          borderColor: "var(--purple-700)",
-                          background: "rgba(13,10,26,0.6)",
-                          animation: `tarot-card-reveal 0.6s ease-out ${globalIdx * 0.08}s both`,
-                        }}
-                      >
-                        {drawn.card.image ? (
-                          <Image
-                            src={drawn.card.image}
-                            alt={drawn.card.name}
-                            width={160}
-                            height={240}
-                            className={`h-auto w-full rounded-lg object-cover ${drawn.orientation === "reversed" ? "rotate-180" : ""}`}
-                          />
-                        ) : null}
-                        <p className="mt-1 truncate text-[10px]" style={{ color: "var(--purple-200)" }}>{drawn.card.name}</p>
-                        <p className="text-[10px]" style={{ color: "var(--purple-400)" }}>
-                          {drawn.orientation === "upright" ? "ตั้งตรง" : "กลับหัว"}
-                        </p>
-                      </div>
-                    );
-                  })}
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className={`grid gap-3 ${count === 1 ? "grid-cols-1 max-w-[210px]" : count === 2 ? "grid-cols-2 max-w-[420px]" : count === 4 ? "grid-cols-4" : "grid-cols-3"}`}>
-              {drawnCards.map((drawn, index) => (
-                <div
-                  key={`${drawn.card.id}-${index}`}
-                  className="overflow-hidden rounded-xl border p-2 text-center"
-                  style={{
-                    borderColor: "var(--purple-700)",
-                    background: "rgba(13,10,26,0.6)",
-                    animation: `tarot-card-reveal 0.6s ease-out ${index * 0.12}s both`,
-                  }}
-                >
-                  {drawn.card.image ? (
-                    <Image
-                      src={drawn.card.image}
-                      alt={drawn.card.name}
-                      width={180}
-                      height={270}
-                      className={`h-auto w-full rounded-lg object-cover ${drawn.orientation === "reversed" ? "rotate-180" : ""}`}
-                    />
-                  ) : null}
-                  <p className="mt-1 text-xs" style={{ color: "var(--purple-200)" }}>{drawn.card.name}</p>
-                  <p className="text-[11px]" style={{ color: "var(--purple-400)" }}>
-                    {drawn.orientation === "upright" ? "ตั้งตรง" : "กลับหัว"}
-                  </p>
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
-      ) : null}
-
-      {/* ── AI Summary ── */}
-      <section
-        className="mt-4 rounded-2xl border p-5"
-        style={{
-          borderColor: "var(--purple-700)",
-          background: "linear-gradient(160deg, rgba(139,92,246,0.1), rgba(13,10,26,0.92))",
-          animation: "tarot-fade-up 0.6s ease-out 0.3s both",
-        }}
-      >
-        <h2 className="text-base font-semibold" style={{ color: "var(--purple-300)" }}>
-          สรุปคำทำนาย
-        </h2>
+      {/* ── Overall Summary ── */}
+      <section className="mt-4 rounded-2xl border p-4" style={{ borderColor: "var(--border)", background: "var(--bg-elevated)" }}>
+        <h2 className="text-sm font-bold" style={{ color: "var(--text)" }}>Overall</h2>
         {aiReading ? (
-          <div className="mt-3 space-y-4 text-sm">
-            <div style={{ animation: "tarot-fade-up 0.5s ease-out 0.5s both" }}>
-              <p className="font-semibold" style={{ color: "var(--purple-400)" }}>สรุป</p>
-              <p className="mt-1 whitespace-pre-line leading-relaxed" style={{ color: "var(--purple-100)" }}>
-                {aiReading.summary}
-              </p>
-            </div>
-            <div style={{ animation: "tarot-fade-up 0.5s ease-out 0.7s both" }}>
-              <p className="font-semibold" style={{ color: "var(--purple-400)" }}>โครงไพ่</p>
-              <p className="mt-1 whitespace-pre-line leading-relaxed" style={{ color: "var(--purple-100)" }}>
-                {aiReading.cardStructure}
-              </p>
-            </div>
-          </div>
+          <p className="mt-2 text-sm leading-relaxed whitespace-pre-line" style={{ color: "var(--text-muted)" }}>
+            {aiReading.summary}
+          </p>
         ) : (
-          <div className="mt-3 flex items-center gap-2">
-            <div
-              className="h-4 w-4 rounded-full"
-              style={{
-                background: "var(--purple-500)",
-                animation: "tarot-glow-pulse 1.5s ease-in-out infinite",
-              }}
-            />
-            <p className="text-sm" style={{ color: "var(--purple-300)" }}>กำลังสรุปคำทำนาย...</p>
+          <div className="mt-2 flex items-center gap-2">
+            <div className="h-3 w-3 animate-pulse rounded-full" style={{ background: "var(--purple-400)" }} />
+            <p className="text-sm" style={{ color: "var(--text-subtle)" }}>กำลังสรุปคำทำนาย...</p>
           </div>
         )}
       </section>
 
-      {/* ── Chat / Follow-up ── */}
-      <section
-        className="mt-4 rounded-2xl border p-5"
-        style={{
-          borderColor: "var(--purple-800)",
-          background: "linear-gradient(160deg, rgba(139,92,246,0.06), rgba(13,10,26,0.95))",
-          animation: "tarot-fade-up 0.6s ease-out 0.5s both",
-        }}
-      >
-        <h2 className="text-base font-semibold" style={{ color: "var(--purple-300)" }}>
-          ถามเกี่ยวกับไพ่
-        </h2>
-        <p className="mt-1 text-xs" style={{ color: "var(--purple-200)" }}>
-          ถามต่อได้ทันที เช่น &quot;ไพ่ใบไหนเป็นจุดเสี่ยงสุด&quot; หรือ &quot;ควรโฟกัสใบไหนก่อน&quot;
-        </p>
-
-        <div
-          className="mt-3 max-h-72 space-y-2 overflow-y-auto rounded-xl border p-3"
+      {/* ── Per-card interpretations ── */}
+      {aiReading && drawnCards.map((drawn, index) => (
+        <section
+          key={`${drawn.card.id}-interp-${index}`}
+          className="mt-3 rounded-2xl border-l-4 border p-4"
           style={{
-            borderColor: "var(--purple-800)",
-            background: "rgba(13,10,26,0.6)",
+            borderColor: "var(--border)",
+            borderLeftColor: "var(--purple-400)",
+            background: "var(--bg-elevated)",
           }}
         >
+          <h3 className="text-sm font-bold" style={{ color: "var(--text)" }}>
+            {drawn.card.nameTh ?? drawn.card.name} — {drawn.orientation === "upright" ? "Situation" : "Challenge"}
+          </h3>
+          <p className="mt-1.5 text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>
+            {drawn.orientation === "upright" ? drawn.card.meaningUpright : drawn.card.meaningReversed}
+          </p>
+        </section>
+      ))}
+
+      {/* ── Card structure (if available) ── */}
+      {aiReading?.cardStructure && (
+        <section className="mt-3 rounded-2xl border p-4" style={{ borderColor: "var(--border)", background: "var(--bg-elevated)" }}>
+          <h2 className="text-sm font-bold" style={{ color: "var(--text)" }}>Reading Details</h2>
+          <p className="mt-2 text-sm leading-relaxed whitespace-pre-line" style={{ color: "var(--text-muted)" }}>
+            {aiReading.cardStructure}
+          </p>
+        </section>
+      )}
+
+      {/* ── Chat / Follow-up ── */}
+      <section className="mt-4 rounded-2xl border p-4" style={{ borderColor: "var(--border)", background: "var(--bg-elevated)" }}>
+        <h2 className="text-sm font-bold" style={{ color: "var(--text)" }}>Ask about your cards</h2>
+        <p className="mt-1 text-xs" style={{ color: "var(--text-subtle)" }}>
+          Ask follow-up questions about your reading
+        </p>
+
+        <div className="mt-3 max-h-60 space-y-2 overflow-y-auto rounded-xl border p-3" style={{ borderColor: "var(--border)", background: "var(--surface-1)" }}>
           {chatMessages.length === 0 ? (
-            <p className="text-sm" style={{ color: "var(--purple-300)" }}>
-              ยังไม่มีข้อความ ลองถามคำถามต่อได้เลย
+            <p className="text-sm" style={{ color: "var(--text-subtle)" }}>
+              No messages yet. Try asking a question.
             </p>
           ) : (
             chatMessages.map((m, idx) => (
@@ -439,106 +336,66 @@ export default function ResultClient() {
                 style={{
                   marginLeft: m.role === "user" ? "1.5rem" : "0",
                   marginRight: m.role === "assistant" ? "1.5rem" : "0",
-                  background: m.role === "user" ? "rgba(139,92,246,0.2)" : "rgba(139,92,246,0.08)",
-                  color: m.role === "user" ? "#fff" : "var(--purple-100)",
-                  animation: `tarot-fade-up 0.3s ease-out both`,
+                  background: m.role === "user" ? "var(--purple-100)" : "var(--surface-1)",
+                  color: "var(--text)",
                 }}
               >
                 {m.text}
               </div>
             ))
           )}
-          {chatLoading ? (
+          {chatLoading && (
             <div className="flex items-center gap-2">
-              <div
-                className="h-3 w-3 rounded-full"
-                style={{
-                  background: "var(--purple-500)",
-                  animation: "tarot-glow-pulse 1.2s ease-in-out infinite",
-                }}
-              />
-              <p className="text-sm" style={{ color: "var(--purple-300)" }}>กำลังพิมพ์คำตอบ...</p>
+              <div className="h-3 w-3 animate-pulse rounded-full" style={{ background: "var(--purple-400)" }} />
+              <p className="text-sm" style={{ color: "var(--text-subtle)" }}>Typing...</p>
             </div>
-          ) : null}
+          )}
         </div>
 
         <div className="mt-3 flex gap-2">
           <input
             value={chatInput}
             onChange={(e) => setChatInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") sendFollowUpQuestion();
-            }}
-            placeholder="พิมพ์คำถามเพิ่มเติม..."
-            className="min-h-11 flex-1 rounded-xl border px-3 py-2 text-sm text-white outline-none transition-all duration-200 focus:ring-2"
+            onKeyDown={(e) => { if (e.key === "Enter") sendFollowUpQuestion(); }}
+            placeholder="Type your question..."
+            className="min-h-10 flex-1 rounded-xl border px-3 py-2 text-sm outline-none transition focus:ring-2"
             style={{
-              borderColor: "var(--purple-700)",
-              background: "rgba(139,92,246,0.08)",
-              "--tw-ring-color": "var(--purple-glow)",
+              borderColor: "var(--border)",
+              background: "var(--bg-elevated)",
+              color: "var(--text)",
+              "--tw-ring-color": "var(--ring)",
             } as React.CSSProperties}
           />
           <button
             type="button"
             onClick={sendFollowUpQuestion}
             disabled={chatLoading || !chatInput.trim()}
-            className="min-h-11 rounded-xl px-5 py-2 text-sm font-bold text-white transition-all duration-300 hover:scale-[1.03] disabled:opacity-40"
-            style={{
-              background: "var(--purple-600)",
-              boxShadow: "0 0 12px var(--purple-glow)",
-            }}
+            className="min-h-10 rounded-xl px-4 py-2 text-sm font-semibold text-white transition disabled:opacity-40"
+            style={{ background: "var(--purple-500)" }}
           >
-            ส่ง
+            Send
           </button>
         </div>
       </section>
 
-      {/* ── Paywall CTA ── */}
-      {paywall?.show ? (
-        <section
-          className="mt-6 rounded-2xl border p-5"
-          style={{
-            borderColor: "var(--purple-600)",
-            background: "linear-gradient(160deg, rgba(139,92,246,0.12), rgba(13,10,26,0.9))",
-            animation: "tarot-fade-up 0.6s ease-out 0.7s both",
-          }}
+      {/* ── Bottom actions ── */}
+      <div className="mt-6 flex gap-3">
+        <button
+          type="button"
+          onClick={handleSave}
+          className="flex-1 rounded-full py-3 text-sm font-semibold text-white transition"
+          style={{ background: "var(--purple-500)" }}
         >
-          <h3 className="text-base font-semibold" style={{ color: "var(--purple-300)" }}>
-            ดูดวงออนไลน์กับเรฟ
-          </h3>
-          <p className="mt-2 text-sm" style={{ color: "var(--purple-200)" }}>
-            ติดต่อเพื่อรับคำทำนายส่วนตัวได้ที่ช่องทางนี้
-          </p>
-          <div className="mt-4 flex flex-wrap gap-2">
-            <a
-              href="https://line.me/R/ti/p/@reffortune"
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex min-h-10 items-center rounded-full px-5 py-2 text-sm font-bold text-white transition-all duration-300 hover:scale-[1.03]"
-              style={{ background: "var(--purple-500)", boxShadow: "0 0 16px var(--purple-glow)" }}
-            >
-              LINE @reffortune
-            </a>
-            <a
-              href="https://www.instagram.com/reffortune"
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex min-h-10 items-center rounded-full border px-5 py-2 text-sm font-semibold transition hover:bg-white/5"
-              style={{ borderColor: "var(--purple-600)", color: "var(--purple-200)" }}
-            >
-              IG reffortune
-            </a>
-            <a
-              href="https://www.reffortune.com/package.html"
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex min-h-10 items-center rounded-full border px-5 py-2 text-sm font-semibold transition hover:bg-white/5"
-              style={{ borderColor: "var(--purple-600)", color: "var(--purple-200)" }}
-            >
-              ดูแพ็กเกจ
-            </a>
-          </div>
-        </section>
-      ) : null}
+          Save to Library
+        </button>
+        <Link
+          href="/tarot"
+          className="flex flex-1 items-center justify-center rounded-full border py-3 text-sm font-semibold transition"
+          style={{ borderColor: "var(--border-strong)", color: "var(--text-muted)" }}
+        >
+          New Reading
+        </Link>
+      </div>
     </main>
   );
 }

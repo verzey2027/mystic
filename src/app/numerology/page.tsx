@@ -97,66 +97,64 @@ export default function NumerologyPage() {
   }
 
   return (
-    <main className="mx-auto w-full max-w-3xl px-4 py-10 md:py-14">
-      <h1 className="text-3xl font-semibold text-white md:text-4xl">วิเคราะห์เบอร์มงคล</h1>
-      <p className="mt-2 text-sm text-slate-300">อ่านผลแบบสำนวนเดียวกับ REFFORTUNE</p>
+    <main className="mx-auto w-full max-w-lg px-5 py-6">
+      <h1 className="text-2xl font-bold" style={{ color: "var(--text)" }}>Numerology</h1>
+      <p className="mt-1 text-sm" style={{ color: "var(--text-muted)" }}>วิเคราะห์เบอร์มงคล</p>
 
-      <section className="mt-8 rounded-3xl border border-white/10 bg-white/[0.03] p-6">
-        <form onSubmit={onSubmit} className="flex flex-col gap-3 md:flex-row md:items-end">
-          <label className="flex flex-1 flex-col gap-2 text-sm text-slate-200">
-            เบอร์โทรศัพท์
-            <input
-              type="tel"
-              inputMode="numeric"
-              value={phone}
-              onChange={(event) => setPhone(event.target.value)}
-              required
-              placeholder="08x-xxx-xxxx"
-              className="rounded-xl border border-white/15 bg-slate-900/60 px-3 py-2 text-white outline-none ring-amber-200/60 focus:ring"
-            />
-          </label>
-          <button
-            type="submit"
-            className="rounded-full bg-amber-300 px-5 py-2 text-sm font-semibold text-slate-900 transition hover:bg-amber-200"
-          >
-            วิเคราะห์เบอร์
-          </button>
-        </form>
+      <form onSubmit={onSubmit} className="mt-5 rounded-2xl border p-5" style={{ borderColor: "var(--border)", background: "var(--bg-elevated)" }}>
+        <label className="text-xs font-semibold uppercase tracking-widest" style={{ color: "var(--purple-500)" }}>
+          เบอร์โทรศัพท์
+        </label>
+        <input
+          type="tel"
+          inputMode="numeric"
+          value={phone}
+          onChange={(event) => setPhone(event.target.value)}
+          required
+          placeholder="08x-xxx-xxxx"
+          className="mt-2 w-full rounded-xl border px-4 py-3 text-sm outline-none transition focus:ring-2"
+          style={{
+            borderColor: "var(--border)",
+            background: "var(--surface-1)",
+            color: "var(--text)",
+            "--tw-ring-color": "var(--ring)",
+          } as React.CSSProperties}
+        />
+        <button
+          type="submit"
+          className="mt-4 w-full rounded-full py-3 text-sm font-semibold text-white transition hover:opacity-90"
+          style={{ background: "var(--purple-500)" }}
+        >
+          Calculate
+        </button>
 
-        {error && <p className="mt-3 text-sm text-rose-300">{error}</p>}
+        {error && (
+          <p className="mt-3 text-sm" style={{ color: "var(--danger)" }}>{error}</p>
+        )}
+      </form>
 
-        {submittedPhone ? (
-          <section className="mt-4 rounded-2xl border border-fuchsia-300/30 bg-fuchsia-400/10 p-5">
-            <h2 className="text-base font-semibold text-fuchsia-100">สรุปคำทำนาย</h2>
+      {submittedPhone && (
+        <section className="mt-5 space-y-4">
+          <div className="rounded-2xl border p-5" style={{ borderColor: "var(--border)", background: "var(--bg-elevated)" }}>
+            <h2 className="text-sm font-bold" style={{ color: "var(--purple-500)" }}>Summary</h2>
             {aiReading ? (
-              <div className="mt-3 space-y-3 text-sm text-fuchsia-50">
-                <div>
-                  <p className="font-semibold">สรุป</p>
-                  <p className="mt-1 whitespace-pre-line">{aiReading.summary}</p>
-                </div>
-                <div>
-                  <p className="font-semibold">โครงไพ่/โครงพลังตัวเลข</p>
-                  <p className="mt-1 whitespace-pre-line">{aiReading.cardStructure}</p>
-                </div>
-              </div>
+              <p className="mt-2 whitespace-pre-line text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>{aiReading.summary}</p>
             ) : (
-              <p className="mt-2 text-sm text-fuchsia-100/80">กำลังสรุปคำทำนาย...</p>
+              <div className="mt-2 flex items-center gap-2">
+                <div className="h-3 w-3 animate-pulse rounded-full" style={{ background: "var(--purple-400)" }} />
+                <p className="text-sm" style={{ color: "var(--text-subtle)" }}>กำลังวิเคราะห์...</p>
+              </div>
             )}
-          </section>
-        ) : null}
-
-        {paywall?.show ? (
-        <section className="mt-6 rounded-2xl border border-amber-300/40 bg-amber-200/10 p-5">
-          <h3 className="text-base font-semibold text-amber-100">ดูดวงออนไลน์กับเรฟ</h3>
-          <p className="mt-2 text-sm text-amber-50/90">ติดต่อเพื่อรับคำทำนายส่วนตัวได้ที่ช่องทางนี้</p>
-          <div className="mt-4 flex flex-wrap gap-2">
-            <a href="https://line.me/R/ti/p/@reffortune" target="_blank" rel="noreferrer" className="inline-flex rounded-full bg-amber-300 px-4 py-2 text-sm font-semibold text-slate-900">LINE @reffortune</a>
-            <a href="https://www.instagram.com/reffortune" target="_blank" rel="noreferrer" className="inline-flex rounded-full border border-white/20 px-4 py-2 text-sm font-semibold text-slate-100">IG reffortune</a>
-            <a href="https://www.reffortune.com/package.html" target="_blank" rel="noreferrer" className="inline-flex rounded-full border border-white/20 px-4 py-2 text-sm font-semibold text-slate-100">ดูแพ็กเกจ</a>
           </div>
+
+          {aiReading && (
+            <div className="rounded-2xl border p-5" style={{ borderColor: "var(--border)", background: "var(--bg-elevated)" }}>
+              <h2 className="text-sm font-bold" style={{ color: "var(--purple-500)" }}>Number Energy</h2>
+              <p className="mt-2 whitespace-pre-line text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>{aiReading.cardStructure}</p>
+            </div>
+          )}
         </section>
-      ) : null}
-      </section>
+      )}
     </main>
   );
 }

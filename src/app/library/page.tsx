@@ -16,29 +16,29 @@ export const metadata: Metadata = {
 
 export default function TarotLibraryPage() {
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-8 md:py-12">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="text-3xl font-semibold text-fg md:text-4xl">ห้องสมุดไพ่ 78 ใบ</h1>
-          <p className="mt-2 text-sm text-fg-muted">ค้นหาความหมายไพ่แต่ละใบแบบรวดเร็ว พร้อมแนวทางเชิงปฏิบัติ</p>
-        </div>
+    <main className="mx-auto w-full max-w-lg px-5 py-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold" style={{ color: "var(--text)" }}>ห้องสมุดไพ่ 78 ใบ</h1>
         <Link
           href="/library/saved"
-          className="inline-flex min-h-11 items-center rounded-full bg-accent px-5 py-2 text-sm font-semibold text-accent-ink transition hover:bg-accent-hover"
+          className="rounded-full px-4 py-1.5 text-xs font-semibold transition"
+          style={{ background: "var(--purple-100)", color: "var(--purple-600)" }}
         >
           ไปที่คลังของฉัน
         </Link>
       </div>
+      <p className="mt-1 text-sm" style={{ color: "var(--text-muted)" }}>ค้นหาความหมายไพ่แต่ละใบแบบรวดเร็ว พร้อมแนวทางเชิงปฏิบัติ</p>
 
-      <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-5 grid gap-3 grid-cols-2">
         {TAROT_DECK.map((card) => (
           <Link
             key={card.id}
             href={`/library/${card.id}`}
-            className="rounded-xl border border-border bg-surface p-4 transition hover:border-border-strong hover:bg-surface-2"
+            className="rounded-2xl border p-4 transition hover:shadow-md"
+            style={{ borderColor: "var(--border)", background: "var(--bg-elevated)" }}
           >
-            <p className="text-xs uppercase tracking-widest text-fg-subtle">{card.id}</p>
-            <h2 className="mt-2 text-base font-semibold text-fg">{card.name}</h2>
+            <p className="text-[10px] uppercase tracking-[0.15em]" style={{ color: "var(--text-subtle)" }}>{card.id}</p>
+            <h2 className="mt-1 text-sm font-semibold" style={{ color: "var(--text)" }}>{card.name}</h2>
             <p className="mt-1 text-xs text-fg-subtle">
               {card.arcana === "major" ? "Major Arcana" : `Minor Arcana • ${card.suit}`}
             </p>

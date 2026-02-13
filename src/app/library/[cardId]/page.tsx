@@ -42,54 +42,63 @@ export default async function TarotCardDetailPage({
   }
 
   return (
-    <main className="mx-auto w-full max-w-4xl px-4 py-10">
+    <main className="mx-auto w-full max-w-lg px-5 py-6">
       <Link
         href="/library"
-        className="text-sm text-slate-300 underline-offset-2 hover:text-white hover:underline"
+        className="inline-flex items-center gap-1 text-sm transition"
+        style={{ color: "var(--text-muted)" }}
       >
-        ← กลับห้องสมุด
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="15 18 9 12 15 6" />
+        </svg>
+        Library
       </Link>
 
-      <section className="mt-4 rounded-2xl border border-white/10 bg-white/[0.03] p-6 md:p-8">
-        <p className="text-xs uppercase tracking-[0.22em] text-amber-200/80">{card.id}</p>
-        <h1 className="mt-2 text-3xl font-semibold text-white">{card.name}</h1>
-        {card.nameTh ? <p className="mt-1 text-sm text-slate-400">{card.nameTh}</p> : null}
+      <section className="mt-4 rounded-2xl border p-5" style={{ borderColor: "var(--border)", background: "var(--bg-elevated)" }}>
+        <p className="text-[10px] uppercase tracking-[0.2em]" style={{ color: "var(--purple-500)" }}>{card.id}</p>
+        <h1 className="mt-2 text-2xl font-bold" style={{ color: "var(--text)" }}>{card.name}</h1>
+        {card.nameTh ? <p className="mt-1 text-sm" style={{ color: "var(--text-muted)" }}>{card.nameTh}</p> : null}
         {card.image ? (
           <Image
             src={card.image}
             alt={card.name}
             width={360}
             height={540}
-            className="mt-4 w-full max-w-xs rounded-2xl border border-white/10 object-cover"
+            className="mt-4 w-full max-w-xs rounded-2xl border object-cover"
+            style={{ borderColor: "var(--border)" }}
           />
         ) : null}
 
-        <div className="mt-5 grid gap-3 text-sm text-slate-300 sm:grid-cols-2">
-          <div className="rounded-xl border border-white/10 bg-slate-900/50 p-4">
-            <p className="text-xs uppercase tracking-widest text-slate-400">Arcana</p>
-            <p className="mt-1 font-medium text-slate-100">{card.arcana}</p>
+        <div className="mt-5 grid gap-3 text-sm sm:grid-cols-2">
+          <div className="rounded-xl border p-4" style={{ borderColor: "var(--border)", background: "var(--surface-1)" }}>
+            <p className="text-xs uppercase tracking-widest" style={{ color: "var(--text-subtle)" }}>Arcana</p>
+            <p className="mt-1 font-medium" style={{ color: "var(--text)" }}>{card.arcana}</p>
           </div>
-          <div className="rounded-xl border border-white/10 bg-slate-900/50 p-4">
-            <p className="text-xs uppercase tracking-widest text-slate-400">Number</p>
-            <p className="mt-1 font-medium text-slate-100">{card.number}</p>
+          <div className="rounded-xl border p-4" style={{ borderColor: "var(--border)", background: "var(--surface-1)" }}>
+            <p className="text-xs uppercase tracking-widest" style={{ color: "var(--text-subtle)" }}>Number</p>
+            <p className="mt-1 font-medium" style={{ color: "var(--text)" }}>{card.number}</p>
           </div>
         </div>
 
-        <div className="mt-6 grid gap-4 md:grid-cols-2">
-          <article className="rounded-xl border border-emerald-300/20 bg-emerald-400/10 p-4">
-            <h2 className="text-base font-semibold text-emerald-50">Upright</h2>
-            <p className="mt-2 text-sm text-emerald-100">{card.meaningUpright}</p>
-            <p className="mt-3 text-xs text-emerald-200/90">
-              {card.keywordsUpright.join(" • ")}
-            </p>
+        <div className="mt-5 grid gap-4 md:grid-cols-2">
+          <article className="rounded-xl border-l-4 border p-4" style={{ borderColor: "var(--border)", borderLeftColor: "var(--success)" }}>
+            <h2 className="text-sm font-bold" style={{ color: "var(--text)" }}>Upright</h2>
+            <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>{card.meaningUpright}</p>
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              {card.keywordsUpright.map((kw) => (
+                <span key={kw} className="rounded-full px-2.5 py-0.5 text-xs" style={{ background: "rgba(34,197,94,0.08)", color: "var(--success)" }}>{kw}</span>
+              ))}
+            </div>
           </article>
 
-          <article className="rounded-xl border border-rose-300/20 bg-rose-400/10 p-4">
-            <h2 className="text-base font-semibold text-rose-50">Reversed</h2>
-            <p className="mt-2 text-sm text-rose-100">{card.meaningReversed}</p>
-            <p className="mt-3 text-xs text-rose-200/90">
-              {card.keywordsReversed.join(" • ")}
-            </p>
+          <article className="rounded-xl border-l-4 border p-4" style={{ borderColor: "var(--border)", borderLeftColor: "var(--rose)" }}>
+            <h2 className="text-sm font-bold" style={{ color: "var(--text)" }}>Reversed</h2>
+            <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>{card.meaningReversed}</p>
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              {card.keywordsReversed.map((kw) => (
+                <span key={kw} className="rounded-full px-2.5 py-0.5 text-xs" style={{ background: "rgba(244,63,94,0.08)", color: "var(--rose)" }}>{kw}</span>
+              ))}
+            </div>
           </article>
         </div>
       </section>

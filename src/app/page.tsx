@@ -1,558 +1,219 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { trackEvent } from "@/lib/analytics/tracking";
 
-const serviceBanners = [
+const exploreItems = [
   {
-    title: "ไพ่ทาโรต์",
-    subtitle: "เปิดไพ่ดูทิศทางชีวิต ความรัก การงาน การเงิน",
+    title: "Tarot",
     href: "/tarot",
-    cta: "เปิดไพ่เลย",
-    banner: "/tarot.jpg",
-    gradient: "linear-gradient(135deg, #4c2889 0%, #6d3bbd 50%, #8b5cf6 100%)",
-    accent: "#a78bfa",
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--purple-500)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="4" y="2" width="16" height="20" rx="2" />
+        <circle cx="12" cy="12" r="4" />
+        <line x1="12" y1="6" x2="12" y2="6.01" />
+        <line x1="12" y1="18" x2="12" y2="18.01" />
+      </svg>
+    ),
   },
   {
-    title: "ไพ่จิตวิญญาณ",
-    subtitle: "รับข้อความจากจักรวาล ค้นหาคำตอบภายในตัวคุณ",
-    href: "/spirit-card",
-    cta: "เปิดไพ่ Oracle",
-    banner: "/oracle.jpg",
-    gradient: "linear-gradient(135deg, #1a0e3e 0%, #2d1b69 50%, #4c2889 100%)",
-    accent: "#d4af37",
-    badge: "ยอดนิยม",
-  },
-  {
-    title: "วิเคราะห์เบอร์มงคล",
-    subtitle: "ตรวจเบอร์โทร เลขทะเบียน หาเบอร์เสริมดวง",
-    href: "/numerology",
-    cta: "วิเคราะห์เบอร์",
-    banner: "/numerology.jpg",
-    gradient: "linear-gradient(135deg, #1e1145 0%, #3b2080 50%, #5b34b5 100%)",
-    accent: "#c084fc",
-  },
-  {
-    title: "ไพ่รายวัน",
-    subtitle: "จับไพ่ประจำวัน รับพลังงานเริ่มต้นวันใหม่",
+    title: "Daily Card",
     href: "/daily-card",
-    cta: "จับไพ่วันนี้",
-    banner: "/daily.jpg",
-    gradient: "linear-gradient(135deg, #2d1b69 0%, #4c2889 50%, #7c3aed 100%)",
-    accent: "#fbbf24",
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--purple-500)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+        <line x1="16" y1="2" x2="16" y2="6" />
+        <line x1="8" y1="2" x2="8" y2="6" />
+        <line x1="3" y1="10" x2="21" y2="10" />
+      </svg>
+    ),
+  },
+  {
+    title: "Spirit Card",
+    href: "/spirit-card",
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--purple-500)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 2L2 7l10 5 10-5-10-5z" />
+        <path d="M2 17l10 5 10-5" />
+        <path d="M2 12l10 5 10-5" />
+      </svg>
+    ),
+  },
+  {
+    title: "Numerology",
+    href: "/numerology",
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--purple-500)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
+        <line x1="4" y1="22" x2="4" y2="15" />
+      </svg>
+    ),
   },
 ];
 
-const recommendedPackages = [
+const popularSpreads = [
   {
-    id: "promo-3q",
-    emoji: "✨",
-    badge: "โปรพิเศษ",
-    title: "โปรเปิดไพ่ 3 คำถาม",
-    price: "99.-",
-    subtitle: "เช็คดวง ดูแนวทางต่างๆ อยากเคลียร์ข้อสงสัย",
-    description: "ไพ่ถามตอบ จัดโปรดูดวงตลอดเดือนมกราคม 🌞",
-    highlights: [
-      "3 คำถาม 99.-",
-      "พิมพ์ตอบกลับ ได้คำตอบภายในวันเดียว",
-      "เร็วสุดภายใน 1-2 ชั่วโมง 🔮",
-    ],
-    format: "พิมพ์ตอบ",
+    title: "3-Card Insight",
+    description: "Describes 3-card Insight to cole rene...",
+    href: "/tarot/pick?count=3",
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--purple-500)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+      </svg>
+    ),
   },
   {
-    id: "monthly",
-    emoji: "🔮",
-    badge: "ลูกค้าประจำเยอะ",
-    title: "แพคดูดวงรายเดือน",
-    price: "259.-",
-    subtitle: "สำหรับคนที่อยากรู้ทิศทาง ดูพลังงานตัวเองเพื่อตั้งรับ",
-    description: "ใช้ศาสตร์ ไพ่ + โหราศาสตร์ไทย ดูครบทุกด้าน",
-    highlights: [
-      "การเงิน – รายรับ รายจ่าย โอกาสใหม่",
-      "โชคลาภ – จังหวะเสี่ยงดวงที่ควรรู้",
-      "ความรัก – คนโสด / คนมีคู่",
-      "การงาน – ทิศทาง งานจะไปต่อหรือปรับอะไรดี",
-      "สุขภาพ – สิ่งที่ควรระวัง",
-      "คำแนะนำ & พลังงานชีวิตประจำเดือน",
-    ],
-    format: "พิมพ์ตอบ · อ่านง่าย ใช้ได้จริงทั้งเดือน",
+    title: "Love",
+    description: "Share your love and realtration.",
+    href: "/tarot/pick?count=3",
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="var(--purple-400)" stroke="var(--purple-500)" strokeWidth="1.5">
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+      </svg>
+    ),
   },
   {
-    id: "pack-b",
-    emoji: "⭐",
-    badge: "ลูกค้าเลือกเยอะสุด",
-    title: "แพ็ก B | เปิดไพ่ 10 ใบ + โหราศาสตร์",
-    price: "389.-",
-    subtitle: "ดูภาพรวมดวงและทิศทางชีวิตในช่วงนี้",
-    description: "ครอบคลุมทุกเรื่องหลัก ทั้งการงาน การเงิน โชคลาภ ความรัก และจังหวะชีวิต",
-    highlights: [
-      "รู้ทิศทาง นำไปใช้ได้จริง ชี้ชัดว่าเรื่องไหนเด่น เรื่องไหนควรรอ",
-      "อ่านคู่กับโหราศาสตร์ ดูจังหวะเวลา พลังดาว",
-      "เหมาะกับคนที่ต้องการเช็คดวงชะตา 1-3 เดือน",
-      "คนรอบข้าง ความก้าวหน้า อุปสรรค สุขภาพ",
-    ],
-    format: "คอล 20-30 นาที | พิมพ์ | อัดเสียง",
-  },
-  {
-    id: "full-report",
-    emoji: "📜",
-    badge: "เจาะลึกที่สุด",
-    title: "Personal Horoscope Report",
-    price: "929.-",
-    subtitle: "เปิดดวงชะตาฉบับเต็ม เจาะลึกทุกมิติชีวิตด้วยโหราศาสตร์ไทย",
-    description: "รู้ก่อน วางแผนก่อน เปลี่ยนอุปสรรคให้เป็นโอกาส",
-    highlights: [
-      "พื้นดวงชะตาเดิม · จุดแข็ง จุดอ่อน Inner-Self",
-      "การเงิน & ความมั่งคั่ง · อาชีพ & ความสำเร็จ",
-      "ความรัก & คู่ครอง · บริวาร & คนรอบข้าง",
-      "สุขภาพ & อุปสรรค",
-      "ดวงรายปี 2026 ครึ่งปีแรก-หลัง ครบทุกด้าน",
-      "เคล็ดลับเสริมดวง + การ์ดฮีลใจประจำปี",
-    ],
-    format: "ไฟล์ PDF 15-20 หน้า · ใช้เวลา 3-7 วัน",
+    title: "Career",
+    description: "Explore tha employers...",
+    href: "/tarot/pick?count=3",
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--purple-500)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
+        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+      </svg>
+    ),
   },
 ];
+
+function todayDate() {
+  const d = new Date();
+  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  return `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]}`;
+}
 
 export default function Home() {
-  const [expandedPkg, setExpandedPkg] = useState<string | null>(null);
-
   useEffect(() => {
     trackEvent("landing_view", { step: "home" });
   }, []);
 
   return (
-    <main className="theme-light mx-auto w-full max-w-lg">
-      {/* ── Hero ── */}
-      <section
-        className="relative isolate overflow-hidden px-5 pb-6 pt-12"
-        style={{
-          background: "linear-gradient(160deg, #1a0e3e 0%, #2d1b69 35%, #4c2889 70%, #6d3bbd 100%)",
-        }}
-      >
-        {/* Ambient glow orbs */}
-        <div
-          className="pointer-events-none absolute -top-20 -right-20 h-60 w-60 rounded-full opacity-30 blur-3xl"
-          style={{ background: "#8b5cf6" }}
-        />
-        <div
-          className="pointer-events-none absolute -bottom-16 -left-16 h-48 w-48 rounded-full opacity-20 blur-3xl"
-          style={{ background: "#a78bfa" }}
-        />
-
-        <div className="relative z-10 text-center">
-          <p
-            className="text-sm font-semibold tracking-[0.15em]"
-            style={{ color: "#d4af37", fontStyle: "italic" }}
+    <main className="mx-auto w-full max-w-lg">
+      {/* ── Header ── */}
+      <header className="flex items-center justify-between px-5 pt-6 pb-2">
+        <h1 className="text-xl font-bold" style={{ color: "var(--text)" }}>
+          MysticFlow
+        </h1>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            className="flex h-9 w-9 items-center justify-center rounded-full"
+            style={{ background: "var(--surface-1)" }}
+            aria-label="Search"
           >
-            REFFORTUNE
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+          </button>
+          <Link
+            href="/library/saved"
+            className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium"
+            style={{ background: "var(--surface-1)", color: "var(--text-muted)" }}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+            </svg>
+          </Link>
+        </div>
+      </header>
+
+      {/* ── Today's Guidance ── */}
+      <section className="px-5 pt-4">
+        <div
+          className="rounded-2xl p-5"
+          style={{ background: "var(--purple-100)" }}
+        >
+          <h2 className="text-xl font-bold" style={{ color: "var(--text)" }}>
+            Today&apos;s Guidance
+          </h2>
+          <p className="mt-1 text-sm" style={{ color: "var(--text-muted)" }}>
+            {todayDate()}
           </p>
-          <h1 className="mt-3 text-2xl font-bold leading-tight text-white">
-            ค้นหาคำตอบของชีวิต
-          </h1>
-          <p className="mt-1 text-sm" style={{ color: "#c4b5fd" }}>
-            ด้วยศาสตร์แห่งการพยากรณ์ชั้นสูง
-          </p>
+          <Link
+            href="/daily-card"
+            className="mt-4 flex w-full items-center justify-center rounded-full py-3 text-sm font-semibold text-white transition hover:opacity-90"
+            style={{ background: "var(--purple-400)" }}
+          >
+            Draw Daily Card
+          </Link>
         </div>
       </section>
 
-      {/* ── บริการแนะนำ (Banner Cards) ── */}
-      <section className="px-5 pt-6 pb-2">
+      {/* ── Explore ── */}
+      <section className="px-5 pt-6">
         <h2 className="text-base font-bold" style={{ color: "var(--text)" }}>
-          บริการแนะนำ
+          Explore
         </h2>
-        <p className="mt-1 text-xs" style={{ color: "var(--text-subtle)" }}>
-          เลือกศาสตร์ที่เหมาะกับคุณ
-        </p>
-
-        <div className="mt-4 flex flex-col gap-4">
-          {serviceBanners.map((svc, i) => (
+        <div className="mt-3 grid grid-cols-2 gap-3">
+          {exploreItems.map((item) => (
             <Link
-              key={svc.title}
-              href={svc.href}
-              className="group relative overflow-hidden rounded-2xl border transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+              key={item.title}
+              href={item.href}
+              className="flex flex-col gap-3 rounded-2xl border p-4 transition hover:shadow-md"
               style={{
-                borderColor: "rgba(139,92,246,0.15)",
+                borderColor: "var(--border)",
                 background: "var(--bg-elevated)",
-                animation: `tarot-fade-up 0.5s ease-out ${i * 0.1}s both`,
               }}
             >
-              {/* Badge */}
-              {"badge" in svc && svc.badge && (
-                <div
-                  className="absolute top-3 right-3 z-10 rounded-full px-3 py-1 text-[10px] font-bold"
-                  style={{
-                    background: "linear-gradient(135deg, #d4af37, #e6c34a)",
-                    color: "#1a0e3e",
-                    boxShadow: "0 2px 8px rgba(212,175,55,0.4)",
-                  }}
-                >
-                  🔥 {svc.badge}
-                </div>
-              )}
-
-              {/* Banner image — fixed 16:9 aspect ratio */}
-              <div className="relative w-full overflow-hidden" style={{ aspectRatio: "16 / 9" }}>
-                <Image
-                  src={svc.banner}
-                  alt={svc.title}
-                  fill
-                  sizes="(max-width: 512px) 100vw, 512px"
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-                {/* Gradient overlay at bottom of image */}
-                <div
-                  className="pointer-events-none absolute inset-0"
-                  style={{
-                    background: "linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 50%)",
-                  }}
-                />
+              <div
+                className="flex h-10 w-10 items-center justify-center rounded-xl"
+                style={{ background: "var(--purple-50)" }}
+              >
+                {item.icon}
               </div>
-
-              {/* Text + CTA below image */}
-              <div className="p-4">
-                <h3 className="text-sm font-bold leading-tight" style={{ color: "var(--text)" }}>
-                  {svc.title}
-                </h3>
-                <p className="mt-1 text-xs leading-relaxed" style={{ color: "var(--text-subtle)" }}>
-                  {svc.subtitle}
-                </p>
-                <div
-                  className="mt-3 inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-[11px] font-bold transition-all duration-300 group-hover:scale-[1.03] group-hover:shadow-lg"
-                  style={{
-                    background: svc.gradient,
-                    color: "white",
-                    boxShadow: `0 2px 12px ${svc.accent}30`,
-                  }}
-                >
-                  {svc.cta}
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="9 18 15 12 9 6" />
-                  </svg>
-                </div>
-              </div>
+              <p className="text-sm font-semibold" style={{ color: "var(--text)" }}>
+                {item.title}
+              </p>
             </Link>
           ))}
         </div>
       </section>
 
-      {/* ── บริการด่วน ── */}
-      <section className="px-5 pt-6">
-        <h2 className="text-base font-bold" style={{ color: "var(--text)" }}>
-          บริการด่วน
-        </h2>
-        <div className="mt-3 grid grid-cols-2 gap-3">
-          <Link
-            href="/tarot"
-            className="flex items-center gap-3 rounded-2xl border p-4 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
-            style={{
-              borderColor: "var(--border-gold)",
-              background: "var(--bg-elevated)",
-              boxShadow: "0 2px 12px rgba(139,92,246,0.06)",
-            }}
-          >
-            <div
-              className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full"
-              style={{ background: "linear-gradient(135deg, #4c2889, #6d3bbd)" }}
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10" />
-                <polyline points="12 6 12 12 16 14" />
-              </svg>
-            </div>
-            <div>
-              <p className="text-sm font-bold" style={{ color: "var(--text)" }}>จองคิวดูดวง</p>
-              <p className="text-[11px]" style={{ color: "var(--text-subtle)" }}>พร้อมให้บริการทันที</p>
-            </div>
-          </Link>
-
-          <Link
-            href="#"
-            className="flex items-center gap-3 rounded-2xl border p-4 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
-            style={{
-              borderColor: "var(--border-gold)",
-              background: "var(--bg-elevated)",
-              boxShadow: "0 2px 12px rgba(139,92,246,0.06)",
-            }}
-          >
-            <div
-              className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full"
-              style={{ background: "linear-gradient(135deg, #4c2889, #6d3bbd)" }}
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-              </svg>
-            </div>
-            <div>
-              <p className="text-sm font-bold" style={{ color: "var(--text)" }}>ปรึกษาฟรีเบื้องต้น</p>
-              <p className="text-[11px]" style={{ color: "var(--text-subtle)" }}>พูดคุยกับผู้เชี่ยวชาญ</p>
-            </div>
-          </Link>
+      {/* ── Popular Spreads ── */}
+      <section className="pt-6 pb-4">
+        <div className="px-5">
+          <h2 className="text-base font-bold" style={{ color: "var(--text)" }}>
+            Popular spreads
+          </h2>
         </div>
-      </section>
-
-      {/* ── แพคแนะนำ ── */}
-      <section className="px-5 pt-8 pb-4">
-        <h2 className="text-base font-bold" style={{ color: "var(--text)" }}>
-          แพคแนะนำ
-        </h2>
-        <p className="mt-1 text-xs" style={{ color: "var(--text-subtle)" }}>
-          เลือกแพคที่เหมาะกับคุณ
-        </p>
-
-        <div className="mt-4 flex flex-col gap-4">
-          {recommendedPackages.map((pkg, i) => {
-            const isExpanded = expandedPkg === pkg.id;
-            const isPopular = pkg.id === "pack-b";
-            return (
-              <div
-                key={pkg.id}
-                className="relative overflow-hidden rounded-2xl border transition-all duration-300"
-                style={{
-                  borderColor: isPopular
-                    ? "rgba(212,175,55,0.5)"
-                    : "rgba(139,92,246,0.15)",
-                  background: isPopular
-                    ? "linear-gradient(160deg, #1a0e3e 0%, #2d1b69 50%, #4c2889 100%)"
-                    : "var(--bg-elevated)",
-                  boxShadow: isPopular
-                    ? "0 4px 24px rgba(139,92,246,0.15), 0 0 0 1px rgba(212,175,55,0.2)"
-                    : "0 2px 12px rgba(139,92,246,0.06)",
-                  animation: `tarot-fade-up 0.5s ease-out ${i * 0.08}s both`,
-                }}
-              >
-                {/* Popular ribbon */}
-                {isPopular && (
-                  <div
-                    className="absolute top-0 right-0 rounded-bl-xl px-3 py-1 text-[10px] font-bold"
-                    style={{
-                      background: "linear-gradient(135deg, #d4af37, #e6c34a)",
-                      color: "#1a0e3e",
-                    }}
-                  >
-                    🔥 ยอดนิยม
-                  </div>
-                )}
-
-                <div className="p-4">
-                  {/* Header row */}
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="text-lg">{pkg.emoji}</span>
-                        <span
-                          className="rounded-full px-2 py-0.5 text-[10px] font-semibold"
-                          style={{
-                            background: isPopular
-                              ? "rgba(212,175,55,0.2)"
-                              : "rgba(139,92,246,0.1)",
-                            color: isPopular ? "#d4af37" : "#8b5cf6",
-                          }}
-                        >
-                          {pkg.badge}
-                        </span>
-                      </div>
-                      <h3
-                        className="mt-1.5 text-sm font-bold leading-tight"
-                        style={{ color: isPopular ? "#fff" : "var(--text)" }}
-                      >
-                        {pkg.title}
-                      </h3>
-                      <p
-                        className="mt-1 text-xs leading-relaxed"
-                        style={{
-                          color: isPopular
-                            ? "rgba(255,255,255,0.7)"
-                            : "var(--text-subtle)",
-                        }}
-                      >
-                        {pkg.subtitle}
-                      </p>
-                    </div>
-                    {/* Price badge */}
-                    <div
-                      className="flex-shrink-0 rounded-xl px-3 py-2 text-center"
-                      style={{
-                        background: isPopular
-                          ? "linear-gradient(135deg, rgba(212,175,55,0.2), rgba(212,175,55,0.1))"
-                          : "rgba(139,92,246,0.08)",
-                        border: isPopular
-                          ? "1px solid rgba(212,175,55,0.3)"
-                          : "1px solid rgba(139,92,246,0.12)",
-                      }}
-                    >
-                      <p
-                        className="text-lg font-bold leading-none"
-                        style={{ color: isPopular ? "#d4af37" : "#8b5cf6" }}
-                      >
-                        {pkg.price}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Description */}
-                  <p
-                    className="mt-2 text-[11px] italic leading-relaxed"
-                    style={{
-                      color: isPopular
-                        ? "rgba(255,255,255,0.55)"
-                        : "var(--text-subtle)",
-                    }}
-                  >
-                    {pkg.description}
-                  </p>
-
-                  {/* Expand/collapse toggle */}
-                  <button
-                    onClick={() =>
-                      setExpandedPkg(isExpanded ? null : pkg.id)
-                    }
-                    className="mt-2 flex items-center gap-1 text-[11px] font-semibold transition-colors"
-                    style={{ color: isPopular ? "#d4af37" : "#8b5cf6" }}
-                  >
-                    {isExpanded ? "ซ่อนรายละเอียด" : "ดูรายละเอียด"}
-                    <svg
-                      width="12"
-                      height="12"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="transition-transform duration-300"
-                      style={{
-                        transform: isExpanded
-                          ? "rotate(180deg)"
-                          : "rotate(0deg)",
-                      }}
-                    >
-                      <polyline points="6 9 12 15 18 9" />
-                    </svg>
-                  </button>
-
-                  {/* Expandable details */}
-                  <div
-                    className="overflow-hidden transition-all duration-300"
-                    style={{
-                      maxHeight: isExpanded ? "400px" : "0px",
-                      opacity: isExpanded ? 1 : 0,
-                    }}
-                  >
-                    <div
-                      className="mt-3 rounded-xl p-3"
-                      style={{
-                        background: isPopular
-                          ? "rgba(255,255,255,0.06)"
-                          : "rgba(139,92,246,0.04)",
-                      }}
-                    >
-                      {pkg.highlights.map((h) => (
-                        <div
-                          key={h}
-                          className="flex items-start gap-2 py-1"
-                        >
-                          <span
-                            className="mt-1 text-[8px]"
-                            style={{
-                              color: isPopular ? "#d4af37" : "#8b5cf6",
-                            }}
-                          >
-                            ●
-                          </span>
-                          <p
-                            className="text-xs leading-relaxed"
-                            style={{
-                              color: isPopular
-                                ? "rgba(255,255,255,0.8)"
-                                : "var(--text-muted)",
-                            }}
-                          >
-                            {h}
-                          </p>
-                        </div>
-                      ))}
-                      {/* Format tag */}
-                      <div
-                        className="mt-2 inline-block rounded-full px-2.5 py-1 text-[10px] font-medium"
-                        style={{
-                          background: isPopular
-                            ? "rgba(212,175,55,0.12)"
-                            : "rgba(139,92,246,0.08)",
-                          color: isPopular
-                            ? "rgba(212,175,55,0.9)"
-                            : "#8b5cf6",
-                        }}
-                      >
-                        📋 {pkg.format}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* CTA */}
-                  <a
-                    href="https://line.me/R/ti/p/@reffortune"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="mt-3 flex w-full items-center justify-center gap-2 rounded-full py-2.5 text-xs font-bold transition-all duration-300 hover:scale-[1.02] hover:shadow-lg"
-                    style={{
-                      background: isPopular
-                        ? "linear-gradient(135deg, #d4af37, #e6c34a)"
-                        : "linear-gradient(135deg, #4c2889, #6d3bbd)",
-                      color: isPopular ? "#1a0e3e" : "white",
-                      boxShadow: isPopular
-                        ? "0 4px 20px rgba(212,175,55,0.3)"
-                        : "0 4px 20px rgba(109,59,189,0.25)",
-                    }}
-                  >
-                    จองคิว · ปรึกษา · นัดหมาย
-                  </a>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* ── ดูดวงออนไลน์กับเรฟ (Contact) ── */}
-      <section className="px-5 pt-4 pb-6">
-        <div
-          className="overflow-hidden rounded-2xl border p-5"
-          style={{
-            borderColor: "var(--border-gold)",
-            background: "linear-gradient(135deg, rgba(212,175,55,0.06), rgba(139,92,246,0.04))",
-          }}
-        >
-          <h3 className="text-sm font-bold" style={{ color: "var(--text)" }}>
-            ดูดวงออนไลน์กับเรฟ
-          </h3>
-          <p className="mt-1 text-xs" style={{ color: "var(--text-subtle)" }}>
-            ติดต่อเพื่อดูดวงออนไลน์กับเรฟได้ที่ช่องทางด้านล่าง
-          </p>
-          <div className="mt-3 flex flex-wrap gap-2">
-            <a
-              href="https://line.me/R/ti/p/@reffortune"
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-bold transition-all hover:scale-[1.03]"
+        <div className="mt-3 flex gap-3 overflow-x-auto px-5 pb-2" style={{ scrollbarWidth: "none" }}>
+          {popularSpreads.map((spread) => (
+            <Link
+              key={spread.title}
+              href={spread.href}
+              className="flex w-40 flex-shrink-0 flex-col gap-2 rounded-2xl border p-4 transition hover:shadow-md"
               style={{
-                background: "linear-gradient(135deg, #4c2889, #6d3bbd)",
-                color: "white",
+                borderColor: "var(--border)",
+                background: "var(--bg-elevated)",
               }}
             >
-              LINE @reffortune
-            </a>
-            <a
-              href="https://www.instagram.com/reffortune"
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-full border px-4 py-2 text-xs font-semibold transition hover:bg-purple-50"
-              style={{ borderColor: "var(--border-strong)", color: "var(--text)" }}
-            >
-              IG reffortune
-            </a>
-          </div>
+              <div
+                className="flex h-10 w-10 items-center justify-center rounded-xl"
+                style={{ background: "var(--purple-50)" }}
+              >
+                {spread.icon}
+              </div>
+              <p className="text-sm font-semibold" style={{ color: "var(--text)" }}>
+                {spread.title}
+              </p>
+              <p className="line-clamp-2 text-xs" style={{ color: "var(--text-subtle)" }}>
+                {spread.description}
+              </p>
+            </Link>
+          ))}
         </div>
       </section>
     </main>

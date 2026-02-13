@@ -15,10 +15,10 @@ const base =
   "disabled:opacity-50 disabled:pointer-events-none";
 
 const variants: Record<Variant, string> = {
-  primary: "bg-accent text-accent-ink hover:bg-accent-hover",
-  secondary: "bg-surface-2 text-fg border border-border hover:border-border-strong",
-  ghost: "bg-transparent text-fg border border-border hover:bg-surface-2",
-  danger: "bg-danger/15 text-fg border border-danger/40 hover:bg-danger/25",
+  primary: "bg-accent text-accent-ink hover:bg-accent-hover shadow-sm",
+  secondary: "bg-bg-elevated text-fg border border-border hover:border-border-strong shadow-sm",
+  ghost: "bg-transparent text-fg-muted border border-border hover:bg-surface hover:text-fg",
+  danger: "bg-danger/10 text-danger border border-danger/30 hover:bg-danger/20",
 };
 
 const sizes: Record<Size, string> = {
