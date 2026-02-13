@@ -74,7 +74,7 @@ export default function DailyCardPage() {
     setTimeout(() => setShowDetails(true), 600);
   }, [flipped, drawn]);
 
-  const orientationLabel = drawn?.orientation === "upright" ? "Upright" : "Reversed";
+  const orientationLabel = drawn?.orientation === "upright" ? "ตั้งตรง" : "กลับหัว";
 
   const guidance = useMemo(() => {
     if (!drawn) return null;
@@ -97,7 +97,7 @@ export default function DailyCardPage() {
   }, [drawn]);
 
   const shareText = drawn
-    ? `ไพ่รายวันของฉัน: ${drawn.card.nameTh ?? drawn.card.name} (${orientationLabel}) — MysticFlow`
+    ? `ไพ่รายวัน: ${drawn.card.nameTh ?? drawn.card.name} (${orientationLabel}) — MysticFlow`
     : "";
   const shareUrl = "https://www.reffortune.com/daily-card";
 
@@ -108,7 +108,7 @@ export default function DailyCardPage() {
 
       if (platform === "native" && typeof navigator !== "undefined" && navigator.share) {
         try {
-          await navigator.share({ title: "Daily Card — MysticFlow", text: shareText, url: shareUrl });
+          await navigator.share({ title: "ไพ่รายวัน — MysticFlow", text: shareText, url: shareUrl });
         } catch {}
         return;
       }
@@ -147,11 +147,11 @@ export default function DailyCardPage() {
     <main className="mx-auto w-full max-w-lg px-5 py-6">
       {/* ── Header ── */}
       <div className="text-center">
-        <h1 className="text-2xl font-bold" style={{ color: "var(--text)" }}>Daily Card</h1>
+        <h1 className="text-2xl font-bold" style={{ color: "var(--text)" }}>ไพ่รายวัน</h1>
         <p className="mt-1 text-sm" style={{ color: "var(--text-subtle)" }}>
           {alreadyDrawn
             ? "คุณเปิดไพ่วันนี้แล้ว กลับมาเปิดใหม่ได้พรุ่งนี้"
-            : "Tap the card to reveal today's energy"}
+            : "แตะที่ไพ่เพื่อเปิดพลังงานประจำวัน"}
         </p>
       </div>
 
@@ -195,7 +195,7 @@ export default function DailyCardPage() {
                   className="rounded-full px-3 py-1 text-[11px] font-bold text-white"
                   style={{ background: "var(--purple-500)" }}
                 >
-                  Tap to reveal
+                  แตะเพื่อเปิด
                 </span>
               </div>
             )}
@@ -250,7 +250,7 @@ export default function DailyCardPage() {
           {/* Guidance card */}
           <div className="rounded-2xl border p-4" style={{ borderColor: "var(--border)", background: "var(--bg-elevated)" }}>
             <h3 className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--purple-500)" }}>
-              Guidance
+              คำแนะนำ
             </h3>
             <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>
               {guidance.energy}
@@ -260,7 +260,7 @@ export default function DailyCardPage() {
           {/* Affirmation / Action */}
           <div className="rounded-2xl border p-4" style={{ borderColor: "var(--border)", background: "var(--bg-elevated)" }}>
             <h3 className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--success)" }}>
-              Action
+              สิ่งที่ควรทำ
             </h3>
             <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>
               {guidance.action}
@@ -270,7 +270,7 @@ export default function DailyCardPage() {
           {/* Avoid */}
           <div className="rounded-2xl border p-4" style={{ borderColor: "var(--border)", background: "var(--bg-elevated)" }}>
             <h3 className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--rose)" }}>
-              Avoid
+              สิ่งที่ควรเลี่ยง
             </h3>
             <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>
               {guidance.avoid}
@@ -305,7 +305,7 @@ export default function DailyCardPage() {
               className="flex-1 rounded-full py-3 text-sm font-semibold text-white transition"
               style={{ background: "var(--purple-500)" }}
             >
-              Save
+              บันทึก
             </button>
             <button
               type="button"
@@ -319,7 +319,7 @@ export default function DailyCardPage() {
               className="flex-1 rounded-full border py-3 text-sm font-semibold transition"
               style={{ borderColor: "var(--border-strong)", color: "var(--text-muted)" }}
             >
-              Draw again
+              เปิดใหม่
             </button>
           </div>
         </div>

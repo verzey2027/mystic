@@ -113,7 +113,7 @@ export default function SpiritCardPage() {
 
   return (
     <main className="mx-auto w-full max-w-lg px-5 py-6">
-      <h1 className="text-2xl font-bold" style={{ color: "var(--text)" }}>Spirit Card</h1>
+      <h1 className="text-2xl font-bold" style={{ color: "var(--text)" }}>ไพ่จิตวิญญาณ</h1>
       <p className="mt-1 text-sm" style={{ color: "var(--text-muted)" }}>รับข้อความจากจักรวาล ผ่านวันเกิดของคุณ</p>
 
       <form onSubmit={handleSubmit} className="mt-5 rounded-2xl border p-5" style={{ borderColor: "var(--border)", background: "var(--bg-elevated)" }}>
@@ -150,11 +150,11 @@ export default function SpiritCardPage() {
       {aiReading && (
         <section className="mt-5 space-y-4">
           <div className="rounded-2xl border p-5" style={{ borderColor: "var(--border)", background: "var(--bg-elevated)" }}>
-            <h2 className="text-sm font-bold" style={{ color: "var(--purple-500)" }}>Message</h2>
+            <h2 className="text-sm font-bold" style={{ color: "var(--purple-500)" }}>สารจากจักรวาล</h2>
             <p className="mt-2 whitespace-pre-line text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>{aiReading.summary}</p>
           </div>
           <div className="rounded-2xl border p-5" style={{ borderColor: "var(--border)", background: "var(--bg-elevated)" }}>
-            <h2 className="text-sm font-bold" style={{ color: "var(--purple-500)" }}>Practice</h2>
+            <h2 className="text-sm font-bold" style={{ color: "var(--purple-500)" }}>แนวทางปฏิบัติ</h2>
             <p className="mt-2 whitespace-pre-line text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>{aiReading.cardStructure}</p>
           </div>
 
@@ -163,7 +163,7 @@ export default function SpiritCardPage() {
             className="w-full rounded-full py-3 text-sm font-semibold text-white transition"
             style={{ background: "var(--purple-500)" }}
           >
-            Save to Library
+            บันทึกผล
           </button>
         </section>
       )}

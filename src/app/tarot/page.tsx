@@ -13,14 +13,14 @@ export const metadata: Metadata = {
   },
 };
 
-const categories = ["All", "Love", "Career", "Money"];
+const categories = ["ทั้งหมด", "ความรัก", "การงาน", "การเงิน"];
 
 const spreads = [
   {
     count: 1,
-    title: "1-Card Quick",
-    description: "Daily guidance and focus.",
-    eta: "2 min",
+    title: "ไพ่ 1 ใบ",
+    description: "ดูดวงรายวัน โฟกัสพลังงานวันนี้",
+    eta: "2 นาที",
     icon: (
       <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <rect x="6" y="3" width="12" height="18" rx="2" />
@@ -30,9 +30,9 @@ const spreads = [
   },
   {
     count: 3,
-    title: "3-Card Insight",
-    description: "Past, Present, Future clarity.",
-    eta: "5 min",
+    title: "ไพ่ 3 ใบ",
+    description: "อดีต ปัจจุบัน อนาคต เห็นภาพรวมชัดเจน",
+    eta: "5 นาที",
     icon: (
       <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <rect x="2" y="4" width="8" height="12" rx="1.5" />
@@ -43,9 +43,9 @@ const spreads = [
   },
   {
     count: 5,
-    title: "5-Card Cross",
-    description: "In-depth analysis for complex questions.",
-    eta: "10 min",
+    title: "ไพ่ 5 ใบ",
+    description: "วิเคราะห์เจาะลึกสำหรับคำถามซับซ้อน",
+    eta: "10 นาที",
     icon: (
       <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <rect x="2" y="6" width="7" height="10" rx="1.5" />
@@ -58,9 +58,9 @@ const spreads = [
   },
   {
     count: 10,
-    title: "10-Card Celtic Cross",
-    description: "Full life overview and deep insight.",
-    eta: "15 min",
+    title: "ไพ่ 10 ใบ เซลติกครอส",
+    description: "ดูภาพรวมชีวิตแบบเจาะลึกที่สุด",
+    eta: "15 นาที",
     icon: (
       <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <rect x="3" y="3" width="18" height="18" rx="2" />
@@ -78,7 +78,7 @@ export default function TarotHomePage() {
     <main className="mx-auto w-full max-w-lg px-5 py-6">
       {/* ── Title ── */}
       <h1 className="text-2xl font-bold" style={{ color: "var(--text)" }}>
-        Tarot
+        ทาโรต์
       </h1>
 
       {/* ── Category chips ── */}
@@ -144,7 +144,7 @@ export default function TarotHomePage() {
           className="flex w-full items-center justify-center rounded-full py-3.5 text-sm font-semibold text-white transition hover:opacity-90"
           style={{ background: "var(--purple-500)" }}
         >
-          Start 3-Card Insight
+          เริ่มเปิดไพ่ 3 ใบ
         </Link>
       </div>
     </main>

@@ -24,7 +24,7 @@ export default function TarotLibraryPage() {
           className="rounded-full px-4 py-1.5 text-xs font-semibold transition"
           style={{ background: "var(--purple-100)", color: "var(--purple-600)" }}
         >
-          ไปที่คลังของฉัน
+          คลังของฉัน
         </Link>
       </div>
       <p className="mt-1 text-sm" style={{ color: "var(--text-muted)" }}>ค้นหาความหมายไพ่แต่ละใบแบบรวดเร็ว พร้อมแนวทางเชิงปฏิบัติ</p>

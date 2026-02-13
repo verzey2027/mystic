@@ -206,7 +206,7 @@ export default function ResultClient() {
       {/* ── Header ── */}
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold" style={{ color: "var(--text)" }}>
-          {count}-Card Insight
+          ผลไพ่ {count} ใบ
         </h1>
         <button
           type="button"
@@ -217,7 +217,7 @@ export default function ResultClient() {
             color: savedId ? "var(--purple-600)" : "#fff",
           }}
         >
-          {savedId ? "Saved ✓" : "Save"}
+          {savedId ? "บันทึกแล้ว ✓" : "บันทึก"}
         </button>
       </div>
 
@@ -265,7 +265,7 @@ export default function ResultClient() {
       {question && (
         <div className="mt-4 rounded-2xl border p-4" style={{ borderColor: "var(--border)", background: "var(--bg-elevated)" }}>
           <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--purple-500)" }}>
-            Question
+            คำถาม
           </p>
           <p className="mt-1 text-sm" style={{ color: "var(--text)" }}>{question}</p>
         </div>
@@ -273,7 +273,7 @@ export default function ResultClient() {
 
       {/* ── Overall Summary ── */}
       <section className="mt-4 rounded-2xl border p-4" style={{ borderColor: "var(--border)", background: "var(--bg-elevated)" }}>
-        <h2 className="text-sm font-bold" style={{ color: "var(--text)" }}>Overall</h2>
+        <h2 className="text-sm font-bold" style={{ color: "var(--text)" }}>ภาพรวม</h2>
         {aiReading ? (
           <p className="mt-2 text-sm leading-relaxed whitespace-pre-line" style={{ color: "var(--text-muted)" }}>
             {aiReading.summary}
@@ -298,7 +298,7 @@ export default function ResultClient() {
           }}
         >
           <h3 className="text-sm font-bold" style={{ color: "var(--text)" }}>
-            {drawn.card.nameTh ?? drawn.card.name} — {drawn.orientation === "upright" ? "Situation" : "Challenge"}
+            {drawn.card.nameTh ?? drawn.card.name} — {drawn.orientation === "upright" ? "สถานการณ์" : "สิ่งท้าทาย"}
           </h3>
           <p className="mt-1.5 text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>
             {drawn.orientation === "upright" ? drawn.card.meaningUpright : drawn.card.meaningReversed}
@@ -309,7 +309,7 @@ export default function ResultClient() {
       {/* ── Card structure (if available) ── */}
       {aiReading?.cardStructure && (
         <section className="mt-3 rounded-2xl border p-4" style={{ borderColor: "var(--border)", background: "var(--bg-elevated)" }}>
-          <h2 className="text-sm font-bold" style={{ color: "var(--text)" }}>Reading Details</h2>
+          <h2 className="text-sm font-bold" style={{ color: "var(--text)" }}>รายละเอียด</h2>
           <p className="mt-2 text-sm leading-relaxed whitespace-pre-line" style={{ color: "var(--text-muted)" }}>
             {aiReading.cardStructure}
           </p>
@@ -318,15 +318,15 @@ export default function ResultClient() {
 
       {/* ── Chat / Follow-up ── */}
       <section className="mt-4 rounded-2xl border p-4" style={{ borderColor: "var(--border)", background: "var(--bg-elevated)" }}>
-        <h2 className="text-sm font-bold" style={{ color: "var(--text)" }}>Ask about your cards</h2>
+        <h2 className="text-sm font-bold" style={{ color: "var(--text)" }}>ถามเกี่ยวกับไพ่</h2>
         <p className="mt-1 text-xs" style={{ color: "var(--text-subtle)" }}>
-          Ask follow-up questions about your reading
+          ถามคำถามเพิ่มเติมเกี่ยวกับผลที่เปิดได้
         </p>
 
         <div className="mt-3 max-h-60 space-y-2 overflow-y-auto rounded-xl border p-3" style={{ borderColor: "var(--border)", background: "var(--surface-1)" }}>
           {chatMessages.length === 0 ? (
             <p className="text-sm" style={{ color: "var(--text-subtle)" }}>
-              No messages yet. Try asking a question.
+              ยังไม่มีข้อความ ลองถามคำถามดูสิ
             </p>
           ) : (
             chatMessages.map((m, idx) => (
@@ -347,7 +347,7 @@ export default function ResultClient() {
           {chatLoading && (
             <div className="flex items-center gap-2">
               <div className="h-3 w-3 animate-pulse rounded-full" style={{ background: "var(--purple-400)" }} />
-              <p className="text-sm" style={{ color: "var(--text-subtle)" }}>Typing...</p>
+              <p className="text-sm" style={{ color: "var(--text-subtle)" }}>กำลังพิมพ์...</p>
             </div>
           )}
         </div>
@@ -357,7 +357,7 @@ export default function ResultClient() {
             value={chatInput}
             onChange={(e) => setChatInput(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter") sendFollowUpQuestion(); }}
-            placeholder="Type your question..."
+            placeholder="พิมพ์คำถามเพิ่มเติม..."
             className="min-h-10 flex-1 rounded-xl border px-3 py-2 text-sm outline-none transition focus:ring-2"
             style={{
               borderColor: "var(--border)",
@@ -373,7 +373,7 @@ export default function ResultClient() {
             className="min-h-10 rounded-xl px-4 py-2 text-sm font-semibold text-white transition disabled:opacity-40"
             style={{ background: "var(--purple-500)" }}
           >
-            Send
+            ส่ง
           </button>
         </div>
       </section>
@@ -386,14 +386,14 @@ export default function ResultClient() {
           className="flex-1 rounded-full py-3 text-sm font-semibold text-white transition"
           style={{ background: "var(--purple-500)" }}
         >
-          Save to Library
+          บันทึกผล
         </button>
         <Link
           href="/tarot"
           className="flex flex-1 items-center justify-center rounded-full border py-3 text-sm font-semibold transition"
           style={{ borderColor: "var(--border-strong)", color: "var(--text-muted)" }}
         >
-          New Reading
+          เปิดไพ่ใหม่
         </Link>
       </div>
     </main>

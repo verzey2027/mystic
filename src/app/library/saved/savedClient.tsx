@@ -27,13 +27,13 @@ export default function SavedClient() {
   return (
     <main className="mx-auto w-full max-w-lg px-5 py-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold" style={{ color: "var(--text)" }}>Saved</h1>
+        <h1 className="text-2xl font-bold" style={{ color: "var(--text)" }}>คลังของฉัน</h1>
         <div className="flex gap-2">
           <Link href="/tarot" className="inline-flex">
-            <Button>New Reading</Button>
+            <Button>เปิดใหม่</Button>
           </Link>
           <Link href="/library" className="inline-flex">
-            <Button variant="ghost">Library</Button>
+            <Button variant="ghost">ห้องสมุด</Button>
           </Link>
         </div>
       </div>
@@ -41,11 +41,11 @@ export default function SavedClient() {
 
       {lib.items.length === 0 ? (
         <Card className="mt-5 text-center">
-          <CardTitle>No saved readings yet</CardTitle>
-          <CardDesc className="mt-2">Go read some tarot cards and tap "Save" to keep them here.</CardDesc>
+          <CardTitle>ยังไม่มีรายการที่บันทึกไว้</CardTitle>
+          <CardDesc className="mt-2">ไปเปิดไพ่ แล้วกด "บันทึก" เพื่อเก็บไว้กลับมาอ่านได้</CardDesc>
           <div className="mt-4 flex justify-center">
             <Link href="/tarot" className="inline-flex">
-              <Button>Start Reading</Button>
+              <Button>เริ่มเปิดไพ่</Button>
             </Link>
           </div>
         </Card>
@@ -62,7 +62,7 @@ export default function SavedClient() {
               <Card key={r.id} className="p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="text-[11px] uppercase tracking-[0.15em]" style={{ color: "var(--text-subtle)" }}>Tarot • {r.count} cards</p>
+                    <p className="text-[11px] uppercase tracking-[0.15em]" style={{ color: "var(--text-subtle)" }}>ทาโรต์ • {r.count} ใบ</p>
                     <p className="mt-1 text-sm text-fg-muted">{formatDate(r.createdAt)}</p>
                   </div>
                   <button
@@ -103,9 +103,9 @@ export default function SavedClient() {
                 })()}
 
                 {r.question ? (
-                  <p className="mt-3 line-clamp-2 text-sm" style={{ color: "var(--text)" }}>Q: {r.question}</p>
+                  <p className="mt-3 line-clamp-2 text-sm" style={{ color: "var(--text)" }}>คำถาม: {r.question}</p>
                 ) : (
-                  <p className="mt-3 text-sm" style={{ color: "var(--text-subtle)" }}>No question</p>
+                  <p className="mt-3 text-sm" style={{ color: "var(--text-subtle)" }}>ไม่มีคำถาม</p>
                 )}
 
                 {r.aiSummary ? (
@@ -115,11 +115,11 @@ export default function SavedClient() {
                 <div className="mt-4 flex gap-2">
                   <Link href={`/tarot/result?${params.toString()}`} className="inline-flex flex-1">
                     <Button className="w-full" variant="secondary">
-                      View
+                      ดูผล
                     </Button>
                   </Link>
                   <Link href="/tarot" className="inline-flex">
-                    <Button variant="ghost">New</Button>
+                    <Button variant="ghost">ใหม่</Button>
                   </Link>
                 </div>
               </Card>
@@ -138,7 +138,7 @@ export default function SavedClient() {
             className="text-xs underline underline-offset-4 transition"
             style={{ color: "var(--text-subtle)" }}
           >
-            Clear all
+            ล้างทั้งหมด
           </button>
         </div>
       ) : null}

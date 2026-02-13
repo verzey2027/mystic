@@ -51,7 +51,7 @@ export default async function TarotCardDetailPage({
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <polyline points="15 18 9 12 15 6" />
         </svg>
-        Library
+        ห้องสมุด
       </Link>
 
       <section className="mt-4 rounded-2xl border p-5" style={{ borderColor: "var(--border)", background: "var(--bg-elevated)" }}>
@@ -82,7 +82,7 @@ export default async function TarotCardDetailPage({
 
         <div className="mt-5 grid gap-4 md:grid-cols-2">
           <article className="rounded-xl border-l-4 border p-4" style={{ borderColor: "var(--border)", borderLeftColor: "var(--success)" }}>
-            <h2 className="text-sm font-bold" style={{ color: "var(--text)" }}>Upright</h2>
+            <h2 className="text-sm font-bold" style={{ color: "var(--text)" }}>ตั้งตรง</h2>
             <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>{card.meaningUpright}</p>
             <div className="mt-3 flex flex-wrap gap-1.5">
               {card.keywordsUpright.map((kw) => (
@@ -92,7 +92,7 @@ export default async function TarotCardDetailPage({
           </article>
 
           <article className="rounded-xl border-l-4 border p-4" style={{ borderColor: "var(--border)", borderLeftColor: "var(--rose)" }}>
-            <h2 className="text-sm font-bold" style={{ color: "var(--text)" }}>Reversed</h2>
+            <h2 className="text-sm font-bold" style={{ color: "var(--text)" }}>กลับหัว</h2>
             <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>{card.meaningReversed}</p>
             <div className="mt-3 flex flex-wrap gap-1.5">
               {card.keywordsReversed.map((kw) => (

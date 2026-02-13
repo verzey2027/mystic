@@ -98,7 +98,7 @@ export default function NumerologyPage() {
 
   return (
     <main className="mx-auto w-full max-w-lg px-5 py-6">
-      <h1 className="text-2xl font-bold" style={{ color: "var(--text)" }}>Numerology</h1>
+      <h1 className="text-2xl font-bold" style={{ color: "var(--text)" }}>เลขศาสตร์</h1>
       <p className="mt-1 text-sm" style={{ color: "var(--text-muted)" }}>วิเคราะห์เบอร์มงคล</p>
 
       <form onSubmit={onSubmit} className="mt-5 rounded-2xl border p-5" style={{ borderColor: "var(--border)", background: "var(--bg-elevated)" }}>
@@ -125,7 +125,7 @@ export default function NumerologyPage() {
           className="mt-4 w-full rounded-full py-3 text-sm font-semibold text-white transition hover:opacity-90"
           style={{ background: "var(--purple-500)" }}
         >
-          Calculate
+          วิเคราะห์เบอร์
         </button>
 
         {error && (
@@ -136,7 +136,7 @@ export default function NumerologyPage() {
       {submittedPhone && (
         <section className="mt-5 space-y-4">
           <div className="rounded-2xl border p-5" style={{ borderColor: "var(--border)", background: "var(--bg-elevated)" }}>
-            <h2 className="text-sm font-bold" style={{ color: "var(--purple-500)" }}>Summary</h2>
+            <h2 className="text-sm font-bold" style={{ color: "var(--purple-500)" }}>สรุปคำทำนาย</h2>
             {aiReading ? (
               <p className="mt-2 whitespace-pre-line text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>{aiReading.summary}</p>
             ) : (
@@ -149,7 +149,7 @@ export default function NumerologyPage() {
 
           {aiReading && (
             <div className="rounded-2xl border p-5" style={{ borderColor: "var(--border)", background: "var(--bg-elevated)" }}>
-              <h2 className="text-sm font-bold" style={{ color: "var(--purple-500)" }}>Number Energy</h2>
+              <h2 className="text-sm font-bold" style={{ color: "var(--purple-500)" }}>พลังตัวเลข</h2>
               <p className="mt-2 whitespace-pre-line text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>{aiReading.cardStructure}</p>
             </div>
           )}

@@ -6,7 +6,7 @@ import { trackEvent } from "@/lib/analytics/tracking";
 
 const exploreItems = [
   {
-    title: "Tarot",
+    title: "ทาโรต์",
     href: "/tarot",
     icon: (
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--purple-500)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -18,7 +18,7 @@ const exploreItems = [
     ),
   },
   {
-    title: "Daily Card",
+    title: "ไพ่รายวัน",
     href: "/daily-card",
     icon: (
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--purple-500)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -30,7 +30,7 @@ const exploreItems = [
     ),
   },
   {
-    title: "Spirit Card",
+    title: "ไพ่จิตวิญญาณ",
     href: "/spirit-card",
     icon: (
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--purple-500)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -41,7 +41,7 @@ const exploreItems = [
     ),
   },
   {
-    title: "Numerology",
+    title: "เลขศาสตร์",
     href: "/numerology",
     icon: (
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--purple-500)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -54,8 +54,8 @@ const exploreItems = [
 
 const popularSpreads = [
   {
-    title: "3-Card Insight",
-    description: "Describes 3-card Insight to cole rene...",
+    title: "ไพ่ 3 ใบ",
+    description: "อดีต ปัจจุบัน อนาคต",
     href: "/tarot/pick?count=3",
     icon: (
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--purple-500)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -65,8 +65,8 @@ const popularSpreads = [
     ),
   },
   {
-    title: "Love",
-    description: "Share your love and realtration.",
+    title: "ความรัก",
+    description: "ดูดวงความรักและความสัมพันธ์",
     href: "/tarot/pick?count=3",
     icon: (
       <svg width="24" height="24" viewBox="0 0 24 24" fill="var(--purple-400)" stroke="var(--purple-500)" strokeWidth="1.5">
@@ -75,8 +75,8 @@ const popularSpreads = [
     ),
   },
   {
-    title: "Career",
-    description: "Explore tha employers...",
+    title: "การงาน",
+    description: "ดูดวงการงานและอาชีพ",
     href: "/tarot/pick?count=3",
     icon: (
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--purple-500)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -89,9 +89,9 @@ const popularSpreads = [
 
 function todayDate() {
   const d = new Date();
-  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  return `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]}`;
+  const days = ["อาทิตย์", "จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์"];
+  const months = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+  return `วัน${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]}`;
 }
 
 export default function Home() {
@@ -111,7 +111,7 @@ export default function Home() {
             type="button"
             className="flex h-9 w-9 items-center justify-center rounded-full"
             style={{ background: "var(--surface-1)" }}
-            aria-label="Search"
+            aria-label="ค้นหา"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="11" cy="11" r="8" />
@@ -137,7 +137,7 @@ export default function Home() {
           style={{ background: "var(--purple-100)" }}
         >
           <h2 className="text-xl font-bold" style={{ color: "var(--text)" }}>
-            Today&apos;s Guidance
+            คำแนะนำวันนี้
           </h2>
           <p className="mt-1 text-sm" style={{ color: "var(--text-muted)" }}>
             {todayDate()}
@@ -147,7 +147,7 @@ export default function Home() {
             className="mt-4 flex w-full items-center justify-center rounded-full py-3 text-sm font-semibold text-white transition hover:opacity-90"
             style={{ background: "var(--purple-400)" }}
           >
-            Draw Daily Card
+            เปิดไพ่รายวัน
           </Link>
         </div>
       </section>
@@ -155,7 +155,7 @@ export default function Home() {
       {/* ── Explore ── */}
       <section className="px-5 pt-6">
         <h2 className="text-base font-bold" style={{ color: "var(--text)" }}>
-          Explore
+          สำรวจ
         </h2>
         <div className="mt-3 grid grid-cols-2 gap-3">
           {exploreItems.map((item) => (
@@ -186,7 +186,7 @@ export default function Home() {
       <section className="pt-6 pb-4">
         <div className="px-5">
           <h2 className="text-base font-bold" style={{ color: "var(--text)" }}>
-            Popular spreads
+            สเปรดยอดนิยม
           </h2>
         </div>
         <div className="mt-3 flex gap-3 overflow-x-auto px-5 pb-2" style={{ scrollbarWidth: "none" }}>

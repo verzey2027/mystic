@@ -49,9 +49,9 @@ export default function PickClient() {
   const displayCards = shuffled.slice(0, 9);
 
   const steps = [
-    { num: 1, label: "Spread" },
-    { num: 2, label: "Pick" },
-    { num: 3, label: "Result" },
+    { num: 1, label: "เลือกสเปรด" },
+    { num: 2, label: "เลือกไพ่" },
+    { num: 3, label: "ผลลัพธ์" },
   ];
 
   return (
@@ -110,7 +110,7 @@ export default function PickClient() {
 
       {/* ── Title ── */}
       <h1 className="mt-5 text-center text-lg font-bold" style={{ color: "var(--text)" }}>
-        Tap {count} cards
+        แตะเลือกไพ่ {count} ใบ
       </h1>
 
       {/* ── Question (optional) ── */}
@@ -119,7 +119,7 @@ export default function PickClient() {
           type="text"
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
-          placeholder="Your question (optional)"
+          placeholder="คำถามของคุณ (ไม่บังคับ)"
           className="w-full rounded-xl border px-4 py-2.5 text-sm outline-none transition focus:ring-2"
           style={{
             borderColor: "var(--border)",
@@ -193,7 +193,7 @@ export default function PickClient() {
               )}
             </div>
             <span className="text-xs font-medium" style={{ color: "var(--text-subtle)" }}>
-              Card {i + 1}
+              ใบที่ {i + 1}
             </span>
           </div>
         ))}
@@ -211,7 +211,7 @@ export default function PickClient() {
             color: selected.length === count ? "#fff" : "var(--text-subtle)",
           }}
         >
-          Reveal Reading
+          ดูผลคำทำนาย
         </button>
       </div>
     </main>

@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const SITE_URL = "https://www.reffortune.com";
+const SITE_URL = "https://tarot.reffortune.com";
 const SITE_NAME = "MysticFlow";
 const DEFAULT_TITLE = "MysticFlow — Tarot, Daily Card & Spiritual Guidance";
 const DEFAULT_DESCRIPTION =
@@ -92,10 +92,10 @@ export const metadata: Metadata = {
 };
 
 const bottomTabs = [
-  { label: "Home", href: "/", icon: "home" },
-  { label: "Tarot", href: "/tarot", icon: "tarot" },
-  { label: "Library", href: "/library", icon: "library" },
-  { label: "Profile", href: "#", icon: "profile" },
+  { label: "หน้าแรก", href: "/", icon: "home" },
+  { label: "ทาโรต์", href: "/tarot", icon: "tarot" },
+  { label: "คลังไพ่", href: "/library", icon: "library" },
+  { label: "โปรไฟล์", href: "#", icon: "profile" },
 ];
 
 function BottomTabIcon({ type }: { type: string }) {
