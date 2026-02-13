@@ -149,7 +149,7 @@ function BottomNav() {
       className="fixed bottom-0 left-0 right-0 border-t backdrop-blur-lg"
       style={{ borderColor: "var(--border)", background: "rgba(16,12,34,0.92)", boxShadow: "0 -2px 20px rgba(0,0,0,0.3)", zIndex: 9999 }}
     >
-      <div className="mx-auto flex max-w-lg items-center justify-around py-2">
+      <div className="flex items-center justify-around py-2 px-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]">
         {bottomTabs.map((tab) => (
           <Link
             key={tab.label}
