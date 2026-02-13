@@ -66,16 +66,17 @@ function buildTarotRole(): string {
 /**
  * Select appropriate few-shot examples based on spread type
  */
-function selectExamplesForSpread(spreadType: 1 | 3 | 10) {
+function selectExamplesForSpread(spreadType: 1 | 2 | 3 | 4 | 10) {
   switch (spreadType) {
     case 1:
       return TAROT_EXAMPLES_BY_SPREAD.single;
+    case 2:
     case 3:
+    case 4:
       return TAROT_EXAMPLES_BY_SPREAD.three;
     case 10:
       return TAROT_EXAMPLES_BY_SPREAD.celtic;
     default:
-      // Default to 3-card examples
       return TAROT_EXAMPLES_BY_SPREAD.three;
   }
 }
@@ -156,7 +157,7 @@ ${spreadInstructions}`;
 /**
  * Build instructions specific to the spread type
  */
-function buildSpreadSpecificInstructions(spreadType: 1 | 3 | 10, cards: TarotPromptParams['cards']): string {
+function buildSpreadSpecificInstructions(spreadType: 1 | 2 | 3 | 4 | 10, cards: TarotPromptParams['cards']): string {
   switch (spreadType) {
     case 1:
       return `### คำแนะนำเฉพาะสำหรับไพ่ 1 ใบ
@@ -165,6 +166,14 @@ function buildSpreadSpecificInstructions(spreadType: 1 | 3 | 10, cards: TarotPro
 - เหมาะสำหรับคำแนะนำรายวันหรือคำถามเฉพาะเจาะจง
 - ไม่ต้องยืดยาว เน้นความชัดเจนและนำไปปฏิบัติได้`;
 
+    case 2:
+      return `### คำแนะนำเฉพาะสำหรับไพ่ 2 ใบ (Choice/Duality)
+- **ไพ่ใบที่ 1 (ทางเลือก A)**: วิเคราะห์ข้อดี ข้อเสีย พลังงาน และแนวโน้มของทางเลือกนี้
+- **ไพ่ใบที่ 2 (ทางเลือก B)**: วิเคราะห์ข้อดี ข้อเสีย พลังงาน และแนวโน้มของทางเลือกนี้
+- เปรียบเทียบทั้งสองทางเลือกอย่างชัดเจน ชี้ให้เห็นความแตกต่าง
+- ให้คำแนะนำว่าทางไหนเหมาะกับสถานการณ์มากกว่า พร้อมเหตุผล
+- ไม่ตัดสินใจแทนผู้ถาม แต่ให้ข้อมูลเพียงพอเพื่อตัดสินใจ`;
+
     case 3:
       return `### คำแนะนำเฉพาะสำหรับไพ่ 3 ใบ (Past-Present-Future)
 - **ไพ่ใบที่ 1 (อดีต)**: อธิบายพื้นฐานหรือสาเหตุที่นำมาสู่สถานการณ์ปัจจุบัน
@@ -172,6 +181,15 @@ function buildSpreadSpecificInstructions(spreadType: 1 | 3 | 10, cards: TarotPro
 - **ไพ่ใบที่ 3 (อนาคต)**: บอกแนวโน้มหรือผลลัพธ์ที่เป็นไปได้
 - วิเคราะห์การไหลของเรื่องราว (narrative flow) จากอดีตสู่อนาคต
 - ชี้ให้เห็นว่าอดีตส่งผลต่อปัจจุบันอย่างไร และปัจจุบันจะนำไปสู่อนาคตอย่างไร`;
+
+    case 4:
+      return `### คำแนะนำเฉพาะสำหรับไพ่ 4 ใบ (Action Plan)
+- **ไพ่ใบที่ 1 (สถานการณ์)**: อธิบายสถานการณ์ปัจจุบันที่ผู้ถามกำลังเผชิญ
+- **ไพ่ใบที่ 2 (อุปสรรค)**: ระบุอุปสรรค ความท้าทาย หรือสิ่งที่ขัดขวางความสำเร็จ
+- **ไพ่ใบที่ 3 (คำแนะนำ)**: ให้คำแนะนำที่ชัดเจนว่าควรทำอย่างไร ขั้นตอนปฏิบัติ
+- **ไพ่ใบที่ 4 (ผลลัพธ์)**: บอกผลลัพธ์ที่เป็นไปได้หากทำตามคำแนะนำ
+- วิเคราะห์ความเชื่อมโยงระหว่าง 4 ตำแหน่ง เป็นแผนปฏิบัติการที่ชัดเจน
+- ให้กรอบเวลาที่เฉพาะเจาะจงในส่วนคำแนะนำ`;
 
     case 10:
       return `### คำแนะนำเฉพาะสำหรับไพ่ 10 ใบ (Celtic Cross)

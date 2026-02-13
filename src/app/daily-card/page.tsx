@@ -102,24 +102,33 @@ export default function DailyCardPage() {
   const shareUrl = "https://www.reffortune.com/daily-card";
 
   const handleShare = useCallback(
-    (platform: string) => {
+    async (platform: string) => {
       const text = encodeURIComponent(shareText);
       const url = encodeURIComponent(shareUrl);
+
+      if (platform === "native" && typeof navigator !== "undefined" && navigator.share) {
+        try {
+          await navigator.share({ title: "ไพ่รายวัน — REFFORTUNE", text: shareText, url: shareUrl });
+        } catch {}
+        return;
+      }
+
       switch (platform) {
         case "line":
-          window.open(`https://social-plugins.line.me/lineit/share?url=${url}&text=${text}`, "_blank");
+          window.open(`https://line.me/R/msg/text/?${text}%0A${url}`, "_blank");
           break;
         case "facebook":
-          window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${text}`, "_blank");
+          window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${text}&hashtag=%23REFFORTUNE`, "_blank");
           break;
         case "twitter":
           window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, "_blank");
           break;
         case "copy":
-          navigator.clipboard.writeText(`${shareText}\n${shareUrl}`).then(() => {
+          try {
+            await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);
-          });
+          } catch {}
           break;
       }
     },
