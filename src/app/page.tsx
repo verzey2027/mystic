@@ -5,27 +5,43 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { trackEvent } from "@/lib/analytics/tracking";
 
-const serviceCards = [
+const serviceBanners = [
   {
     title: "ไพ่ทาโรต์",
+    subtitle: "เปิดไพ่ดูทิศทางชีวิต ความรัก การงาน การเงิน",
     href: "/tarot",
-    price: "เริ่มต้น 299.-",
-    badge: null,
-    icon: "https://www.reffortune.com/icon/backcard.png",
+    cta: "เปิดไพ่เลย",
+    banner: "/tarot.jpg",
+    gradient: "linear-gradient(135deg, #4c2889 0%, #6d3bbd 50%, #8b5cf6 100%)",
+    accent: "#a78bfa",
   },
   {
     title: "ไพ่จิตวิญญาณ",
+    subtitle: "รับข้อความจากจักรวาล ค้นหาคำตอบภายในตัวคุณ",
     href: "/spirit-card",
-    price: "ยอดนิยม 399.-",
+    cta: "เปิดไพ่ Oracle",
+    banner: "/oracle.jpg",
+    gradient: "linear-gradient(135deg, #1a0e3e 0%, #2d1b69 50%, #4c2889 100%)",
+    accent: "#d4af37",
     badge: "ยอดนิยม",
-    icon: "https://www.reffortune.com/icon/backcard.png",
   },
   {
     title: "วิเคราะห์เบอร์มงคล",
+    subtitle: "ตรวจเบอร์โทร เลขทะเบียน หาเบอร์เสริมดวง",
     href: "/numerology",
-    price: "พิเศษ 499.-",
-    badge: null,
-    icon: "https://www.reffortune.com/icon/backcard.png",
+    cta: "วิเคราะห์เบอร์",
+    banner: "/numerology.jpg",
+    gradient: "linear-gradient(135deg, #1e1145 0%, #3b2080 50%, #5b34b5 100%)",
+    accent: "#c084fc",
+  },
+  {
+    title: "ไพ่รายวัน",
+    subtitle: "จับไพ่ประจำวัน รับพลังงานเริ่มต้นวันใหม่",
+    href: "/daily-card",
+    cta: "จับไพ่วันนี้",
+    banner: "/daily.jpg",
+    gradient: "linear-gradient(135deg, #2d1b69 0%, #4c2889 50%, #7c3aed 100%)",
+    accent: "#fbbf24",
   },
 ];
 
@@ -110,7 +126,7 @@ export default function Home() {
     <main className="theme-light mx-auto w-full max-w-lg">
       {/* ── Hero ── */}
       <section
-        className="relative isolate overflow-hidden px-5 pb-8 pt-12"
+        className="relative isolate overflow-hidden px-5 pb-6 pt-12"
         style={{
           background: "linear-gradient(160deg, #1a0e3e 0%, #2d1b69 35%, #4c2889 70%, #6d3bbd 100%)",
         }}
@@ -124,17 +140,6 @@ export default function Home() {
           className="pointer-events-none absolute -bottom-16 -left-16 h-48 w-48 rounded-full opacity-20 blur-3xl"
           style={{ background: "#a78bfa" }}
         />
-
-        {/* Shimmer overlay */}
-        <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-          <div
-            className="absolute -top-1/2 left-0 h-[200%] w-20 opacity-[0.06]"
-            style={{
-              background: "linear-gradient(90deg, transparent, white, transparent)",
-              animation: "tarot-shimmer 4s ease-in-out infinite",
-            }}
-          />
-        </div>
 
         <div className="relative z-10 text-center">
           <p
@@ -150,46 +155,82 @@ export default function Home() {
             ด้วยศาสตร์แห่งการพยากรณ์ชั้นสูง
           </p>
         </div>
+      </section>
 
-        {/* ── Service Cards (horizontal scroll) ── */}
-        <div className="relative z-10 mt-6 flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-          {serviceCards.map((item, i) => (
+      {/* ── บริการแนะนำ (Banner Cards) ── */}
+      <section className="px-5 pt-6 pb-2">
+        <h2 className="text-base font-bold" style={{ color: "var(--text)" }}>
+          บริการแนะนำ
+        </h2>
+        <p className="mt-1 text-xs" style={{ color: "var(--text-subtle)" }}>
+          เลือกศาสตร์ที่เหมาะกับคุณ
+        </p>
+
+        <div className="mt-4 flex flex-col gap-4">
+          {serviceBanners.map((svc, i) => (
             <Link
-              key={item.title}
-              href={item.href}
-              className="group flex-shrink-0 overflow-hidden rounded-2xl border transition-all duration-300 hover:-translate-y-1"
+              key={svc.title}
+              href={svc.href}
+              className="group relative overflow-hidden rounded-2xl border transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
               style={{
-                width: "140px",
-                borderColor: "rgba(212,175,55,0.3)",
-                background: "rgba(255,255,255,0.08)",
-                backdropFilter: "blur(12px)",
+                borderColor: "rgba(139,92,246,0.15)",
+                background: "var(--bg-elevated)",
                 animation: `tarot-fade-up 0.5s ease-out ${i * 0.1}s both`,
               }}
             >
-              {/* Image */}
-              <div className="relative mx-auto mt-3 h-24 w-20 overflow-hidden rounded-lg">
-                <Image
-                  src={item.icon}
-                  alt={item.title}
-                  fill
-                  sizes="80px"
-                  className="object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-              </div>
-              {/* Text */}
-              <div className="px-2 pb-3 pt-2 text-center">
-                <h3 className="text-xs font-bold text-white">{item.title}</h3>
-                <p
-                  className="mt-1.5 inline-block rounded-full px-2.5 py-0.5 text-[10px] font-semibold"
+              {/* Badge */}
+              {"badge" in svc && svc.badge && (
+                <div
+                  className="absolute top-3 right-3 z-10 rounded-full px-3 py-1 text-[10px] font-bold"
                   style={{
-                    background: item.badge
-                      ? "linear-gradient(135deg, #d4af37, #e6c34a)"
-                      : "rgba(212,175,55,0.15)",
-                    color: item.badge ? "#1a0e3e" : "#d4af37",
+                    background: "linear-gradient(135deg, #d4af37, #e6c34a)",
+                    color: "#1a0e3e",
+                    boxShadow: "0 2px 8px rgba(212,175,55,0.4)",
                   }}
                 >
-                  {item.price}
+                  🔥 {svc.badge}
+                </div>
+              )}
+
+              {/* Banner image — fixed 16:9 aspect ratio */}
+              <div className="relative w-full overflow-hidden" style={{ aspectRatio: "16 / 9" }}>
+                <Image
+                  src={svc.banner}
+                  alt={svc.title}
+                  fill
+                  sizes="(max-width: 512px) 100vw, 512px"
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                {/* Gradient overlay at bottom of image */}
+                <div
+                  className="pointer-events-none absolute inset-0"
+                  style={{
+                    background: "linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 50%)",
+                  }}
+                />
+              </div>
+
+              {/* Text + CTA below image */}
+              <div className="p-4">
+                <h3 className="text-sm font-bold leading-tight" style={{ color: "var(--text)" }}>
+                  {svc.title}
+                </h3>
+                <p className="mt-1 text-xs leading-relaxed" style={{ color: "var(--text-subtle)" }}>
+                  {svc.subtitle}
                 </p>
+                <div
+                  className="mt-3 inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-[11px] font-bold transition-all duration-300 group-hover:scale-[1.03] group-hover:shadow-lg"
+                  style={{
+                    background: svc.gradient,
+                    color: "white",
+                    boxShadow: `0 2px 12px ${svc.accent}30`,
+                  }}
+                >
+                  {svc.cta}
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
+                </div>
               </div>
             </Link>
           ))}
