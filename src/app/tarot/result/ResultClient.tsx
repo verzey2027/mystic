@@ -188,12 +188,37 @@ export default function ResultClient() {
 
   return (
     <main className="mx-auto w-full max-w-5xl px-4 py-8 md:py-12">
-      <section className="rounded-3xl border border-border bg-gradient-to-br from-rose/15 to-teal/10 p-5 md:p-7">
-        <div className="flex flex-wrap items-start justify-between gap-3">
+      {/* ── Header ── */}
+      <section
+        className="relative overflow-hidden rounded-3xl border p-5 md:p-7"
+        style={{
+          borderColor: "var(--purple-700)",
+          background: "linear-gradient(135deg, var(--purple-deep) 0%, var(--purple-900) 50%, var(--purple-800) 100%)",
+          backgroundSize: "200% 200%",
+          animation: "tarot-drift 14s ease-in-out infinite",
+        }}
+      >
+        <div
+          className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full opacity-25 blur-3xl"
+          style={{ background: "var(--purple-600)" }}
+        />
+        <div
+          className="pointer-events-none absolute -bottom-12 -left-12 h-40 w-40 rounded-full opacity-15 blur-3xl"
+          style={{ background: "var(--purple-500)" }}
+        />
+
+        <div className="relative z-10 flex flex-wrap items-start justify-between gap-3">
           <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-accent/90">Step 3 of 3</p>
-            <h1 className="mt-2 text-3xl font-semibold text-fg md:text-4xl">ผลคำทำนาย</h1>
-            <p className="mt-2 text-sm text-fg-muted">อ่านภาพรวมก่อน แล้วค่อยถามเจาะลึกในประเด็นที่คุณอยากรู้ต่อ</p>
+            <p
+              className="text-xs font-semibold uppercase tracking-[0.2em]"
+              style={{ color: "var(--purple-400)" }}
+            >
+              Step 3 of 3
+            </p>
+            <h1 className="mt-2 text-3xl font-bold text-white md:text-4xl">ผลคำทำนาย</h1>
+            <p className="mt-2 text-sm" style={{ color: "var(--purple-200)" }}>
+              อ่านภาพรวมก่อน แล้วค่อยถามเจาะลึกในประเด็นที่คุณอยากรู้ต่อ
+            </p>
           </div>
           <div className="flex flex-wrap gap-2">
             <button
@@ -214,11 +239,15 @@ export default function ResultClient() {
                 setSaveToast("บันทึกเรียบร้อย");
                 setTimeout(() => setSaveToast(null), 1800);
               }}
-              className="inline-flex"
+              className="inline-flex min-h-10 items-center justify-center rounded-full px-5 py-2 text-sm font-bold text-white transition-all duration-300 hover:scale-[1.03]"
+              style={{
+                background: savedId ? "var(--purple-800)" : "var(--purple-500)",
+                boxShadow: savedId ? "none" : "0 0 16px var(--purple-glow)",
+                borderWidth: savedId ? "1px" : "0",
+                borderColor: "var(--purple-600)",
+              }}
             >
-              <Button variant={savedId ? "secondary" : "primary"}>
-                {savedId ? "บันทึกแล้ว" : "บันทึกผลนี้"}
-              </Button>
+              {savedId ? "บันทึกแล้ว ✓" : "บันทึกผลนี้"}
             </button>
             <Link href="/library/saved" className="inline-flex">
               <Button variant="ghost">ไปที่คลังของฉัน</Button>
@@ -239,43 +268,81 @@ export default function ResultClient() {
         </div>
       ) : null}
 
+      {/* ── Question ── */}
       {question ? (
-        <Card className="mt-4">
-          <CardTitle>คำถาม</CardTitle>
-          <CardDesc className="mt-1">{question}</CardDesc>
-        </Card>
+        <div
+          className="mt-4 rounded-2xl border p-4"
+          style={{
+            borderColor: "var(--purple-800)",
+            background: "linear-gradient(160deg, rgba(139,92,246,0.06), rgba(13,10,26,0.9))",
+            animation: "tarot-fade-up 0.5s ease-out both",
+          }}
+        >
+          <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--purple-400)" }}>
+            คำถาม
+          </p>
+          <p className="mt-1 text-sm text-white">{question}</p>
+        </div>
       ) : null}
 
+      {/* ── Drawn Cards ── */}
       {drawnCards.length > 0 ? (
-        <section className="mt-4 rounded-2xl border border-white/10 bg-white/[0.03] p-4 md:p-5">
+        <section
+          className="mt-4 rounded-2xl border p-4 md:p-5"
+          style={{
+            borderColor: "var(--purple-800)",
+            background: "linear-gradient(160deg, rgba(139,92,246,0.05), rgba(13,10,26,0.95))",
+          }}
+        >
           <h2 className="mb-4 text-base font-semibold text-white">ไพ่ที่เปิดได้</h2>
 
           {count === 10 ? (
             <div className="space-y-3">
               {[drawnCards.slice(0, 5), drawnCards.slice(5, 10)].map((row, rowIndex) => (
                 <div key={rowIndex} className="grid grid-cols-5 gap-2 md:gap-3">
-                  {row.map((drawn, index) => (
-                    <div key={`${rowIndex}-${drawn.card.id}-${index}`} className="rounded-xl border border-white/10 bg-black/20 p-1.5 text-center">
-                      {drawn.card.image ? (
-                        <Image
-                          src={drawn.card.image}
-                          alt={drawn.card.name}
-                          width={160}
-                          height={240}
-                          className={`h-auto w-full rounded-lg object-cover ${drawn.orientation === "reversed" ? "rotate-180" : ""}`}
-                        />
-                      ) : null}
-                      <p className="mt-1 truncate text-[10px] text-slate-300">{drawn.card.name}</p>
-                      <p className="text-[10px] text-slate-400">{drawn.orientation === "upright" ? "ตั้งตรง" : "กลับหัว"}</p>
-                    </div>
-                  ))}
+                  {row.map((drawn, index) => {
+                    const globalIdx = rowIndex * 5 + index;
+                    return (
+                      <div
+                        key={`${rowIndex}-${drawn.card.id}-${index}`}
+                        className="overflow-hidden rounded-xl border p-1.5 text-center"
+                        style={{
+                          borderColor: "var(--purple-700)",
+                          background: "rgba(13,10,26,0.6)",
+                          animation: `tarot-card-reveal 0.6s ease-out ${globalIdx * 0.08}s both`,
+                        }}
+                      >
+                        {drawn.card.image ? (
+                          <Image
+                            src={drawn.card.image}
+                            alt={drawn.card.name}
+                            width={160}
+                            height={240}
+                            className={`h-auto w-full rounded-lg object-cover ${drawn.orientation === "reversed" ? "rotate-180" : ""}`}
+                          />
+                        ) : null}
+                        <p className="mt-1 truncate text-[10px]" style={{ color: "var(--purple-200)" }}>{drawn.card.name}</p>
+                        <p className="text-[10px]" style={{ color: "var(--purple-400)" }}>
+                          {drawn.orientation === "upright" ? "ตั้งตรง" : "กลับหัว"}
+                        </p>
+                      </div>
+                    );
+                  })}
                 </div>
               ))}
             </div>
           ) : (
             <div className={`grid gap-3 ${count === 1 ? "grid-cols-1 max-w-[210px]" : "grid-cols-3"}`}>
               {drawnCards.map((drawn, index) => (
-                <div key={`${drawn.card.id}-${index}`} className="rounded-xl border border-white/10 bg-black/20 p-2 text-center">
+                <div
+                  key={`${drawn.card.id}-${index}`}
+                  className="overflow-hidden rounded-xl border p-2 text-center"
+                  style={{
+                    borderColor: "var(--purple-700)",
+                    background: "rgba(13,10,26,0.6)",
+                    animation: `tarot-card-reveal 0.6s ease-out ${index * 0.12}s both`,
+                  }}
+                >
                   {drawn.card.image ? (
                     <Image
                       src={drawn.card.image}
@@ -285,8 +352,10 @@ export default function ResultClient() {
                       className={`h-auto w-full rounded-lg object-cover ${drawn.orientation === "reversed" ? "rotate-180" : ""}`}
                     />
                   ) : null}
-                  <p className="mt-1 text-xs text-slate-200">{drawn.card.name}</p>
-                  <p className="text-[11px] text-slate-400">{drawn.orientation === "upright" ? "ตั้งตรง" : "กลับหัว"}</p>
+                  <p className="mt-1 text-xs" style={{ color: "var(--purple-200)" }}>{drawn.card.name}</p>
+                  <p className="text-[11px]" style={{ color: "var(--purple-400)" }}>
+                    {drawn.orientation === "upright" ? "ตั้งตรง" : "กลับหัว"}
+                  </p>
                 </div>
               ))}
             </div>
@@ -294,42 +363,103 @@ export default function ResultClient() {
         </section>
       ) : null}
 
-      <section className="mt-4 rounded-2xl border border-fuchsia-300/30 bg-fuchsia-400/10 p-5">
-        <h2 className="text-base font-semibold text-fuchsia-100">สรุปคำทำนาย</h2>
+      {/* ── AI Summary ── */}
+      <section
+        className="mt-4 rounded-2xl border p-5"
+        style={{
+          borderColor: "var(--purple-700)",
+          background: "linear-gradient(160deg, rgba(139,92,246,0.1), rgba(13,10,26,0.92))",
+          animation: "tarot-fade-up 0.6s ease-out 0.3s both",
+        }}
+      >
+        <h2 className="text-base font-semibold" style={{ color: "var(--purple-300)" }}>
+          สรุปคำทำนาย
+        </h2>
         {aiReading ? (
-          <div className="mt-3 space-y-4 text-sm text-fuchsia-50">
-            <div>
-              <p className="font-semibold">สรุป</p>
-              <p className="mt-1 whitespace-pre-line leading-relaxed">{aiReading.summary}</p>
+          <div className="mt-3 space-y-4 text-sm">
+            <div style={{ animation: "tarot-fade-up 0.5s ease-out 0.5s both" }}>
+              <p className="font-semibold" style={{ color: "var(--purple-400)" }}>สรุป</p>
+              <p className="mt-1 whitespace-pre-line leading-relaxed" style={{ color: "var(--purple-100)" }}>
+                {aiReading.summary}
+              </p>
             </div>
-            <div>
-              <p className="font-semibold">โครงไพ่</p>
-              <p className="mt-1 whitespace-pre-line leading-relaxed">{aiReading.cardStructure}</p>
+            <div style={{ animation: "tarot-fade-up 0.5s ease-out 0.7s both" }}>
+              <p className="font-semibold" style={{ color: "var(--purple-400)" }}>โครงไพ่</p>
+              <p className="mt-1 whitespace-pre-line leading-relaxed" style={{ color: "var(--purple-100)" }}>
+                {aiReading.cardStructure}
+              </p>
             </div>
           </div>
         ) : (
-          <p className="mt-2 text-sm text-fuchsia-100/80">กำลังสรุปคำทำนาย...</p>
+          <div className="mt-3 flex items-center gap-2">
+            <div
+              className="h-4 w-4 rounded-full"
+              style={{
+                background: "var(--purple-500)",
+                animation: "tarot-glow-pulse 1.5s ease-in-out infinite",
+              }}
+            />
+            <p className="text-sm" style={{ color: "var(--purple-300)" }}>กำลังสรุปคำทำนาย...</p>
+          </div>
         )}
       </section>
 
-      <section className="mt-4 rounded-2xl border border-cyan-300/30 bg-cyan-400/10 p-5">
-        <h2 className="text-base font-semibold text-cyan-100">ถามเกี่ยวกับไพ่</h2>
-        <p className="mt-1 text-xs text-cyan-50/90">ถามต่อได้ทันที เช่น “ไพ่ใบไหนเป็นจุดเสี่ยงสุด” หรือ “ควรโฟกัสใบไหนก่อน”</p>
+      {/* ── Chat / Follow-up ── */}
+      <section
+        className="mt-4 rounded-2xl border p-5"
+        style={{
+          borderColor: "var(--purple-800)",
+          background: "linear-gradient(160deg, rgba(139,92,246,0.06), rgba(13,10,26,0.95))",
+          animation: "tarot-fade-up 0.6s ease-out 0.5s both",
+        }}
+      >
+        <h2 className="text-base font-semibold" style={{ color: "var(--purple-300)" }}>
+          ถามเกี่ยวกับไพ่
+        </h2>
+        <p className="mt-1 text-xs" style={{ color: "var(--purple-200)" }}>
+          ถามต่อได้ทันที เช่น &quot;ไพ่ใบไหนเป็นจุดเสี่ยงสุด&quot; หรือ &quot;ควรโฟกัสใบไหนก่อน&quot;
+        </p>
 
-        <div className="mt-3 max-h-72 space-y-2 overflow-y-auto rounded-xl border border-white/15 bg-black/20 p-3">
+        <div
+          className="mt-3 max-h-72 space-y-2 overflow-y-auto rounded-xl border p-3"
+          style={{
+            borderColor: "var(--purple-800)",
+            background: "rgba(13,10,26,0.6)",
+          }}
+        >
           {chatMessages.length === 0 ? (
-            <p className="text-sm text-cyan-50/80">ยังไม่มีข้อความ ลองถามคำถามต่อได้เลย</p>
+            <p className="text-sm" style={{ color: "var(--purple-300)" }}>
+              ยังไม่มีข้อความ ลองถามคำถามต่อได้เลย
+            </p>
           ) : (
             chatMessages.map((m, idx) => (
               <div
                 key={`${m.role}-${idx}`}
-                className={`rounded-xl px-3 py-2 text-sm leading-relaxed ${m.role === "user" ? "ml-6 bg-white/20 text-white" : "mr-6 bg-cyan-100/20 text-cyan-50"}`}
+                className="rounded-xl px-3 py-2 text-sm leading-relaxed"
+                style={{
+                  marginLeft: m.role === "user" ? "1.5rem" : "0",
+                  marginRight: m.role === "assistant" ? "1.5rem" : "0",
+                  background: m.role === "user" ? "rgba(139,92,246,0.2)" : "rgba(139,92,246,0.08)",
+                  color: m.role === "user" ? "#fff" : "var(--purple-100)",
+                  animation: `tarot-fade-up 0.3s ease-out both`,
+                }}
               >
                 {m.text}
               </div>
             ))
           )}
-          {chatLoading ? <p className="text-sm text-cyan-50/80">กำลังพิมพ์คำตอบ...</p> : null}
+          {chatLoading ? (
+            <div className="flex items-center gap-2">
+              <div
+                className="h-3 w-3 rounded-full"
+                style={{
+                  background: "var(--purple-500)",
+                  animation: "tarot-glow-pulse 1.2s ease-in-out infinite",
+                }}
+              />
+              <p className="text-sm" style={{ color: "var(--purple-300)" }}>กำลังพิมพ์คำตอบ...</p>
+            </div>
+          ) : null}
         </div>
 
         <div className="mt-3 flex gap-2">
@@ -340,27 +470,72 @@ export default function ResultClient() {
               if (e.key === "Enter") sendFollowUpQuestion();
             }}
             placeholder="พิมพ์คำถามเพิ่มเติม..."
-            className="min-h-11 flex-1 rounded-xl border border-white/20 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-white/60 outline-none"
+            className="min-h-11 flex-1 rounded-xl border px-3 py-2 text-sm text-white outline-none transition-all duration-200 focus:ring-2"
+            style={{
+              borderColor: "var(--purple-700)",
+              background: "rgba(139,92,246,0.08)",
+              "--tw-ring-color": "var(--purple-glow)",
+            } as React.CSSProperties}
           />
           <button
             type="button"
             onClick={sendFollowUpQuestion}
             disabled={chatLoading || !chatInput.trim()}
-            className="min-h-11 rounded-xl bg-cyan-300 px-4 py-2 text-sm font-semibold text-slate-900 disabled:opacity-50"
+            className="min-h-11 rounded-xl px-5 py-2 text-sm font-bold text-white transition-all duration-300 hover:scale-[1.03] disabled:opacity-40"
+            style={{
+              background: "var(--purple-600)",
+              boxShadow: "0 0 12px var(--purple-glow)",
+            }}
           >
             ส่ง
           </button>
         </div>
       </section>
 
+      {/* ── Paywall CTA ── */}
       {paywall?.show ? (
-        <section className="mt-6 rounded-2xl border border-amber-300/40 bg-amber-200/10 p-5">
-          <h3 className="text-base font-semibold text-amber-100">ดูดวงออนไลน์กับเรฟ</h3>
-          <p className="mt-2 text-sm text-amber-50/90">ติดต่อเพื่อรับคำทำนายส่วนตัวได้ที่ช่องทางนี้</p>
+        <section
+          className="mt-6 rounded-2xl border p-5"
+          style={{
+            borderColor: "var(--purple-600)",
+            background: "linear-gradient(160deg, rgba(139,92,246,0.12), rgba(13,10,26,0.9))",
+            animation: "tarot-fade-up 0.6s ease-out 0.7s both",
+          }}
+        >
+          <h3 className="text-base font-semibold" style={{ color: "var(--purple-300)" }}>
+            ดูดวงออนไลน์กับเรฟ
+          </h3>
+          <p className="mt-2 text-sm" style={{ color: "var(--purple-200)" }}>
+            ติดต่อเพื่อรับคำทำนายส่วนตัวได้ที่ช่องทางนี้
+          </p>
           <div className="mt-4 flex flex-wrap gap-2">
-            <a href="https://line.me/R/ti/p/@reffortune" target="_blank" rel="noreferrer" className="inline-flex rounded-full bg-amber-300 px-4 py-2 text-sm font-semibold text-slate-900">LINE @reffortune</a>
-            <a href="https://www.instagram.com/reffortune" target="_blank" rel="noreferrer" className="inline-flex rounded-full border border-white/20 px-4 py-2 text-sm font-semibold text-slate-100">IG reffortune</a>
-            <a href="https://www.reffortune.com/package.html" target="_blank" rel="noreferrer" className="inline-flex rounded-full border border-white/20 px-4 py-2 text-sm font-semibold text-slate-100">ดูแพ็กเกจ</a>
+            <a
+              href="https://line.me/R/ti/p/@reffortune"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex min-h-10 items-center rounded-full px-5 py-2 text-sm font-bold text-white transition-all duration-300 hover:scale-[1.03]"
+              style={{ background: "var(--purple-500)", boxShadow: "0 0 16px var(--purple-glow)" }}
+            >
+              LINE @reffortune
+            </a>
+            <a
+              href="https://www.instagram.com/reffortune"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex min-h-10 items-center rounded-full border px-5 py-2 text-sm font-semibold transition hover:bg-white/5"
+              style={{ borderColor: "var(--purple-600)", color: "var(--purple-200)" }}
+            >
+              IG reffortune
+            </a>
+            <a
+              href="https://www.reffortune.com/package.html"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex min-h-10 items-center rounded-full border px-5 py-2 text-sm font-semibold transition hover:bg-white/5"
+              style={{ borderColor: "var(--purple-600)", color: "var(--purple-200)" }}
+            >
+              ดูแพ็กเกจ
+            </a>
           </div>
         </section>
       ) : null}

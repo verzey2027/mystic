@@ -42,25 +42,74 @@ export const metadata: Metadata = {
   },
 };
 
-function FloatingMenu() {
+const bottomTabs = [
+  { label: "หน้าแรก", href: "/", icon: "home" },
+  { label: "บริการ", href: "/tarot", icon: "services" },
+  { label: "นัดหมาย", href: "#", icon: "calendar" },
+  { label: "โปรไฟล์", href: "#", icon: "profile" },
+];
+
+function BottomTabIcon({ type }: { type: string }) {
+  switch (type) {
+    case "home":
+      return (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+          <polyline points="9 22 9 12 15 12 15 22" />
+        </svg>
+      );
+    case "services":
+      return (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="3" y="3" width="7" height="7" />
+          <rect x="14" y="3" width="7" height="7" />
+          <rect x="3" y="14" width="7" height="7" />
+          <rect x="14" y="14" width="7" height="7" />
+        </svg>
+      );
+    case "calendar":
+      return (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+          <line x1="16" y1="2" x2="16" y2="6" />
+          <line x1="8" y1="2" x2="8" y2="6" />
+          <line x1="3" y1="10" x2="21" y2="10" />
+        </svg>
+      );
+    case "profile":
+      return (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+          <circle cx="12" cy="7" r="4" />
+        </svg>
+      );
+    default:
+      return null;
+  }
+}
+
+function BottomNav() {
   return (
-    <div className="fixed bottom-5 right-4 z-50">
-      <details className="group relative">
-        <summary className="flex h-12 w-12 cursor-pointer list-none items-center justify-center rounded-full bg-accent text-accent-ink shadow-lg transition hover:bg-accent-hover focus-visible:ring-2 focus-visible:ring-ring">
-          ☰
-        </summary>
-        <div className="absolute bottom-14 right-0 w-56 space-y-2 rounded-2xl border border-border bg-bg/85 p-3 text-sm shadow-2xl backdrop-blur">
-          <Link href="/" className="block rounded-lg px-3 py-2 text-fg hover:bg-surface-2">หน้าแรก</Link>
-          <Link href="/tarot" className="block rounded-lg px-3 py-2 text-fg hover:bg-surface-2">ไพ่ทาโรต์</Link>
-          <Link href="/spirit-card" className="block rounded-lg px-3 py-2 text-fg hover:bg-surface-2">ไพ่จิตวิญญาณ</Link>
-          <Link href="/numerology" className="block rounded-lg px-3 py-2 text-fg hover:bg-surface-2">วิเคราะห์เบอร์มงคล</Link>
-          <Link href="/library" className="block rounded-lg px-3 py-2 text-fg hover:bg-surface-2">ห้องสมุดไพ่</Link>
-          <Link href="/library/saved" className="block rounded-lg px-3 py-2 text-fg hover:bg-surface-2">คลังของฉัน</Link>
-          <Link href="/pricing" className="block rounded-lg px-3 py-2 text-fg hover:bg-surface-2">แพ็กเกจ</Link>
-          <a href="https://line.me/R/ti/p/@reffortune" target="_blank" rel="noreferrer" className="block rounded-lg bg-accent px-3 py-2 text-center font-semibold text-accent-ink transition hover:bg-accent-hover">แอดไลน์ @reffortune</a>
-        </div>
-      </details>
-    </div>
+    <nav
+      className="fixed bottom-0 left-0 right-0 border-t backdrop-blur-lg"
+      style={{ borderColor: "var(--border)", background: "rgba(16,12,34,0.92)", boxShadow: "0 -2px 20px rgba(0,0,0,0.3)", zIndex: 9999 }}
+    >
+      <div className="mx-auto flex max-w-lg items-center justify-around py-2">
+        {bottomTabs.map((tab) => (
+          <Link
+            key={tab.label}
+            href={tab.href}
+            className="flex flex-col items-center gap-0.5 px-3 py-1.5 text-[11px] transition-colors"
+            style={{ color: tab.icon === "home" ? "var(--purple-400)" : "var(--text-subtle)" }}
+          >
+            <BottomTabIcon type={tab.icon} />
+            <span className="font-medium">{tab.label}</span>
+          </Link>
+        ))}
+      </div>
+      {/* Safe area for iPhone notch */}
+      <div className="h-[env(safe-area-inset-bottom)]" />
+    </nav>
   );
 }
 
@@ -71,30 +120,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="th">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-bg pb-20 text-fg`}>
-        <header className="sticky top-0 z-40 border-b border-border bg-bg/80 backdrop-blur">
-          <nav className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-3">
-            <Link href="/" className="font-semibold tracking-wide text-accent/90 hover:text-accent">
-              REFFORTUNE ✦
-            </Link>
-            <div className="hidden items-center gap-4 text-sm text-fg-muted md:flex">
-              <Link href="/tarot" className="hover:text-fg">Tarot</Link>
-              <Link href="/spirit-card" className="hover:text-fg">Spirit</Link>
-              <Link href="/numerology" className="hover:text-fg">Numerology</Link>
-              <Link href="/library" className="hover:text-fg">Library</Link>
-              <Link href="/library/saved" className="hover:text-fg">Saved</Link>
-              <Link href="/pricing" className="hover:text-fg">Pricing</Link>
-            </div>
-          </nav>
-          <div className="border-t border-border bg-accent/10 px-4 py-2 text-center text-xs text-accent/90 md:text-sm">
-            <span className="font-semibold text-fg">ดูดวงออนไลน์กับเรฟ</span> •
-            <a href="https://line.me/R/ti/p/@reffortune" target="_blank" rel="noreferrer" className="ml-2 font-semibold underline underline-offset-2 hover:text-accent">
-              แอดไลน์ @reffortune
-            </a>
-          </div>
-        </header>
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+      </head>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-bg pb-24 text-fg`}>
         {children}
-        <FloatingMenu />
+        <BottomNav />
       </body>
     </html>
   );

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { spiritCardFromDob } from "@/lib/tarot/spirit";
 import { cardMeaning } from "@/lib/tarot/engine";
+import { buildSpiritPrompt } from "@/lib/ai/prompts";
 
 function toReadable(value: unknown): string {
   if (typeof value === "string") return value;
@@ -54,20 +55,15 @@ export async function POST(req: Request) {
     const result = spiritCardFromDob(body.dob ?? "");
     if (!result) return NextResponse.json({ error: "invalid_dob" }, { status: 400 });
 
+    // Build prompt using new prompt builder
+    const prompt = buildSpiritPrompt({
+      card: result.card,
+      orientation: result.orientation,
+      lifePathNumber: result.lifePathNumber,
+      dob: body.dob ?? "",
+    });
+
     const fallbackStructure = `ไพ่: ${result.card.name} • ทิศทาง: ${result.orientation === "upright" ? "ตั้งตรง" : "กลับหัว"} • เลขเส้นทางชีวิต: ${result.lifePathNumber} • ใจความ: ${cardMeaning(result)}`;
-
-    const prompt = `ใช้แนวอ่านแบบ REFFORTUNE (ไทยธรรมชาติ ตรงแต่ไม่ตัดสิน)
-ตอบเป็น JSON เท่านั้น โดยมีคีย์:
-- summary
-- cardStructure
-
-กติกา: cardStructure ต้องเป็นข้อความล้วน และห้ามแสดง key-value/object ห้ามเป็น object
-
-ข้อมูล:
-- ไพ่: ${result.card.name}
-- ทิศทาง: ${result.orientation === "upright" ? "ตั้งตรง" : "กลับหัว"}
-- เลขเส้นทางชีวิต: ${result.lifePathNumber}
-- ความหมายหลัก: ${cardMeaning(result)}`;
 
     const model = process.env.GEMINI_MODEL || "gemini-2.0-flash";
     const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {

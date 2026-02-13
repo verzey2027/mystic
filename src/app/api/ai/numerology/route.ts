@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { analyzeThaiPhone } from "@/lib/numerology/engine";
+import { buildNumerologyPrompt } from "@/lib/ai/prompts";
 
 function toReadable(value: unknown): string {
   if (typeof value === "string") return value;
@@ -43,24 +44,17 @@ export async function POST(req: Request) {
     const result = analyzeThaiPhone(body.phone ?? "");
     if (!result) return NextResponse.json({ error: "invalid_phone" }, { status: 400 });
 
+    // Build prompt using new prompt builder
+    const prompt = buildNumerologyPrompt({
+      normalizedPhone: result.normalizedPhone,
+      score: result.score,
+      tier: result.tier,
+      total: result.total,
+      root: result.root,
+      themes: result.themes,
+    });
+
     const fallbackStructure = `คะแนน ${result.score}/99 (${result.tier}) • เลขรวม ${result.total} • เลขราก ${result.root}`;
-
-    const prompt = `ใช้แนวอ่านแบบ REFFORTUNE (ไทยธรรมชาติ กระชับ ใช้งานได้จริง)
-ตอบเป็น JSON เท่านั้น โดยมีคีย์:
-- summary
-- cardStructure
-
-กติกา: cardStructure ต้องเป็นข้อความล้วน และห้ามแสดง key-value/object ห้ามเป็น object
-
-ข้อมูลที่วิเคราะห์ได้:
-- เบอร์: ${result.normalizedPhone}
-- คะแนน: ${result.score}/99 (${result.tier})
-- เลขรวม: ${result.total}
-- เลขราก: ${result.root}
-- งาน: ${result.themes.work}
-- เงิน: ${result.themes.money}
-- ความสัมพันธ์: ${result.themes.relationship}
-- คำเตือน: ${result.themes.caution}`;
 
     const model = process.env.GEMINI_MODEL || "gemini-2.0-flash";
     const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {

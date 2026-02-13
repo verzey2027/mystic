@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { cardMeaning, parseCardTokens } from "@/lib/tarot/engine";
+import { buildTarotPrompt } from "@/lib/ai/prompts";
 
 type GeminiTarotResponse = {
   summary: string;
@@ -67,12 +68,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "invalid_cards" }, { status: 400 });
     }
 
-    const cardContext = cards
-      .map((drawn, i) => {
-        const orient = drawn.orientation === "upright" ? "ตั้งตรง" : "กลับหัว";
-        return `${i + 1}. ${drawn.card.name} (${orient}) => ${cardMeaning(drawn)}`;
-      })
-      .join("\n");
+    // Determine spread type based on card count
+    const spreadType = (body.count === 1 ? 1 : body.count === 10 ? 10 : 3) as 1 | 3 | 10;
+
+    // Build prompt using new prompt builder
+    const prompt = buildTarotPrompt({
+      cards,
+      count: body.count ?? cards.length,
+      question: body.question,
+      spreadType,
+    });
 
     const fallbackStructure = cards
       .map((drawn, i) => {
@@ -80,21 +85,6 @@ export async function POST(req: Request) {
         return `${i + 1}) ${drawn.card.name} (${orient}) — ${cardMeaning(drawn)}`;
       })
       .join("\n");
-
-    const prompt = `คุณคือผู้อ่านไพ่แบบเดียวกับโปรเจกต์ REFFORTUNE: พูดไทยธรรมชาติ ตรงไปตรงมา แต่อ่อนโยน
-
-ตอบเป็น JSON เท่านั้น โดยคีย์ต้องมีแค่:
-- summary: (ย่อหน้าเดียว สรุปภาพรวมแบบภาษามนุษย์) สรุปภาพรวมคำทำนายแบบกระชับ
-- cardStructure: (จัดเป็น 3 บรรทัด: ภาพรวมสถานการณ์ / จุดที่ควรระวัง / แนวทางที่ควรทำ) สรุปโครงไพ่เป็น "ข้อความล้วน" แบบลิสต์ทีละตำแหน่ง
-
-ข้อห้าม:
-- ห้ามส่ง object/array ซ้อนใน cardStructure
-- ห้ามฟันธงอนาคต 100%
-
-คำถามผู้ใช้: ${body.question?.trim() || "(ไม่ได้ระบุ)"}
-จำนวนไพ่: ${body.count ?? cards.length}
-ไพ่ที่เปิดได้:
-${cardContext}`;
 
     const model = process.env.GEMINI_MODEL || "gemini-2.0-flash";
     const resp = await fetch(
