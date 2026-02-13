@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { HelperText, Label } from "@/components/ui/Input";
 
-const allowedCounts = new Set([1, 3, 10]);
+const allowedCounts = new Set([1, 2, 3, 4, 10]);
 
 type ShufflePhase = "stacked" | "shuffling" | "spread";
 

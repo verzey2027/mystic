@@ -58,7 +58,7 @@ interface TarotPromptParams {
   cards: DrawnCard[];
   count: number;
   question?: string;
-  spreadType: 1 | 3 | 10;
+  spreadType: 1 | 2 | 3 | 4 | 10;
 }
 ```
 

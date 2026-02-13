@@ -332,7 +332,7 @@ export default function ResultClient() {
               ))}
             </div>
           ) : (
-            <div className={`grid gap-3 ${count === 1 ? "grid-cols-1 max-w-[210px]" : "grid-cols-3"}`}>
+            <div className={`grid gap-3 ${count === 1 ? "grid-cols-1 max-w-[210px]" : count === 2 ? "grid-cols-2 max-w-[420px]" : count === 4 ? "grid-cols-4" : "grid-cols-3"}`}>
               {drawnCards.map((drawn, index) => (
                 <div
                   key={`${drawn.card.id}-${index}`}

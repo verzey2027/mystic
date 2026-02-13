@@ -69,7 +69,8 @@ export async function POST(req: Request) {
     }
 
     // Determine spread type based on card count
-    const spreadType = (body.count === 1 ? 1 : body.count === 10 ? 10 : 3) as 1 | 3 | 10;
+    const countMap: Record<number, 1 | 2 | 3 | 4 | 10> = { 1: 1, 2: 2, 3: 3, 4: 4, 10: 10 };
+    const spreadType = countMap[body.count ?? cards.length] ?? 3;
 
     // Build prompt using new prompt builder
     const prompt = buildTarotPrompt({

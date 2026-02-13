@@ -94,11 +94,51 @@ export const TAROT_10_CARD_COMPLEX: FewShotExample = {
 };
 
 /**
+ * Example 5: 2-card spread - Choice/Duality scenario
+ * Demonstrates: Comparison between two options, balanced analysis
+ */
+export const TAROT_2_CARD_CHOICE: FewShotExample = {
+  scenario: "2-card choice comparison - career vs stability",
+  input: `คำถามผู้ใช้: ควรเลือกงานใหม่หรืออยู่ที่เดิม
+จำนวนไพ่: 2
+ไพ่ที่เปิดได้:
+1. The Chariot (ตั้งตรง) => ชัยชนะ ความมุ่งมั่น การเดินหน้า
+2. Four of Pentacles (ตั้งตรง) => ความมั่นคง การยึดติด ความปลอดภัย`,
+  output: `{
+  "summary": "ไพ่บอกว่าทางเลือก A (งานใหม่) มีพลังขับเคลื่อนและโอกาสเติบโต แต่ต้องกล้าเสี่ยง ส่วนทางเลือก B (อยู่ที่เดิม) ให้ความมั่นคงแต่อาจขาดการเติบโต กุญแจคือคุณพร้อมรับความเปลี่ยนแปลงแค่ไหน",
+  "cardStructure": "ภาพรวมสถานการณ์: คุณกำลังยืนอยู่ตรงกลางระหว่างการเดินหน้ากับความปลอดภัย The Chariot บอกว่างานใหม่จะพาคุณไปข้างหน้าอย่างรวดเร็ว แต่ต้องกล้าเสี่ยงและปรับตัวเยอะ ส่วน Four of Pentacles บอกว่างานเดิมให้ความมั่นคงทางการเงิน แต่อาจทำให้รู้สึกติดอยู่ใน comfort zone\n\nจุดที่ควรระวัง: ทางเลือก A อาจทำให้เหนื่อยและกดดันในช่วงแรก ทางเลือก B อาจทำให้พลาดโอกาสใหม่ๆ ถ้ายึดติดมากเกินไป\n\nแนวทางที่ควรทำ: ถ้าคุณพร้อมรับความเสี่ยงและอยากเติบโต งานใหม่เหมาะกว่า แต่ถ้าความมั่นคงทางการเงินสำคัญกว่า งานเดิมก็ยังรองรับได้ ลองตั้งเป้าหมายใหม่ในงานเดิมก่อนตัดสินใจลาออก"
+}`,
+  notes: "Shows 2-card reading with clear comparison between two choices"
+};
+
+/**
+ * Example 6: 4-card spread - Action Plan scenario
+ * Demonstrates: Structured analysis with situation, obstacle, advice, outcome
+ */
+export const TAROT_4_CARD_ACTION: FewShotExample = {
+  scenario: "4-card action plan - financial decision",
+  input: `คำถามผู้ใช้: ควรลงทุนเปิดร้านหรือยัง
+จำนวนไพ่: 4
+ไพ่ที่เปิดได้:
+1. Ace of Pentacles (ตั้งตรง) => โอกาสใหม่ ความมั่งคั่ง จุดเริ่มต้น
+2. Seven of Swords (กลับหัว) => ความซื่อสัตย์ ความโปร่งใส
+3. The Empress (ตั้งตรง) => ความอุดมสมบูรณ์ การเติบโต ความสร้างสรรค์
+4. Ten of Pentacles (ตั้งตรง) => ความมั่งคั่ง ความสำเร็จระยะยาว`,
+  output: `{
+  "summary": "ไพ่บอกว่าสถานการณ์เหมาะกับการลงทุน โอกาสดีมีอยู่จริง แต่ต้องระวังเรื่องความโปร่งใสและข้อมูลที่ไม่ครบ หากทำตามแผนอย่างรอบคอบ ผลลัพธ์ระยะยาวชี้ไปที่ความมั่งคั่งทางการเงิน",
+  "cardStructure": "ภาพรวมสถานการณ์: Ace of Pentacles บอกว่าคุณมีโอกาสทางการเงินที่ดีอยู่ตรงหน้า เป็นจังหวะที่เหมาะกับการเริ่มต้นสิ่งใหม่\n\nจุดที่ควรระวัง: Seven of Swords กลับหัวเตือนว่าอาจมีข้อมูลที่ไม่ครบหรือความเสี่ยงที่มองไม่เห็น ตรวจสอบข้อมูลให้ครบก่อนตัดสินใจ\n\nแนวทางที่ควรทำ: The Empress แนะนำให้เติบโตอย่างค่อยๆ เริ่มจากเล็กแล้วขยาย (1) ภายใน 2 สัปดาห์: ศึกษาตลาดและทำแผนธุรกิจให้ชัด (2) เดือนแรก: ลงทุนเล็กๆ เพื่อทดสอบตลาด (3) เดือนที่ 2-3: ขยายการลงทุนตามผลที่ได้"
+}`,
+  notes: "Shows 4-card action plan with clear situation-obstacle-advice-outcome structure"
+};
+
+/**
  * All tarot examples grouped by spread type
  */
 export const TAROT_EXAMPLES_BY_SPREAD = {
   single: [TAROT_1_CARD_NEUTRAL],
+  dual: [TAROT_2_CARD_CHOICE],
   three: [TAROT_3_CARD_POSITIVE, TAROT_3_CARD_CHALLENGING],
+  action: [TAROT_4_CARD_ACTION],
   celtic: [TAROT_10_CARD_COMPLEX]
 };
 
@@ -107,7 +147,9 @@ export const TAROT_EXAMPLES_BY_SPREAD = {
  */
 export const TAROT_EXAMPLES: FewShotExample[] = [
   TAROT_1_CARD_NEUTRAL,
+  TAROT_2_CARD_CHOICE,
   TAROT_3_CARD_POSITIVE,
   TAROT_3_CARD_CHALLENGING,
+  TAROT_4_CARD_ACTION,
   TAROT_10_CARD_COMPLEX
 ];

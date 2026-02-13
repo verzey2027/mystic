@@ -2,7 +2,7 @@
  * Tarot Prompt Template Builder
  * 
  * This module provides specialized prompt building for tarot readings with:
- * - Spread-specific logic (1, 3, 10-card spreads)
+ * - Spread-specific logic (1, 2, 3, 4, 10-card spreads)
  * - Card relationship analysis
  * - Reversed card interpretation guidance
  * - Major Arcana emphasis
@@ -71,9 +71,11 @@ function selectExamplesForSpread(spreadType: 1 | 2 | 3 | 4 | 10) {
     case 1:
       return TAROT_EXAMPLES_BY_SPREAD.single;
     case 2:
+      return TAROT_EXAMPLES_BY_SPREAD.dual;
     case 3:
-    case 4:
       return TAROT_EXAMPLES_BY_SPREAD.three;
+    case 4:
+      return TAROT_EXAMPLES_BY_SPREAD.action;
     case 10:
       return TAROT_EXAMPLES_BY_SPREAD.celtic;
     default:
