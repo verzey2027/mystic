@@ -2,6 +2,9 @@
 
 import Image from "next/image";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { HeartSave } from "@/components/ui/HeartSave";
+import { useLibrary } from "@/lib/library/useLibrary";
+import { buildSavedDailyCardReading } from "@/lib/library/storage";
 import { TAROT_DECK } from "@/lib/tarot/deck";
 import { cardMeaning } from "@/lib/tarot/engine";
 import { DrawnCard } from "@/lib/tarot/types";
@@ -48,6 +51,9 @@ function saveTodayCard(drawn: DrawnCard) {
 }
 
 export default function DailyCardPage() {
+  const lib = useLibrary();
+  const [savedId, setSavedId] = useState<string | null>(null);
+
   const [drawn, setDrawn] = useState<DrawnCard | null>(null);
   const [alreadyDrawn, setAlreadyDrawn] = useState(false);
   const [flipped, setFlipped] = useState(false);
@@ -65,6 +71,17 @@ export default function DailyCardPage() {
       setDrawn(drawOneCard());
     }
   }, []);
+
+  useEffect(() => {
+    const dayKey = getTodayKey();
+    const existing = lib.items.find(
+      (item) =>
+        "kind" in item &&
+        item.kind === "daily_card" &&
+        (item as any).dayKey === dayKey
+    );
+    setSavedId(existing?.id ?? null);
+  }, [lib.items]);
 
   const handleFlip = useCallback(() => {
     if (flipped || !drawn) return;
@@ -135,6 +152,48 @@ export default function DailyCardPage() {
     [shareText, shareUrl],
   );
 
+  const toggleSaved = useCallback(() => {
+    if (!drawn) return;
+
+    if (savedId) {
+      lib.remove(savedId);
+      setSavedId(null);
+      return;
+    }
+
+    const id =
+      typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : String(Date.now());
+
+    const dayKey = getTodayKey();
+    const title = `Daily Card — ${drawn.card.nameTh ?? drawn.card.name}`;
+
+    lib.upsert(
+      buildSavedDailyCardReading({
+        id,
+        dayKey,
+        cardId: drawn.card.id,
+        orientation: drawn.orientation,
+        title,
+        summary: guidance?.energy,
+        tags: [drawn.card.name, ...(drawn.card.keywordsUpright ?? []), ...(drawn.card.keywordsReversed ?? [])],
+        snapshot: guidance
+          ? {
+              dayKey,
+              cardId: drawn.card.id,
+              orientation: drawn.orientation,
+              output: {
+                message: guidance.energy,
+                focus: guidance.focus,
+                advice: { action: guidance.action, avoid: guidance.avoid },
+              },
+            }
+          : undefined,
+      })
+    );
+
+    setSavedId(id);
+  }, [drawn, guidance?.energy, lib, savedId]);
+
   if (!drawn) {
     return (
       <main className="mx-auto w-full max-w-lg px-5 py-10">
@@ -146,13 +205,21 @@ export default function DailyCardPage() {
   return (
     <main className="mx-auto w-full max-w-lg px-5 py-6">
       {/* ── Header ── */}
-      <div className="text-center">
-        <h1 className="text-2xl font-bold" style={{ color: "var(--text)" }}>ไพ่รายวัน</h1>
-        <p className="mt-1 text-sm" style={{ color: "var(--text-subtle)" }}>
-          {alreadyDrawn
-            ? "คุณเปิดไพ่วันนี้แล้ว กลับมาเปิดใหม่ได้พรุ่งนี้"
-            : "แตะที่ไพ่เพื่อเปิดพลังงานประจำวัน"}
-        </p>
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex-1 text-center">
+          <h1 className="text-2xl font-bold" style={{ color: "var(--text)" }}>
+            ไพ่รายวัน
+          </h1>
+          <p className="mt-1 text-sm" style={{ color: "var(--text-subtle)" }}>
+            {alreadyDrawn
+              ? "คุณเปิดไพ่วันนี้แล้ว กลับมาเปิดใหม่ได้พรุ่งนี้"
+              : "แตะที่ไพ่เพื่อเปิดพลังงานประจำวัน"}
+          </p>
+        </div>
+
+        <div className="pt-1">
+          <HeartSave saved={!!savedId} onToggle={toggleSaved} label="Save daily card" />
+        </div>
       </div>
 
       {/* ── Card with flip animation ── */}

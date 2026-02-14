@@ -1,55 +1,172 @@
 @import "tailwindcss";
 
 /*
-  MysticFlow — Clean White + Purple theme
+  MysticFlow — M3 Pastel Glass
   Tailwind v4 theming via @theme inline.
 */
 :root {
+  /* Radii */
+  --radius-lg: 28px;
+
   /* Base */
-  --bg: #FFFFFF;
-  --bg-elevated: #FFFFFF;
+  --bg: #ffffff;
+  --bg-elevated: #ffffff;
+
+  /* Background gradients (neutral-first; keep purple as ~5% accent) */
+  --bg-gradient: radial-gradient(1200px 600px at 12% -10%, rgba(157, 147, 201, 0.12), transparent 58%),
+    radial-gradient(900px 520px at 85% 0%, rgba(17, 24, 39, 0.035), transparent 60%),
+    linear-gradient(180deg, #ffffff 0%, #fbfbfd 55%, #ffffff 100%);
 
   /* Surfaces */
-  --surface-1: #F3F4F6;
-  --surface-2: #F9FAFB;
-  --surface-3: #EEF2FF;
+  --surface-1: #f3f4f6;
+  --surface-2: #f9fafb;
+  --surface-3: #eef2ff;
+
+  /* Glass tokens */
+  --glass-bg: rgba(255, 255, 255, 0.72);
+  --glass-border: rgba(229, 231, 235, 0.65);
 
   /* Borders */
-  --border: #E5E7EB;
-  --border-strong: #D1D5DB;
+  --border: #e5e7eb;
+  --border-strong: #d1d5db;
 
   /* Text */
   --text: #111827;
-  --text-muted: #6B7280;
-  --text-subtle: #9CA3AF;
+  --text-muted: #6b7280;
+  --text-subtle: #9ca3af;
 
-  /* Accent — minimal purple */
-  --accent: #A78BFA;
-  --accent-hover: #8B5CF6;
-  --accent-ink: #111827;
+  /* Accent — muted lavender (neutral-first UI) */
+  --accent: #9d93c9;
+  --accent-hover: #8f86c2;
+  --accent-ink: #ffffff;
+  --accent-soft: rgba(157, 147, 201, 0.10);
 
-  --rose: #F43F5E;
-  --teal: #14B8A6;
+  --rose: #f43f5e;
+  --teal: #14b8a6;
 
   /* Status */
-  --success: #22C55E;
-  --warning: #F59E0B;
-  --danger: #EF4444;
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --danger: #ef4444;
 
   /* Focus */
-  --ring: rgba(167, 139, 250, 0.35);
+  --ring: rgba(157, 147, 201, 0.30);
+
+  /* Shadow */
+  --shadow-soft: 0 10px 30px rgba(17, 24, 39, 0.08), 0 1px 0 rgba(255, 255, 255, 0.8) inset;
 
   /* Purple scale (keep for illustrations only) */
-  --purple-50: #F5F3FF;
-  --purple-100: #EDE9FE;
-  --purple-200: #DDD6FE;
-  --purple-300: #C4B5FD;
-  --purple-400: #A78BFA; /* accent */
-  --purple-500: #8B5CF6;
-  --purple-600: #7C3AED;
-  --purple-700: #6D28D9;
-  --purple-800: #5B21B6;
-  --purple-900: #4C1D95;
+  --purple-50: #f5f3ff;
+  --purple-100: #ede9fe;
+  --purple-200: #ddd6fe;
+  --purple-300: #c4b5fd;
+  --purple-400: #9d93c9; /* accent */
+  --purple-500: #8f86c2;
+  --purple-600: #7c3aed;
+  --purple-700: #6d28d9;
+  --purple-800: #5b21b6;
+  --purple-900: #4c1d95;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #070710;
+    --bg-elevated: #0c0c16;
+
+    --bg-gradient: radial-gradient(1200px 600px at 12% -10%, rgba(157, 147, 201, 0.16), transparent 58%),
+      radial-gradient(900px 520px at 85% 0%, rgba(255, 255, 255, 0.06), transparent 60%),
+      linear-gradient(180deg, #070710 0%, #080818 55%, #070710 100%);
+
+    --surface-1: rgba(255, 255, 255, 0.06);
+    --surface-2: rgba(255, 255, 255, 0.08);
+    --surface-3: rgba(167, 139, 250, 0.12);
+
+    --glass-bg: rgba(10, 10, 20, 0.62);
+    --glass-border: rgba(255, 255, 255, 0.10);
+
+    --border: rgba(255, 255, 255, 0.10);
+    --border-strong: rgba(255, 255, 255, 0.16);
+
+    --text: rgba(255, 255, 255, 0.92);
+    --text-muted: rgba(255, 255, 255, 0.68);
+    --text-subtle: rgba(255, 255, 255, 0.45);
+
+    --accent: #a99fe0;
+    --accent-hover: #9b90d8;
+    --accent-ink: #0a0a14;
+    --accent-soft: rgba(169, 159, 224, 0.14);
+
+    --ring: rgba(169, 159, 224, 0.32);
+
+    --shadow-soft: 0 16px 45px rgba(0, 0, 0, 0.55), 0 1px 0 rgba(255, 255, 255, 0.05) inset;
+  }
+}
+
+/* Manual theme override (set via html[data-theme]) */
+html[data-theme="light"] {
+  --bg: #ffffff;
+  --bg-elevated: #ffffff;
+
+  --bg-gradient: radial-gradient(1200px 600px at 10% -10%, rgba(167, 139, 250, 0.22), transparent 55%),
+    radial-gradient(900px 500px at 92% 0%, rgba(20, 184, 166, 0.10), transparent 55%),
+    radial-gradient(900px 520px at 40% 110%, rgba(244, 63, 94, 0.10), transparent 55%),
+    linear-gradient(180deg, #ffffff 0%, #fbfbff 55%, #ffffff 100%);
+
+  --surface-1: #f3f4f6;
+  --surface-2: #f9fafb;
+  --surface-3: #eef2ff;
+
+  --glass-bg: rgba(255, 255, 255, 0.72);
+  --glass-border: rgba(229, 231, 235, 0.65);
+
+  --border: #e5e7eb;
+  --border-strong: #d1d5db;
+
+  --text: #111827;
+  --text-muted: #6b7280;
+  --text-subtle: #9ca3af;
+
+  --accent: #a78bfa;
+  --accent-hover: #8b5cf6;
+  --accent-ink: #111827;
+  --accent-soft: rgba(167, 139, 250, 0.14);
+
+  --ring: rgba(167, 139, 250, 0.42);
+
+  --shadow-soft: 0 10px 30px rgba(17, 24, 39, 0.08), 0 1px 0 rgba(255, 255, 255, 0.8) inset;
+}
+
+html[data-theme="dark"] {
+  --bg: #070710;
+  --bg-elevated: #0c0c16;
+
+  --bg-gradient: radial-gradient(1200px 600px at 10% -10%, rgba(167, 139, 250, 0.22), transparent 55%),
+    radial-gradient(900px 520px at 92% 0%, rgba(20, 184, 166, 0.10), transparent 55%),
+    radial-gradient(900px 520px at 40% 110%, rgba(244, 63, 94, 0.10), transparent 55%),
+    linear-gradient(180deg, #070710 0%, #080818 55%, #070710 100%);
+
+  --surface-1: rgba(255, 255, 255, 0.06);
+  --surface-2: rgba(255, 255, 255, 0.08);
+  --surface-3: rgba(167, 139, 250, 0.12);
+
+  --glass-bg: rgba(10, 10, 20, 0.62);
+  --glass-border: rgba(255, 255, 255, 0.10);
+
+  --border: rgba(255, 255, 255, 0.10);
+  --border-strong: rgba(255, 255, 255, 0.16);
+
+  --text: rgba(255, 255, 255, 0.92);
+  --text-muted: rgba(255, 255, 255, 0.68);
+  --text-subtle: rgba(255, 255, 255, 0.45);
+
+  --accent: #b8a0ff;
+  --accent-hover: #9f7bff;
+  --accent-ink: #090916;
+  --accent-soft: rgba(184, 160, 255, 0.16);
+
+  --ring: rgba(184, 160, 255, 0.42);
+
+  --shadow-soft: 0 16px 45px rgba(0, 0, 0, 0.55), 0 1px 0 rgba(255, 255, 255, 0.05) inset;
 }
 
 @theme inline {
@@ -69,6 +186,7 @@
   --color-accent: var(--accent);
   --color-accent-hover: var(--accent-hover);
   --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
   --color-rose: var(--rose);
   --color-teal: var(--teal);
 
@@ -89,7 +207,7 @@
 body {
   margin: 0;
   min-height: 100vh;
-  background: var(--bg);
+  background: var(--bg-gradient);
   color: var(--text);
   font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   overflow-x: hidden;
@@ -103,39 +221,74 @@ a {
 /* ─── Keyframes ─── */
 
 @keyframes tarot-fade-up {
-  from { opacity: 0; transform: translateY(16px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes tarot-card-reveal {
-  0% { opacity: 0; transform: scale(0.9) rotateY(90deg); }
-  50% { opacity: 1; transform: scale(1.02) rotateY(0deg); }
-  100% { opacity: 1; transform: scale(1) rotateY(0deg); }
+  0% {
+    opacity: 0;
+    transform: scale(0.9) rotateY(90deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.02) rotateY(0deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotateY(0deg);
+  }
 }
 
 @keyframes tarot-shimmer {
-  0% { transform: translateX(-100%) rotate(15deg); }
-  100% { transform: translateX(200%) rotate(15deg); }
+  0% {
+    transform: translateX(-100%) rotate(15deg);
+  }
+  100% {
+    transform: translateX(200%) rotate(15deg);
+  }
 }
 
 @keyframes daily-pulse {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 0.7; }
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.7;
+  }
 }
 
 @keyframes slide-up {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
 }
 
 @keyframes tarot-glow-pulse {
-  0%, 100% { box-shadow: 0 0 8px rgba(139, 92, 246, 0.2); }
-  50% { box-shadow: 0 0 16px rgba(139, 92, 246, 0.35); }
+  0%,
+  100% {
+    box-shadow: 0 0 8px rgba(139, 92, 246, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 16px rgba(139, 92, 246, 0.35);
+  }
 }
 
 /* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;

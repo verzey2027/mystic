@@ -29,6 +29,14 @@ export enum TimePeriod {
 }
 
 /**
+ * Domain-specific reading areas (used by specialized readings)
+ */
+export enum ReadingDomain {
+  FINANCE_CAREER = 'finance_career',
+  LOVE_RELATIONSHIPS = 'love_relationships'
+}
+
+/**
  * Input for horoscope generation
  */
 export interface HoroscopeInput {

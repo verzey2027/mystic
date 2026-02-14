@@ -1,9 +1,13 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState, useCallback } from "react";
+import { HeartSave } from "@/components/ui/HeartSave";
+import { useLibrary } from "@/lib/library/useLibrary";
+import { buildSavedSpiritCardReading } from "@/lib/library/storage";
 import { trackEvent } from "@/lib/analytics/tracking";
 import { evaluatePaywall, recordFreeReading } from "@/lib/monetization/paywall";
 import { runReadingPipeline } from "@/lib/reading/pipeline";
+import { spiritCardFromDob } from "@/lib/tarot/spirit";
 
 function normalizeText(value: unknown): string {
   if (typeof value === "string") return value;
@@ -28,6 +32,9 @@ function normalizeText(value: unknown): string {
 }
 
 export default function SpiritCardPage() {
+  const lib = useLibrary();
+  const [savedId, setSavedId] = useState<string | null>(null);
+
   const [dob, setDob] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -37,6 +44,18 @@ export default function SpiritCardPage() {
   useEffect(() => {
     trackEvent("reading_start", { vertical: "spirit-card", step: "form_view" });
   }, []);
+
+  useEffect(() => {
+    if (!submittedDob) {
+      setSavedId(null);
+      return;
+    }
+
+    const existing = lib.items.find(
+      (item) => "kind" in item && item.kind === "spirit_card" && (item as any).dob === submittedDob
+    );
+    setSavedId(existing?.id ?? null);
+  }, [lib.items, submittedDob]);
 
   const session = useMemo(() => {
     if (!submittedDob) return null;
@@ -51,6 +70,54 @@ export default function SpiritCardPage() {
       sessionId: session.sessionId,
     });
   }, [session]);
+
+  const spirit = useMemo(() => {
+    if (!submittedDob) return null;
+    return spiritCardFromDob(submittedDob);
+  }, [submittedDob]);
+
+  const toggleSaved = useCallback(() => {
+    if (!submittedDob || !spirit) return;
+
+    if (savedId) {
+      lib.remove(savedId);
+      setSavedId(null);
+      return;
+    }
+
+    const id =
+      typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : String(Date.now());
+
+    const title = `Spirit Card — ${spirit.card.nameTh ?? spirit.card.name}`;
+
+    lib.upsert(
+      buildSavedSpiritCardReading({
+        id,
+        dob: submittedDob,
+        cardId: spirit.card.id,
+        orientation: spirit.orientation,
+        lifePathNumber: spirit.lifePathNumber,
+        title,
+        aiSummary: aiReading?.summary,
+        aiCardStructure: aiReading?.cardStructure,
+        tags: [spirit.card.name, ...(spirit.card.keywordsUpright ?? []), ...(spirit.card.keywordsReversed ?? [])],
+        snapshot: session
+          ? {
+              input: { dob: submittedDob },
+              card: {
+                cardId: spirit.card.id,
+                orientation: spirit.orientation,
+                lifePathNumber: spirit.lifePathNumber,
+              },
+              session,
+              output: aiReading ? { message: aiReading.summary, practice: aiReading.cardStructure } : undefined,
+            }
+          : undefined,
+      })
+    );
+
+    setSavedId(id);
+  }, [aiReading?.cardStructure, aiReading?.summary, lib, savedId, session, spirit, submittedDob]);
 
   useEffect(() => {
     if (!session || !submittedDob) return;
@@ -157,12 +224,20 @@ export default function SpiritCardPage() {
             <p className="mt-2 whitespace-pre-line text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>{aiReading.cardStructure}</p>
           </div>
 
-          <button
-            type="button"
-            className="w-full rounded-2xl py-3 text-sm font-semibold text-accent-ink transition bg-accent hover:bg-accent-hover"
+          <div
+            className="flex items-center justify-between rounded-2xl border p-4"
+            style={{ borderColor: "var(--border)", background: "var(--bg-elevated)" }}
           >
-            บันทึกผล
-          </button>
+            <div>
+              <p className="text-sm font-semibold" style={{ color: "var(--text)" }}>
+                บันทึกไว้ในคลัง
+              </p>
+              <p className="mt-1 text-xs" style={{ color: "var(--text-muted)" }}>
+                แตะหัวใจเพื่อบันทึก/ยกเลิกบันทึก
+              </p>
+            </div>
+            <HeartSave saved={!!savedId} onToggle={toggleSaved} label="Save spirit card" />
+          </div>
         </section>
       )}
     </main>

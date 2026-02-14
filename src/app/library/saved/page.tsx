@@ -3,8 +3,8 @@ import { Suspense } from "react";
 import SavedClient from "./savedClient";
 
 export const metadata: Metadata = {
-  title: "คลังคำทำนายของฉัน — บันทึกผลไพ่ทาโรต์",
-  description: "ดูบันทึกผลการเปิดไพ่ทาโรต์ที่คุณเคยทำไว้ กลับมาทบทวนได้ทุกเมื่อ",
+  title: "คลังคำทำนายของฉัน — บันทึกผลการดูดวง",
+  description: "ดูบันทึกผลการดูดวงที่คุณเคยทำไว้ ทาโรต์ ดวงชะตา ความรัก ปีจีน และอื่นๆ",
   robots: { index: false, follow: true },
 };
 

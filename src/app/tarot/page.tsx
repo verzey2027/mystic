@@ -80,39 +80,48 @@ const spreads = [
 export default function TarotHomePage() {
   return (
     <main className="mx-auto w-full max-w-lg">
-      <AppBar title="ทาโรต์" />
+      {/* Big title header (Tarot) */}
+      <header className="px-5 pt-7 pb-3">
+        <AppBar title={<span className="sr-only">Tarot</span>} className="px-0 pt-0 pb-0" />
+        <h1 className="mt-1 text-3xl font-bold tracking-tight text-fg">Tarot</h1>
+        <p className="mt-1 text-sm text-fg-muted">
+          Choose a spread to get a clear, practical reading.
+        </p>
 
-      <div className="px-5 pb-6">
         {/* ── Category chips ── */}
-        <div className="mt-2 flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }}>
+        <div className="mt-4 flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }}>
           {categories.map((cat, i) => (
             <Chip key={cat} selected={i === 0}>
               {cat}
             </Chip>
           ))}
         </div>
+      </header>
 
+      <div className="px-5 pb-6">
         {/* ── Spread cards ── */}
-        <div className="mt-5 flex flex-col gap-4">
+        <div className="mt-1 flex flex-col gap-4">
           {spreads.map((spread) => (
-            <Card key={spread.count} className="p-5 bg-bg">
-              <div className="flex items-start gap-4">
-                <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-surface">
-                  {spread.icon}
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-base font-semibold text-fg">{spread.title}</h3>
-                  <div className="mt-0.5 flex items-center gap-1.5 text-xs text-fg-subtle">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="12" cy="12" r="10" />
-                      <polyline points="12 6 12 12 16 14" />
-                    </svg>
-                    {spread.eta}
+            <Link key={spread.count} href={`/tarot/pick?count=${spread.count}`} className="block">
+              <Card className="p-5 bg-bg">
+                <div className="flex items-start gap-4">
+                  <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-surface">
+                    {spread.icon}
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-base font-semibold text-fg">{spread.title}</h3>
+                    <div className="mt-0.5 flex items-center gap-1.5 text-xs text-fg-subtle">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="10" />
+                        <polyline points="12 6 12 12 16 14" />
+                      </svg>
+                      {spread.eta}
+                    </div>
                   </div>
                 </div>
-              </div>
-              <p className="mt-3 text-sm leading-relaxed text-fg-muted">{spread.description}</p>
-            </Card>
+                <p className="mt-3 text-sm leading-relaxed text-fg-muted">{spread.description}</p>
+              </Card>
+            </Link>
           ))}
         </div>
 
@@ -120,7 +129,7 @@ export default function TarotHomePage() {
         <div className="sticky bottom-20 z-30 mt-6">
           <Link href="/tarot/pick?count=3" className="block">
             <Button className="w-full" size="lg">
-              เริ่มเปิดไพ่ 3 ใบ
+              Start a 3-card reading
             </Button>
           </Link>
         </div>

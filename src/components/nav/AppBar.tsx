@@ -7,14 +7,23 @@ export function AppBar({
   right,
   backHref,
   className,
+  largeTitle = false,
 }: {
   title: React.ReactNode;
   right?: React.ReactNode;
   backHref?: string;
   className?: string;
+  /** iOS-style large title header */
+  largeTitle?: boolean;
 }) {
   return (
-    <header className={cn("flex items-center justify-between px-5 pt-6 pb-2", className)}>
+    <header
+      className={cn(
+        "flex items-center justify-between px-5 pt-6 pb-2",
+        largeTitle ? "pb-4" : null,
+        className
+      )}
+    >
       <div className="flex items-center gap-3">
         {backHref ? (
           <Link
@@ -36,7 +45,16 @@ export function AppBar({
             </svg>
           </Link>
         ) : null}
-        <h1 className="text-xl font-bold text-fg">{title}</h1>
+        <h1
+          className={cn(
+            "text-fg",
+            largeTitle
+              ? "text-3xl font-bold tracking-tight"
+              : "text-xl font-bold"
+          )}
+        >
+          {title}
+        </h1>
       </div>
       {right ? <div className="flex items-center gap-2">{right}</div> : null}
     </header>

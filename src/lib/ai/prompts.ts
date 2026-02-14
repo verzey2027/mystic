@@ -24,6 +24,7 @@
 // Re-export all prompt builder functions
 export { buildTarotPrompt } from './templates/tarot';
 export { buildSpiritPrompt } from './templates/spirit';
+export { buildSpiritPathPrompt } from './templates/spiritPath';
 export { buildNumerologyPrompt } from './templates/numerology';
 export { buildChatPrompt } from './templates/chat';
 

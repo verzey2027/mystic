@@ -6,10 +6,11 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/cn";
 
 const bottomTabs = [
-  { label: "หน้าแรก", href: "/", icon: "home" },
-  { label: "ทาโรต์", href: "/tarot", icon: "tarot" },
-  { label: "คลังไพ่", href: "/library", icon: "library" },
-  { label: "โปรไฟล์", href: "#", icon: "profile" },
+  { label: "Home", href: "/", icon: "home" },
+  { label: "Numerology", href: "/numerology", icon: "numerology" },
+  { label: "Tarot", href: "/tarot", icon: "tarot" },
+  { label: "Profile", href: "/profile", icon: "profile" },
+  { label: "Saved", href: "/library/saved", icon: "saved" },
 ] as const;
 
 type IconType = (typeof bottomTabs)[number]["icon"];
@@ -18,30 +19,83 @@ function BottomTabIcon({ type }: { type: IconType }) {
   switch (type) {
     case "home":
       return (
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg
+          width="22"
+          height="22"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
           <polyline points="9 22 9 12 15 12 15 22" />
         </svg>
       );
+    case "numerology":
+      return (
+        <svg
+          width="22"
+          height="22"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M4 8h16" />
+          <path d="M4 16h16" />
+          <path d="M10 3 8 21" />
+          <path d="M16 3l-2 18" />
+        </svg>
+      );
     case "tarot":
       return (
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg
+          width="22"
+          height="22"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
           <rect x="4" y="2" width="16" height="20" rx="2" />
           <circle cx="12" cy="12" r="4" />
           <line x1="12" y1="6" x2="12" y2="6.01" />
           <line x1="12" y1="18" x2="12" y2="18.01" />
         </svg>
       );
-    case "library":
+    case "saved":
       return (
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+        <svg
+          width="22"
+          height="22"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
         </svg>
       );
     case "profile":
       return (
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg
+          width="22"
+          height="22"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
           <circle cx="12" cy="7" r="4" />
         </svg>
@@ -62,10 +116,14 @@ export function BottomTabBar() {
 
   return (
     <nav
-      className="fixed left-0 right-0 bottom-0 z-[9999] w-full border-t border-border bg-bg"
+      className={cn(
+        "fixed bottom-0 left-0 right-0 z-[9999] w-full",
+        "border-t border-[color:var(--glass-border)] bg-[var(--glass-bg)] backdrop-blur-xl",
+        "shadow-[var(--shadow-soft)]"
+      )}
       style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
     >
-      <div className="mx-auto flex max-w-lg items-center justify-around py-2">
+      <div className="mx-auto flex max-w-lg items-center justify-between gap-2 px-3 py-2">
         {bottomTabs.map((tab) => {
           const active = isActive(pathname, tab.href);
           return (
@@ -73,13 +131,31 @@ export function BottomTabBar() {
               key={tab.label}
               href={tab.href}
               className={cn(
-                "flex flex-col items-center gap-0.5 px-3 py-1.5 text-[11px] transition-colors",
-                active ? "text-accent" : "text-fg-subtle"
+                "relative flex h-12 min-w-[72px] flex-1 flex-col items-center justify-center gap-0.5 rounded-[20px] px-2",
+                "text-[11px] transition-[transform,background-color,color]",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
+                active
+                  ? "bg-[var(--accent-soft)] text-fg"
+                  : "text-fg-subtle hover:text-fg"
               )}
               aria-current={active ? "page" : undefined}
             >
-              <BottomTabIcon type={tab.icon} />
-              <span className="font-medium">{tab.label}</span>
+              <span
+                className={cn(
+                  "grid place-items-center",
+                  active ? "text-accent" : "text-fg-subtle"
+                )}
+              >
+                <BottomTabIcon type={tab.icon} />
+              </span>
+              <span className="font-medium leading-none">{tab.label}</span>
+              <span
+                aria-hidden
+                className={cn(
+                  "mt-1 h-1 w-6 rounded-full transition-colors",
+                  active ? "bg-accent" : "bg-transparent"
+                )}
+              />
             </Link>
           );
         })}

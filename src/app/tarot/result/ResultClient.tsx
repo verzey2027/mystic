@@ -8,7 +8,10 @@ import { parseCardTokens } from "@/lib/tarot/engine";
 import { trackEvent } from "@/lib/analytics/tracking";
 import { evaluatePaywall, recordFreeReading } from "@/lib/monetization/paywall";
 import { runReadingPipeline } from "@/lib/reading/pipeline";
-import { buildSavedTarotReading, upsertReading } from "@/lib/library/storage";
+import { buildSavedTarotReading, removeReading, upsertReading } from "@/lib/library/storage";
+import { HeartSave } from "@/components/ui/HeartSave";
+import { Button } from "@/components/ui/Button";
+import { cn } from "@/lib/cn";
 
 function normalizeText(value: unknown): string {
   if (typeof value === "string") return value;
@@ -40,7 +43,7 @@ export default function ResultClient() {
 
   const result = useMemo(
     () => runReadingPipeline({ kind: "tarot", count, cardsToken, question }),
-    [cardsToken, count, question],
+    [cardsToken, count, question]
   );
 
   const drawnCards = useMemo(() => parseCardTokens(cardsToken), [cardsToken]);
@@ -51,6 +54,7 @@ export default function ResultClient() {
   }>(null);
 
   const [savedId, setSavedId] = useState<string | null>(null);
+  const [savedCreatedAt, setSavedCreatedAt] = useState<string | null>(null);
   const [saveToast, setSaveToast] = useState<string | null>(null);
   const [chatInput, setChatInput] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
@@ -66,7 +70,7 @@ export default function ResultClient() {
             hasQuestion: question.trim().length > 0,
           })
         : null,
-    [question, result],
+    [question, result]
   );
 
   useEffect(() => {
@@ -113,15 +117,21 @@ export default function ResultClient() {
         };
         setAiReading(next);
 
-        if (savedId) {
+        if (savedId && result) {
           upsertReading(
             buildSavedTarotReading({
               id: savedId,
+              createdAt: savedCreatedAt ?? undefined,
               count,
               cardsToken,
               question,
               aiSummary: next.summary,
               aiCardStructure: next.cardStructure,
+              snapshot: {
+                input: { count, cardsToken, question },
+                session: result,
+                ai: { summary: next.summary, cardStructure: next.cardStructure },
+              },
             })
           );
         }
@@ -129,7 +139,7 @@ export default function ResultClient() {
       .catch(() => {});
 
     return () => controller.abort();
-  }, [cardsToken, count, question, result, savedId]);
+  }, [cardsToken, count, question, result, savedCreatedAt, savedId]);
 
   async function sendFollowUpQuestion() {
     const q = chatInput.trim();
@@ -173,56 +183,71 @@ export default function ResultClient() {
   }
 
   function handleSave() {
-    const id = savedId ?? (typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : String(Date.now()));
+    if (!result) return;
+
+    const id =
+      savedId ??
+      (typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : String(Date.now()));
+
+    const createdAt = savedCreatedAt ?? new Date().toISOString();
+
     setSavedId(id);
+    setSavedCreatedAt(createdAt);
+
     upsertReading(
       buildSavedTarotReading({
         id,
+        createdAt,
         count,
         cardsToken,
         question,
         aiSummary: aiReading?.summary,
         aiCardStructure: aiReading?.cardStructure,
+        snapshot: {
+          input: { count, cardsToken, question },
+          session: result,
+          ai: aiReading ? { summary: aiReading.summary, cardStructure: aiReading.cardStructure } : undefined,
+        },
       })
     );
-    setSaveToast("บันทึกเรียบร้อย");
-    setTimeout(() => setSaveToast(null), 1800);
+    setSaveToast("Saved to library");
+    setTimeout(() => setSaveToast(null), 1600);
+  }
+
+  function toggleSaved() {
+    if (savedId) {
+      removeReading(savedId);
+      setSavedId(null);
+      setSavedCreatedAt(null);
+      setSaveToast("Removed");
+      setTimeout(() => setSaveToast(null), 1200);
+      return;
+    }
+    handleSave();
   }
 
   if (!result) {
     return (
       <main className="mx-auto w-full max-w-lg px-5 py-8">
-        <div className="rounded-2xl border p-4" style={{ borderColor: "var(--danger)", background: "rgba(239,68,68,0.06)" }}>
-          <p className="text-sm" style={{ color: "var(--danger)" }}>
-            ไม่พบข้อมูลไพ่ที่สมบูรณ์ กรุณากลับไปเปิดไพ่ใหม่อีกครั้ง
-          </p>
+        <div className="rounded-2xl border border-danger/30 bg-danger/10 p-4">
+          <p className="text-sm text-danger">ไม่พบข้อมูลไพ่ที่สมบูรณ์ กรุณากลับไปเปิดไพ่ใหม่อีกครั้ง</p>
         </div>
       </main>
     );
   }
 
+  const cardWidth = count <= 3 ? "w-[100px]" : count <= 5 ? "w-[80px]" : "w-16";
+
   return (
     <main className="mx-auto w-full max-w-lg px-5 py-6">
       {/* ── Header ── */}
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold" style={{ color: "var(--text)" }}>
-          ผลไพ่ {count} ใบ
-        </h1>
-        <button
-          type="button"
-          onClick={handleSave}
-          className="rounded-full px-4 py-1.5 text-xs font-semibold transition"
-          style={{
-            background: savedId ? "var(--purple-100)" : "var(--purple-500)",
-            color: savedId ? "var(--purple-600)" : "#fff",
-          }}
-        >
-          {savedId ? "บันทึกแล้ว ✓" : "บันทึก"}
-        </button>
+        <h1 className="text-xl font-bold text-fg">Tarot result • {count} cards</h1>
+        <HeartSave saved={!!savedId} onToggle={toggleSaved} label="Save reading" />
       </div>
 
       {saveToast && (
-        <div className="mt-3 rounded-xl border p-3 text-sm" style={{ borderColor: "rgba(34,197,94,0.3)", background: "rgba(34,197,94,0.06)", color: "var(--success)" }}>
+        <div className="mt-3 rounded-xl border border-success/25 bg-success/10 p-3 text-sm text-success">
           {saveToast}
         </div>
       )}
@@ -233,12 +258,10 @@ export default function ResultClient() {
           {drawnCards.map((drawn, index) => (
             <div
               key={`${drawn.card.id}-${index}`}
-              className="flex-shrink-0 overflow-hidden rounded-xl border text-center"
-              style={{
-                width: count <= 3 ? "100px" : count <= 5 ? "80px" : "64px",
-                borderColor: "var(--purple-200)",
-                background: "var(--bg-elevated)",
-              }}
+              className={cn(
+                "flex-shrink-0 overflow-hidden rounded-xl border border-border bg-bg-elevated text-center",
+                cardWidth
+              )}
             >
               {drawn.card.image ? (
                 <Image
@@ -246,14 +269,17 @@ export default function ResultClient() {
                   alt={drawn.card.name}
                   width={180}
                   height={270}
-                  className={`h-auto w-full object-cover ${drawn.orientation === "reversed" ? "rotate-180" : ""}`}
+                  className={cn(
+                    "h-auto w-full object-cover",
+                    drawn.orientation === "reversed" && "rotate-180"
+                  )}
                 />
               ) : (
-                <div className="flex h-24 items-center justify-center" style={{ background: "var(--surface-1)" }}>
+                <div className="flex h-24 items-center justify-center bg-surface">
                   <span className="text-2xl">🔮</span>
                 </div>
               )}
-              <p className="truncate px-1 py-1 text-[10px] font-medium" style={{ color: "var(--text-muted)" }}>
+              <p className="truncate px-1 py-1 text-[10px] font-medium text-fg-muted">
                 {drawn.card.nameTh ?? drawn.card.name}
               </p>
             </div>
@@ -263,82 +289,67 @@ export default function ResultClient() {
 
       {/* ── Question ── */}
       {question && (
-        <div className="mt-4 rounded-2xl border p-4" style={{ borderColor: "var(--border)", background: "var(--bg-elevated)" }}>
-          <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--purple-500)" }}>
-            คำถาม
-          </p>
-          <p className="mt-1 text-sm" style={{ color: "var(--text)" }}>{question}</p>
+        <div className="mt-4 rounded-2xl border border-border bg-bg-elevated p-4">
+          <p className="text-xs font-semibold uppercase tracking-wider text-accent">คำถาม</p>
+          <p className="mt-1 text-sm text-fg">{question}</p>
         </div>
       )}
 
       {/* ── Overall Summary ── */}
-      <section className="mt-4 rounded-2xl border p-4" style={{ borderColor: "var(--border)", background: "var(--bg-elevated)" }}>
-        <h2 className="text-sm font-bold" style={{ color: "var(--text)" }}>ภาพรวม</h2>
+      <section className="mt-4 rounded-2xl border border-border bg-bg-elevated p-4">
+        <h2 className="text-sm font-bold text-fg">ภาพรวม</h2>
         {aiReading ? (
-          <p className="mt-2 text-sm leading-relaxed whitespace-pre-line" style={{ color: "var(--text-muted)" }}>
-            {aiReading.summary}
-          </p>
+          <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-fg-muted">{aiReading.summary}</p>
         ) : (
           <div className="mt-2 flex items-center gap-2">
-            <div className="h-3 w-3 animate-pulse rounded-full" style={{ background: "var(--purple-400)" }} />
-            <p className="text-sm" style={{ color: "var(--text-subtle)" }}>กำลังสรุปคำทำนาย...</p>
+            <div className="h-3 w-3 animate-pulse rounded-full bg-accent" />
+            <p className="text-sm text-fg-subtle">กำลังสรุปคำทำนาย...</p>
           </div>
         )}
       </section>
 
       {/* ── Per-card interpretations ── */}
-      {aiReading && drawnCards.map((drawn, index) => (
-        <section
-          key={`${drawn.card.id}-interp-${index}`}
-          className="mt-3 rounded-2xl border-l-4 border p-4"
-          style={{
-            borderColor: "var(--border)",
-            borderLeftColor: "var(--purple-400)",
-            background: "var(--bg-elevated)",
-          }}
-        >
-          <h3 className="text-sm font-bold" style={{ color: "var(--text)" }}>
-            {drawn.card.nameTh ?? drawn.card.name} — {drawn.orientation === "upright" ? "สถานการณ์" : "สิ่งท้าทาย"}
-          </h3>
-          <p className="mt-1.5 text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>
-            {drawn.orientation === "upright" ? drawn.card.meaningUpright : drawn.card.meaningReversed}
-          </p>
-        </section>
-      ))}
+      {aiReading &&
+        drawnCards.map((drawn, index) => (
+          <section
+            key={`${drawn.card.id}-interp-${index}`}
+            className="mt-3 rounded-2xl border border-border border-l-4 border-l-accent bg-bg-elevated p-4"
+          >
+            <h3 className="text-sm font-bold text-fg">
+              {drawn.card.nameTh ?? drawn.card.name} — {drawn.orientation === "upright" ? "สถานการณ์" : "สิ่งท้าทาย"}
+            </h3>
+            <p className="mt-1.5 text-sm leading-relaxed text-fg-muted">
+              {drawn.orientation === "upright" ? drawn.card.meaningUpright : drawn.card.meaningReversed}
+            </p>
+          </section>
+        ))}
 
       {/* ── Card structure (if available) ── */}
       {aiReading?.cardStructure && (
-        <section className="mt-3 rounded-2xl border p-4" style={{ borderColor: "var(--border)", background: "var(--bg-elevated)" }}>
-          <h2 className="text-sm font-bold" style={{ color: "var(--text)" }}>รายละเอียด</h2>
-          <p className="mt-2 text-sm leading-relaxed whitespace-pre-line" style={{ color: "var(--text-muted)" }}>
+        <section className="mt-3 rounded-2xl border border-border bg-bg-elevated p-4">
+          <h2 className="text-sm font-bold text-fg">รายละเอียด</h2>
+          <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-fg-muted">
             {aiReading.cardStructure}
           </p>
         </section>
       )}
 
       {/* ── Chat / Follow-up ── */}
-      <section className="mt-4 rounded-2xl border p-4" style={{ borderColor: "var(--border)", background: "var(--bg-elevated)" }}>
-        <h2 className="text-sm font-bold" style={{ color: "var(--text)" }}>ถามเกี่ยวกับไพ่</h2>
-        <p className="mt-1 text-xs" style={{ color: "var(--text-subtle)" }}>
-          ถามคำถามเพิ่มเติมเกี่ยวกับผลที่เปิดได้
-        </p>
+      <section className="mt-4 rounded-2xl border border-border bg-bg-elevated p-4">
+        <h2 className="text-sm font-bold text-fg">ถามเกี่ยวกับไพ่</h2>
+        <p className="mt-1 text-xs text-fg-subtle">ถามคำถามเพิ่มเติมเกี่ยวกับผลที่เปิดได้</p>
 
-        <div className="mt-3 max-h-60 space-y-2 overflow-y-auto rounded-xl border p-3" style={{ borderColor: "var(--border)", background: "var(--surface-1)" }}>
+        <div className="mt-3 max-h-60 space-y-2 overflow-y-auto rounded-xl border border-border bg-surface p-3">
           {chatMessages.length === 0 ? (
-            <p className="text-sm" style={{ color: "var(--text-subtle)" }}>
-              ยังไม่มีข้อความ ลองถามคำถามดูสิ
-            </p>
+            <p className="text-sm text-fg-subtle">ยังไม่มีข้อความ ลองถามคำถามดูสิ</p>
           ) : (
             chatMessages.map((m, idx) => (
               <div
                 key={`${m.role}-${idx}`}
-                className="rounded-xl px-3 py-2 text-sm leading-relaxed"
-                style={{
-                  marginLeft: m.role === "user" ? "1.5rem" : "0",
-                  marginRight: m.role === "assistant" ? "1.5rem" : "0",
-                  background: m.role === "user" ? "var(--purple-100)" : "var(--surface-1)",
-                  color: "var(--text)",
-                }}
+                className={cn(
+                  "rounded-xl px-3 py-2 text-sm leading-relaxed text-fg",
+                  m.role === "user" ? "ml-6 bg-accent-soft" : "mr-6 bg-surface"
+                )}
               >
                 {m.text}
               </div>
@@ -346,8 +357,8 @@ export default function ResultClient() {
           )}
           {chatLoading && (
             <div className="flex items-center gap-2">
-              <div className="h-3 w-3 animate-pulse rounded-full" style={{ background: "var(--purple-400)" }} />
-              <p className="text-sm" style={{ color: "var(--text-subtle)" }}>กำลังพิมพ์...</p>
+              <div className="h-3 w-3 animate-pulse rounded-full bg-accent" />
+              <p className="text-sm text-fg-subtle">กำลังพิมพ์...</p>
             </div>
           )}
         </div>
@@ -356,44 +367,33 @@ export default function ResultClient() {
           <input
             value={chatInput}
             onChange={(e) => setChatInput(e.target.value)}
-            onKeyDown={(e) => { if (e.key === "Enter") sendFollowUpQuestion(); }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") sendFollowUpQuestion();
+            }}
             placeholder="พิมพ์คำถามเพิ่มเติม..."
-            className="min-h-10 flex-1 rounded-xl border px-3 py-2 text-sm outline-none transition focus:ring-2"
-            style={{
-              borderColor: "var(--border)",
-              background: "var(--bg-elevated)",
-              color: "var(--text)",
-              "--tw-ring-color": "var(--ring)",
-            } as React.CSSProperties}
+            className="min-h-10 flex-1 rounded-xl border border-border bg-bg-elevated px-3 py-2 text-sm text-fg outline-none transition focus:ring-2 focus:ring-ring"
           />
-          <button
+          <Button
             type="button"
             onClick={sendFollowUpQuestion}
             disabled={chatLoading || !chatInput.trim()}
-            className="min-h-10 rounded-xl px-4 py-2 text-sm font-semibold text-white transition disabled:opacity-40"
-            style={{ background: "var(--purple-500)" }}
+            size="sm"
+            className="h-10 rounded-xl px-4"
           >
             ส่ง
-          </button>
+          </Button>
         </div>
       </section>
 
       {/* ── Bottom actions ── */}
-      <div className="mt-6 flex gap-3">
-        <button
-          type="button"
-          onClick={handleSave}
-          className="flex-1 rounded-full py-3 text-sm font-semibold text-white transition"
-          style={{ background: "var(--purple-500)" }}
-        >
-          บันทึกผล
-        </button>
-        <Link
-          href="/tarot"
-          className="flex flex-1 items-center justify-center rounded-full border py-3 text-sm font-semibold transition"
-          style={{ borderColor: "var(--border-strong)", color: "var(--text-muted)" }}
-        >
-          เปิดไพ่ใหม่
+      <div className="mt-6 grid grid-cols-2 gap-3">
+        <Button className="w-full" size="lg" onClick={toggleSaved}>
+          {savedId ? "Saved" : "Save to Library"}
+        </Button>
+        <Link href="/tarot" className="block">
+          <Button className="w-full" size="lg" variant="secondary">
+            New Reading
+          </Button>
         </Link>
       </div>
     </main>

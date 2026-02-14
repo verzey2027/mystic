@@ -10,15 +10,21 @@ export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
 };
 
 const base =
-  "inline-flex items-center justify-center gap-2 rounded-2xl font-semibold " +
-  "transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring " +
-  "disabled:opacity-50 disabled:pointer-events-none";
+  "inline-flex items-center justify-center gap-2 rounded-[var(--radius-lg)] font-semibold " +
+  "transition-[transform,box-shadow,background-color,color,border-color] duration-150 " +
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-bg " +
+  "disabled:pointer-events-none disabled:opacity-50 " +
+  "hover:-translate-y-0.5 active:translate-y-px";
 
 const variants: Record<Variant, string> = {
-  primary: "bg-accent text-accent-ink hover:bg-accent-hover",
-  secondary: "bg-bg-elevated text-fg border border-border hover:border-border-strong",
-  ghost: "bg-transparent text-fg-muted border border-border hover:bg-surface hover:text-fg",
-  danger: "bg-danger/10 text-danger border border-danger/30 hover:bg-danger/20",
+  primary:
+    "bg-accent text-accent-ink shadow-[var(--shadow-soft)] hover:bg-accent-hover",
+  secondary:
+    "bg-bg-elevated text-fg border border-border shadow-[var(--shadow-soft)] hover:border-border-strong",
+  ghost:
+    "bg-transparent text-fg-muted border border-border hover:bg-surface hover:text-fg",
+  danger:
+    "bg-danger/10 text-danger border border-danger/30 hover:bg-danger/20",
 };
 
 const sizes: Record<Size, string> = {
@@ -34,6 +40,9 @@ export function Button({
   ...props
 }: ButtonProps) {
   return (
-    <button className={cn(base, variants[variant], sizes[size], className)} {...props} />
+    <button
+      className={cn(base, variants[variant], sizes[size], className)}
+      {...props}
+    />
   );
 }

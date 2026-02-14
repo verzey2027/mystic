@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { cardMeaning, parseCardTokens } from "@/lib/tarot/engine";
 import { buildTarotPrompt } from "@/lib/ai/prompts";
+import { retrieveRag, formatRagContext, guessIntentsFromText } from "@/lib/rag/retriever";
 
 type GeminiTarotResponse = {
   summary: string;
@@ -72,13 +73,33 @@ export async function POST(req: Request) {
     const countMap: Record<number, 1 | 2 | 3 | 4 | 10> = { 1: 1, 2: 2, 3: 3, 4: 4, 10: 10 };
     const spreadType = countMap[body.count ?? cards.length] ?? 3;
 
-    // Build prompt using new prompt builder
-    const prompt = buildTarotPrompt({
-      cards,
-      count: body.count ?? cards.length,
-      question: body.question,
-      spreadType,
+    const question = body.question;
+
+    // --- RAG (local-file prototype) ---
+    const intent = guessIntentsFromText(question ?? "")[0];
+    const ragQuery = [
+      question ?? "",
+      ...cards.map((c) => c.card.nameTh ?? c.card.name),
+    ]
+      .filter(Boolean)
+      .join("\n");
+
+    const rag = retrieveRag({
+      query: ragQuery,
+      systemId: "tarot_th",
+      intent,
+      limit: 6,
     });
+
+    // Build prompt using prompt builder + attach retrieved context + examples
+    const prompt =
+      buildTarotPrompt({
+        cards,
+        count: body.count ?? cards.length,
+        question,
+        spreadType,
+      }) + formatRagContext(rag.chunks);
+
 
     const fallbackStructure = cards
       .map((drawn, i) => {

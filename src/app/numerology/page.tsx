@@ -1,157 +1,246 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
-import { trackEvent } from "@/lib/analytics/tracking";
-import { evaluatePaywall, recordFreeReading } from "@/lib/monetization/paywall";
-import { runReadingPipeline } from "@/lib/reading/pipeline";
+import { FormEvent, useMemo, useState } from "react";
+import { Button } from "@/components/ui/Button";
+import { Card, CardDesc, CardTitle } from "@/components/ui/Card";
+import { Input, Label, HelperText } from "@/components/ui/Input";
 
-function normalizeText(value: unknown): string {
-  if (typeof value === "string") return value;
-  if (typeof value === "number" || typeof value === "boolean") return String(value);
-  if (Array.isArray(value)) return value.map((v) => normalizeText(v)).join("\n");
-  if (value && typeof value === "object") {
-    try {
-      const obj = value as Record<string, unknown>;
-      const numericKeys = Object.keys(obj).every((k) => /^\d+$/.test(k));
-      if (numericKeys) {
-        return Object.keys(obj)
-          .sort((a, b) => Number(a) - Number(b))
-          .map((k) => normalizeText(obj[k]))
-          .join("\n");
-      }
-      return JSON.stringify(obj, null, 2);
-    } catch {
-      return "";
-    }
-  }
-  return "";
+type NumerologyResult = {
+  lifePath: number;
+  destiny: number;
+  soulUrge: number;
+  chart: {
+    birthDigits: number[];
+    birthSum: number;
+    nameLetters: { char: string; value: number }[];
+    destinySum: number;
+    vowelLetters: { char: string; value: number }[];
+    soulSum: number;
+  };
+};
+
+const MASTER_NUMBERS = new Set([11, 22, 33]);
+
+function sumDigits(n: number): number {
+  return String(Math.abs(n))
+    .split("")
+    .reduce((acc, d) => acc + Number(d), 0);
+}
+
+function reduceNumber(n: number): number {
+  let cur = n;
+  while (cur > 9 && !MASTER_NUMBERS.has(cur)) cur = sumDigits(cur);
+  return cur;
+}
+
+function digitsFromBirthDate(isoDate: string): number[] {
+  // Accepts YYYY-MM-DD (native <input type="date"/>)
+  return isoDate
+    .replace(/[^0-9]/g, "")
+    .split("")
+    .map((d) => Number(d))
+    .filter((d) => Number.isFinite(d));
+}
+
+function letterValue(char: string): number {
+  // Pythagorean numerology mapping (A/J/S=1 ... I/R=9)
+  const c = char.toUpperCase();
+  if (c < "A" || c > "Z") return 0;
+  const index = c.charCodeAt(0) - 64; // A=1
+  return ((index - 1) % 9) + 1;
+}
+
+function isVowel(char: string): boolean {
+  return /[AEIOUY]/i.test(char);
+}
+
+function shortDescriptor(kind: "lifePath" | "destiny" | "soulUrge", value: number): string {
+  const base: Record<number, string> = {
+    1: "Leader",
+    2: "Harmonizer",
+    3: "Creator",
+    4: "Builder",
+    5: "Explorer",
+    6: "Nurturer",
+    7: "Seeker",
+    8: "Achiever",
+    9: "Humanitarian",
+    11: "Intuitive",
+    22: "Master Builder",
+    33: "Teacher",
+  };
+
+  const label = base[value] ?? "—";
+  if (kind === "soulUrge") return label;
+  if (kind === "destiny") return label;
+  return label;
+}
+
+function computeResult(birthDate: string, fullName: string): NumerologyResult | null {
+  const birthDigits = digitsFromBirthDate(birthDate);
+  if (!birthDigits.length) return null;
+
+  const birthSum = birthDigits.reduce((a, b) => a + b, 0);
+  const lifePath = reduceNumber(birthSum);
+
+  const letters = fullName
+    .trim()
+    .split("")
+    .map((char) => ({ char, value: letterValue(char) }))
+    .filter((x) => x.value > 0);
+
+  const destinySum = letters.reduce((acc, x) => acc + x.value, 0);
+  const destiny = reduceNumber(destinySum);
+
+  const vowelLetters = letters.filter((x) => isVowel(x.char));
+  const soulSum = vowelLetters.reduce((acc, x) => acc + x.value, 0);
+  const soulUrge = reduceNumber(soulSum);
+
+  return {
+    lifePath,
+    destiny,
+    soulUrge,
+    chart: { birthDigits, birthSum, nameLetters: letters, destinySum, vowelLetters, soulSum },
+  };
+}
+
+function StatCard({ label, value, desc }: { label: string; value: number; desc: string }) {
+  return (
+    <Card className="p-4 shadow-[var(--shadow-soft)]">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-xs font-medium text-fg-muted">{label}</p>
+          <p className="mt-2 text-4xl font-semibold tracking-tight text-fg">{value}</p>
+          <p className="mt-1 text-sm text-fg-muted">{desc}</p>
+        </div>
+      </div>
+    </Card>
+  );
 }
 
 export default function NumerologyPage() {
-  const [phone, setPhone] = useState("");
+  const [birthDate, setBirthDate] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [submitted, setSubmitted] = useState<{ birthDate: string; fullName: string } | null>(null);
   const [error, setError] = useState("");
-  const [submittedPhone, setSubmittedPhone] = useState<string | null>(null);
-  const [aiReading, setAiReading] = useState<null | { summary: string; cardStructure: string }>(null);
 
-  useEffect(() => {
-    trackEvent("reading_start", { vertical: "numerology", step: "form_view" });
-  }, []);
-
-  const session = useMemo(
-    () => (submittedPhone ? runReadingPipeline({ kind: "numerology", phone: submittedPhone }) : null),
-    [submittedPhone],
+  const result = useMemo(
+    () => (submitted ? computeResult(submitted.birthDate, submitted.fullName) : null),
+    [submitted],
   );
-  const paywall = useMemo(
-    () =>
-      session
-        ? evaluatePaywall({ vertical: "numerology", stage: "result", sessionId: session.sessionId, hasQuestion: true })
-        : null,
-    [session],
-  );
-
-  useEffect(() => {
-    if (!session || !submittedPhone) return;
-    recordFreeReading();
-    trackEvent("reading_result_viewed", {
-      vertical: "numerology",
-      sessionId: session.sessionId,
-      step: "result_view",
-    });
-
-    fetch("/api/ai/numerology", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ phone: submittedPhone }),
-    })
-      .then(async (res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (!data?.ai) return;
-        setAiReading({
-          summary: normalizeText(data.ai.summary),
-          cardStructure: normalizeText(data.ai.cardStructure),
-        });
-      })
-      .catch(() => {});
-
-    if (paywall?.show)
-      trackEvent("paywall_shown", {
-        vertical: "numerology",
-        sessionId: session.sessionId,
-        reason: paywall.reason,
-        ctaVariant: paywall.variant,
-      });
-  }, [paywall?.reason, paywall?.show, paywall?.variant, session, submittedPhone]);
 
   function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const next = runReadingPipeline({ kind: "numerology", phone });
-    if (!next) {
-      setError("กรุณากรอกเบอร์ไทย 10 หลัก เช่น 0812345678 หรือ +66812345678");
-      setSubmittedPhone(null);
+
+    const name = fullName.trim();
+    if (!birthDate) {
+      setError("Please select your birth date.");
+      setSubmitted(null);
       return;
     }
-    trackEvent("reading_submitted", { vertical: "numerology", step: "form_submit" });
+    if (name.length < 2) {
+      setError("Please enter your full name.");
+      setSubmitted(null);
+      return;
+    }
+
     setError("");
-    setAiReading(null);
-    setSubmittedPhone(phone);
+    setSubmitted({ birthDate, fullName: name });
   }
 
   return (
-    <main className="mx-auto w-full max-w-lg px-5 py-6">
-      <h1 className="text-2xl font-bold" style={{ color: "var(--text)" }}>เลขศาสตร์</h1>
-      <p className="mt-1 text-sm" style={{ color: "var(--text-muted)" }}>วิเคราะห์เบอร์มงคล</p>
+    <main className="mx-auto w-full max-w-lg px-5 pb-10 pt-8">
+      <header className="space-y-1">
+        <h1 className="text-3xl font-semibold tracking-tight text-fg">Numerology</h1>
+        <p className="text-sm text-fg-muted">Birth date + name → your core numbers</p>
+      </header>
 
-      <form onSubmit={onSubmit} className="mt-5 rounded-2xl border p-5" style={{ borderColor: "var(--border)", background: "var(--bg-elevated)" }}>
-        <label className="text-sm font-medium" style={{ color: "var(--purple-500)" }}>
-          เบอร์โทรศัพท์
-        </label>
-        <input
-          type="tel"
-          inputMode="numeric"
-          value={phone}
-          onChange={(event) => setPhone(event.target.value)}
-          required
-          placeholder="08x-xxx-xxxx"
-          className="mt-2 w-full rounded-xl border px-4 py-3 text-sm outline-none transition focus:ring-2"
-          style={{
-            borderColor: "var(--border)",
-            background: "var(--surface-1)",
-            color: "var(--text)",
-            "--tw-ring-color": "var(--ring)",
-          } as React.CSSProperties}
-        />
-        <button
-          type="submit"
-          className="mt-4 w-full rounded-2xl py-3 text-sm font-semibold text-accent-ink transition bg-accent hover:bg-accent-hover"
-        >
-          วิเคราะห์เบอร์
-        </button>
+      <Card className="mt-6 p-5">
+        <CardTitle className="text-base">Calculate</CardTitle>
+        <CardDesc className="mt-1">Enter your details to see your Life Path, Destiny, and Soul Urge.</CardDesc>
 
-        {error && (
-          <p className="mt-3 text-sm" style={{ color: "var(--danger)" }}>{error}</p>
-        )}
-      </form>
-
-      {submittedPhone && (
-        <section className="mt-5 space-y-4">
-          <div className="rounded-2xl border p-5" style={{ borderColor: "var(--border)", background: "var(--bg-elevated)" }}>
-            <h2 className="text-sm font-bold" style={{ color: "var(--purple-500)" }}>สรุปคำทำนาย</h2>
-            {aiReading ? (
-              <p className="mt-2 whitespace-pre-line text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>{aiReading.summary}</p>
-            ) : (
-              <div className="mt-2 flex items-center gap-2">
-                <div className="h-3 w-3 animate-pulse rounded-full" style={{ background: "var(--purple-400)" }} />
-                <p className="text-sm" style={{ color: "var(--text-subtle)" }}>กำลังวิเคราะห์...</p>
-              </div>
-            )}
+        <form onSubmit={onSubmit} className="mt-5 space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="birthDate">Birth date</Label>
+            <Input
+              id="birthDate"
+              type="date"
+              value={birthDate}
+              onChange={(e) => setBirthDate(e.target.value)}
+              required
+            />
+            <HelperText>We use this to calculate your Life Path number.</HelperText>
           </div>
 
-          {aiReading && (
-            <div className="rounded-2xl border p-5" style={{ borderColor: "var(--border)", background: "var(--bg-elevated)" }}>
-              <h2 className="text-sm font-bold" style={{ color: "var(--purple-500)" }}>พลังตัวเลข</h2>
-              <p className="mt-2 whitespace-pre-line text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>{aiReading.cardStructure}</p>
+          <div className="space-y-2">
+            <Label htmlFor="fullName">Full name</Label>
+            <Input
+              id="fullName"
+              type="text"
+              autoComplete="name"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              required
+              placeholder="e.g. Jane Appleseed"
+            />
+            <HelperText>We use your name to calculate Destiny and Soul Urge.</HelperText>
+          </div>
+
+          <Button type="submit" size="lg" className="w-full">
+            Calculate
+          </Button>
+
+          {error && <p className="text-sm text-danger">{error}</p>}
+        </form>
+      </Card>
+
+      {result && (
+        <section className="mt-6 space-y-4">
+          <div className="grid grid-cols-3 gap-3">
+            <StatCard label="Life Path" value={result.lifePath} desc={shortDescriptor("lifePath", result.lifePath)} />
+            <StatCard label="Destiny" value={result.destiny} desc={shortDescriptor("destiny", result.destiny)} />
+            <StatCard label="Soul Urge" value={result.soulUrge} desc={shortDescriptor("soulUrge", result.soulUrge)} />
+          </div>
+
+          <Card className="p-5">
+            <CardTitle>Chart</CardTitle>
+            <CardDesc className="mt-1">A quick breakdown of how your numbers were computed.</CardDesc>
+
+            <div className="mt-4 space-y-4">
+              <div className="rounded-2xl border border-border bg-bg-elevated p-4">
+                <p className="text-xs font-medium text-fg-muted">Birth date digits</p>
+                <p className="mt-2 text-sm text-fg">
+                  {result.chart.birthDigits.join(" · ")} <span className="text-fg-muted">(sum {result.chart.birthSum})</span>
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-border bg-bg-elevated p-4">
+                <p className="text-xs font-medium text-fg-muted">Name values</p>
+                <p className="mt-2 text-sm text-fg">
+                  {result.chart.nameLetters.slice(0, 40).map((x, idx) => (
+                    <span key={`${x.char}-${idx}`} className="tabular-nums">
+                      {x.char.toUpperCase()}:{x.value}{idx < Math.min(result.chart.nameLetters.length, 40) - 1 ? "  " : ""}
+                    </span>
+                  ))}
+                  <span className="text-fg-muted"> (sum {result.chart.destinySum})</span>
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-border bg-bg-elevated p-4">
+                <p className="text-xs font-medium text-fg-muted">Vowels (Soul Urge)</p>
+                <p className="mt-2 text-sm text-fg">
+                  {result.chart.vowelLetters.length
+                    ? result.chart.vowelLetters.map((x, idx) => (
+                        <span key={`${x.char}-${idx}`} className="tabular-nums">
+                          {x.char.toUpperCase()}:{x.value}{idx < result.chart.vowelLetters.length - 1 ? "  " : ""}
+                        </span>
+                      ))
+                    : "—"}
+                  <span className="text-fg-muted"> (sum {result.chart.soulSum})</span>
+                </p>
+              </div>
             </div>
-          )}
+          </Card>
         </section>
       )}
     </main>

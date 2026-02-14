@@ -100,6 +100,33 @@ export default function RootLayout({
     <html lang="th">
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+        <script
+          // Set defaults BEFORE paint: Thai + Light (user can override later in /profile)
+          dangerouslySetInnerHTML={{
+            __html: `(() => {
+  try {
+    const LS_LANGUAGE = "mf:language";
+    const LS_THEME = "mf:theme";
+
+    if (localStorage.getItem(LS_LANGUAGE) == null) {
+      localStorage.setItem(LS_LANGUAGE, JSON.stringify("th"));
+    }
+
+    if (localStorage.getItem(LS_THEME) == null) {
+      localStorage.setItem(LS_THEME, JSON.stringify("light"));
+    }
+
+    const rawTheme = localStorage.getItem(LS_THEME);
+    const theme = rawTheme ? JSON.parse(rawTheme) : "light";
+    const el = document.documentElement;
+    if (theme === "system") el.removeAttribute("data-theme");
+    else el.setAttribute("data-theme", theme);
+  } catch (e) {
+    // ignore
+  }
+})();`,
+          }}
+        />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-bg pb-20 text-fg`}>
         {children}
