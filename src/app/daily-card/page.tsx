@@ -4,10 +4,11 @@ import Image from "next/image";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { HeartSave } from "@/components/ui/HeartSave";
 import { useLibrary } from "@/lib/library/useLibrary";
-import { buildSavedDailyCardReading } from "@/lib/library/storage";
+import { buildSavedDailyCardReading, removeReading, upsertReading } from "@/lib/library/storage";
 import { TAROT_DECK } from "@/lib/tarot/deck";
 import { cardMeaning } from "@/lib/tarot/engine";
 import { DrawnCard } from "@/lib/tarot/types";
+import { cn } from "@/lib/cn";
 
 const STORAGE_KEY = "reffortune_daily_card";
 const BACK_IMAGE = "https://www.reffortune.com/icon/backcard.png";
@@ -50,6 +51,11 @@ function saveTodayCard(drawn: DrawnCard) {
   );
 }
 
+function normalizeText(value: unknown): string {
+  if (typeof value === "string") return value;
+  return "";
+}
+
 export default function DailyCardPage() {
   const lib = useLibrary();
   const [savedId, setSavedId] = useState<string | null>(null);
@@ -59,6 +65,7 @@ export default function DailyCardPage() {
   const [flipped, setFlipped] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [aiReading, setAiReading] = useState<null | { summary: string; cardStructure: string }>(null);
 
   useEffect(() => {
     const saved = loadTodayCard();
@@ -71,6 +78,56 @@ export default function DailyCardPage() {
       setDrawn(drawOneCard());
     }
   }, []);
+
+  // Fetch AI reading for the day
+  useEffect(() => {
+    if (!drawn || !flipped) return;
+
+    const controller = new AbortController();
+    const dayKey = getTodayKey();
+
+    // Fallback based on engine
+    const fallback = {
+      summary: cardMeaning(drawn),
+      cardStructure: "เปิดไพ่สำเร็จ รับพลังงานบวกสำหรับวันนี้",
+    };
+
+    const fallbackTimer = setTimeout(() => {
+      setAiReading((prev) => prev ?? fallback);
+    }, 7000);
+
+    fetch("/api/ai/daily-card", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ cardId: drawn.card.id, orientation: drawn.orientation, dayKey }),
+      signal: controller.signal,
+    })
+      .then(async (res) => {
+        if (!res.ok) return null;
+        const data = await res.json();
+        return data?.ai ?? null;
+      })
+      .then((ai) => {
+        if (!ai) {
+          setAiReading((prev) => prev ?? fallback);
+          return;
+        }
+        setAiReading({
+          summary: normalizeText(ai.summary) || fallback.summary,
+          cardStructure: normalizeText(ai.cardStructure) || fallback.cardStructure,
+        });
+      })
+      .catch(() => {
+        setAiReading((prev) => prev ?? fallback);
+      })
+      .finally(() => {
+        clearTimeout(fallbackTimer);
+      });
+
+    return () => {
+      controller.abort();
+    };
+  }, [drawn, flipped]);
 
   useEffect(() => {
     const dayKey = getTodayKey();
@@ -93,30 +150,10 @@ export default function DailyCardPage() {
 
   const orientationLabel = drawn?.orientation === "upright" ? "ตั้งตรง" : "กลับหัว";
 
-  const guidance = useMemo(() => {
-    if (!drawn) return null;
-    const focus =
-      drawn.orientation === "upright"
-        ? drawn.card.keywordsUpright.slice(0, 3)
-        : drawn.card.keywordsReversed.slice(0, 3);
-    return {
-      energy: cardMeaning(drawn),
-      focus,
-      action:
-        drawn.orientation === "upright"
-          ? "เลือก 1 งานสำคัญและลงมือภายในวันนี้ทันที"
-          : "ชะลอการตัดสินใจที่เสี่ยง แล้วตรวจข้อมูลอีก 1 รอบ",
-      avoid:
-        drawn.orientation === "upright"
-          ? "อย่าทำหลายเรื่องพร้อมกันจนเสียโฟกัส"
-          : "อย่าปล่อยอารมณ์ชั่ววูบมากำหนดการกระทำ",
-    };
-  }, [drawn]);
-
   const shareText = drawn
     ? `ไพ่รายวัน: ${drawn.card.nameTh ?? drawn.card.name} (${orientationLabel}) — MysticFlow`
     : "";
-  const shareUrl = "https://www.reffortune.com/daily-card";
+  const shareUrl = "https://tarot.reffortune.com/daily-card";
 
   const handleShare = useCallback(
     async (platform: string) => {
@@ -156,7 +193,7 @@ export default function DailyCardPage() {
     if (!drawn) return;
 
     if (savedId) {
-      lib.remove(savedId);
+      removeReading(savedId);
       setSavedId(null);
       return;
     }
@@ -167,37 +204,35 @@ export default function DailyCardPage() {
     const dayKey = getTodayKey();
     const title = `Daily Card — ${drawn.card.nameTh ?? drawn.card.name}`;
 
-    lib.upsert(
+    upsertReading(
       buildSavedDailyCardReading({
         id,
         dayKey,
         cardId: drawn.card.id,
         orientation: drawn.orientation,
         title,
-        summary: guidance?.energy,
-        tags: [drawn.card.name, ...(drawn.card.keywordsUpright ?? []), ...(drawn.card.keywordsReversed ?? [])],
-        snapshot: guidance
-          ? {
-              dayKey,
-              cardId: drawn.card.id,
-              orientation: drawn.orientation,
-              output: {
-                message: guidance.energy,
-                focus: guidance.focus,
-                advice: { action: guidance.action, avoid: guidance.avoid },
-              },
-            }
-          : undefined,
+        summary: aiReading?.summary ?? cardMeaning(drawn),
+        tags: [drawn.card.name, "daily"],
+        snapshot: {
+          dayKey,
+          cardId: drawn.card.id,
+          orientation: drawn.orientation,
+          output: {
+            message: aiReading?.summary ?? cardMeaning(drawn),
+            focus: [],
+            advice: { action: aiReading?.cardStructure || "", avoid: "" },
+          },
+        },
       })
     );
 
     setSavedId(id);
-  }, [drawn, guidance?.energy, lib, savedId]);
+  }, [aiReading, drawn, savedId]);
 
   if (!drawn) {
     return (
       <main className="mx-auto w-full max-w-lg px-5 py-10">
-        <p className="text-center text-sm" style={{ color: "var(--text-subtle)" }}>กำลังเตรียมไพ่...</p>
+        <p className="text-center text-sm text-fg-subtle">กำลังเตรียมไพ่...</p>
       </main>
     );
   }
@@ -207,10 +242,10 @@ export default function DailyCardPage() {
       {/* ── Header ── */}
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 text-center">
-          <h1 className="text-2xl font-bold" style={{ color: "var(--text)" }}>
+          <h1 className="text-2xl font-bold text-fg">
             ไพ่รายวัน
           </h1>
-          <p className="mt-1 text-sm" style={{ color: "var(--text-subtle)" }}>
+          <p className="mt-1 text-sm text-fg-subtle">
             {alreadyDrawn
               ? "คุณเปิดไพ่วันนี้แล้ว กลับมาเปิดใหม่ได้พรุ่งนี้"
               : "แตะที่ไพ่เพื่อเปิดพลังงานประจำวัน"}
@@ -239,29 +274,16 @@ export default function DailyCardPage() {
         >
           {/* Back face */}
           <div
-            className="absolute inset-0 overflow-hidden rounded-2xl border-2"
-            style={{
-              backfaceVisibility: "hidden",
-              borderColor: "var(--purple-200)",
-              boxShadow: !flipped ? "0 4px 24px rgba(139,92,246,0.15)" : "none",
-            }}
+            className="absolute inset-0 overflow-hidden rounded-2xl border-2 border-accent-soft shadow-[var(--shadow-soft)] bg-bg-elevated"
+            style={{ backfaceVisibility: "hidden" }}
           >
             <Image src={BACK_IMAGE} alt="หลังไพ่" fill sizes="200px" className="object-cover" />
             {!flipped && (
-              <div
-                className="absolute inset-0 rounded-2xl"
-                style={{
-                  background: "radial-gradient(circle, rgba(139,92,246,0.1) 0%, transparent 70%)",
-                  animation: "daily-pulse 2s ease-in-out infinite",
-                }}
-              />
+              <div className="absolute inset-0 rounded-2xl bg-accent/5 animate-pulse" />
             )}
             {!flipped && (
               <div className="absolute inset-x-0 bottom-4 text-center">
-                <span
-                  className="rounded-xl px-3 py-1 text-[11px] font-bold text-white"
-                  style={{ background: "var(--purple-500)" }}
-                >
+                <span className="rounded-xl px-3 py-1 text-[11px] font-bold text-accent-ink bg-accent">
                   แตะเพื่อเปิด
                 </span>
               </div>
@@ -270,18 +292,19 @@ export default function DailyCardPage() {
 
           {/* Front face */}
           <div
-            className="absolute inset-0 overflow-hidden rounded-2xl border-2"
-            style={{
-              backfaceVisibility: "hidden",
-              transform: "rotateY(180deg)",
-              borderColor: "var(--purple-300)",
-              boxShadow: "0 4px 24px rgba(139,92,246,0.15)",
-            }}
+            className="absolute inset-0 overflow-hidden rounded-2xl border-2 border-accent/20 shadow-[var(--shadow-soft)] bg-bg-elevated"
+            style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
           >
             {drawn.card.image ? (
-              <Image src={drawn.card.image} alt={drawn.card.name} fill sizes="200px" className="object-cover" />
+              <Image 
+                src={drawn.card.image} 
+                alt={drawn.card.name} 
+                fill 
+                sizes="200px" 
+                className={cn("object-cover", drawn.orientation === "reversed" && "rotate-180")} 
+              />
             ) : (
-              <div className="flex h-full w-full items-center justify-center" style={{ background: "var(--purple-100)" }}>
+              <div className="flex h-full w-full items-center justify-center bg-accent-soft">
                 <span className="text-4xl">🔮</span>
               </div>
             )}
@@ -290,59 +313,39 @@ export default function DailyCardPage() {
       </div>
 
       {/* ── Card details (shown after flip) ── */}
-      {showDetails && guidance && (
+      {showDetails && (
         <div className="mt-6 space-y-4" style={{ animation: "tarot-fade-up 0.5s ease-out both" }}>
-          {/* Card name + orientation */}
           <div className="text-center">
-            <h2 className="text-lg font-bold" style={{ color: "var(--text)" }}>
+            <h2 className="text-lg font-bold text-fg">
               {drawn.card.nameTh ?? drawn.card.name}
             </h2>
-            <p className="mt-0.5 text-sm" style={{ color: "var(--text-muted)" }}>
+            <p className="mt-0.5 text-sm text-fg-muted">
               {drawn.card.name} • {orientationLabel}
             </p>
-            {/* Theme/Energy pills */}
-            <div className="mt-2 flex flex-wrap justify-center gap-1.5">
-              {guidance.focus.map((kw) => (
-                <span
-                  key={kw}
-                  className="rounded-xl px-3 py-1 text-xs font-medium"
-                  style={{ background: "var(--purple-100)", color: "var(--purple-600)" }}
-                >
-                  {kw}
-                </span>
-              ))}
+          </div>
+
+          <div className="rounded-2xl border border-border bg-bg-elevated p-5">
+            <h3 className="text-sm font-bold text-accent">สารจากจักรวาล</h3>
+            {aiReading ? (
+              <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-fg-muted">
+                {aiReading.summary}
+              </p>
+            ) : (
+              <div className="mt-2 flex items-center gap-2">
+                <div className="h-3 w-3 animate-pulse rounded-full bg-accent" />
+                <p className="text-sm text-fg-subtle">กำลังสรุปคำทำนาย...</p>
+              </div>
+            )}
+          </div>
+
+          {aiReading?.cardStructure && (
+            <div className="rounded-2xl border border-border bg-bg-elevated p-5">
+              <h3 className="text-sm font-bold text-fg">รายละเอียดเพิ่มเติม</h3>
+              <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-fg-muted">
+                {aiReading.cardStructure}
+              </p>
             </div>
-          </div>
-
-          {/* Guidance card */}
-          <div className="rounded-2xl border p-4" style={{ borderColor: "var(--border)", background: "var(--bg-elevated)" }}>
-            <h3 className="text-sm font-medium" style={{ color: "var(--purple-500)" }}>
-              คำแนะนำ
-            </h3>
-            <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>
-              {guidance.energy}
-            </p>
-          </div>
-
-          {/* Affirmation / Action */}
-          <div className="rounded-2xl border p-4" style={{ borderColor: "var(--border)", background: "var(--bg-elevated)" }}>
-            <h3 className="text-sm font-medium" style={{ color: "var(--success)" }}>
-              สิ่งที่ควรทำ
-            </h3>
-            <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>
-              {guidance.action}
-            </p>
-          </div>
-
-          {/* Avoid */}
-          <div className="rounded-2xl border p-4" style={{ borderColor: "var(--border)", background: "var(--bg-elevated)" }}>
-            <h3 className="text-sm font-medium" style={{ color: "var(--rose)" }}>
-              สิ่งที่ควรเลี่ยง
-            </h3>
-            <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>
-              {guidance.avoid}
-            </p>
-          </div>
+          )}
 
           {/* Share buttons */}
           <div className="flex items-center justify-center gap-3 pt-2">
@@ -355,24 +358,16 @@ export default function DailyCardPage() {
             <button type="button" onClick={() => handleShare("twitter")} className="flex h-10 w-10 items-center justify-center rounded-xl transition hover:scale-110" style={{ background: "#000" }} aria-label="Share X">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
             </button>
-            <button type="button" onClick={() => handleShare("copy")} className="flex h-10 w-10 items-center justify-center rounded-xl border transition hover:scale-110" style={{ borderColor: "var(--border-strong)", background: "var(--bg-elevated)" }} aria-label="Copy link">
+            <button type="button" onClick={() => handleShare("copy")} className="flex h-10 w-10 items-center justify-center rounded-xl border transition hover:scale-110 border-border-strong bg-bg-elevated" aria-label="Copy link">
               {copied ? (
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
               ) : (
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" /></svg>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" /></svg>
               )}
             </button>
           </div>
 
-          {/* Bottom actions */}
-          <div className="flex gap-3 pt-2">
-            <button
-              type="button"
-              onClick={handleSave}
-              className="flex-1 rounded-2xl py-3 text-sm font-semibold text-accent-ink transition bg-accent hover:bg-accent-hover"
-            >
-              บันทึก
-            </button>
+          <div className="mt-4">
             <button
               type="button"
               onClick={() => {
@@ -380,19 +375,16 @@ export default function DailyCardPage() {
                 setFlipped(false);
                 setShowDetails(false);
                 setAlreadyDrawn(false);
+                setAiReading(null);
                 setDrawn(drawOneCard());
               }}
-              className="flex-1 rounded-2xl border border-border-strong py-3 text-sm font-semibold text-fg-muted transition hover:bg-surface"
+              className="w-full rounded-2xl border border-border-strong py-3 text-sm font-semibold text-fg-muted transition hover:bg-surface"
             >
-              เปิดใหม่
+              เปิดใหม่ (Debug เท่านั้น)
             </button>
           </div>
         </div>
       )}
     </main>
   );
-
-  function handleSave() {
-    if (drawn) saveTodayCard(drawn);
-  }
 }

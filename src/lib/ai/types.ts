@@ -84,6 +84,12 @@ export interface NumerologyPromptParams {
   };
 }
 
+export interface DailyCardPromptParams {
+  card: TarotCard;
+  orientation: Orientation;
+  dayKey: string;
+}
+
 /**
  * Represents a single turn in a chat conversation
  */
