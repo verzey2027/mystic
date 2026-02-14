@@ -57,12 +57,29 @@ export default function SavedReadingDetailPage() {
 
   const entry = React.useMemo(() => lib.entries.find((e) => e.id === id), [id, lib.entries]);
 
+  // Loading state for library persistence
+  const [isReady, setIsReady] = React.useState(false);
+  React.useEffect(() => {
+    setIsReady(true);
+  }, []);
+
   if (!id) {
     return (
       <main className="mx-auto w-full max-w-lg px-5 py-8">
         <Card className="p-5 text-center">
           <p className="text-sm font-semibold text-fg">ไม่พบรายการ</p>
         </Card>
+      </main>
+    );
+  }
+
+  if (!isReady) {
+    return (
+      <main className="mx-auto w-full max-w-lg">
+        <AppBar title="รายละเอียด" />
+        <div className="px-5 py-10 text-center">
+          <p className="text-sm text-fg-muted">กำลังโหลดข้อมูล...</p>
+        </div>
       </main>
     );
   }

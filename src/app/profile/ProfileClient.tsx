@@ -98,10 +98,10 @@ function Row({
 }
 
 export function ProfileClient({ version }: { version?: string }) {
-  // Defaults: Thai + Light (as requested)
   const [language, setLanguage] = React.useState<Language>("th");
   const [theme, setTheme] = React.useState<ThemeChoice>("light");
   const [dailyReminder, setDailyReminder] = React.useState(false);
+  const [loaded, setLoaded] = React.useState(false);
 
   React.useEffect(() => {
     const initialLang = readLS<Language>(LS_LANGUAGE, "th");
@@ -111,22 +111,26 @@ export function ProfileClient({ version }: { version?: string }) {
     setLanguage(initialLang);
     setTheme(initialTheme);
     setDailyReminder(initialDaily);
+    setLoaded(true);
 
     applyTheme(initialTheme);
   }, []);
 
   React.useEffect(() => {
+    if (!loaded) return;
     writeLS(LS_LANGUAGE, language);
-  }, [language]);
+  }, [language, loaded]);
 
   React.useEffect(() => {
+    if (!loaded) return;
     writeLS(LS_THEME, theme);
     if (typeof document !== "undefined") applyTheme(theme);
-  }, [theme]);
+  }, [theme, loaded]);
 
   React.useEffect(() => {
+    if (!loaded) return;
     writeLS(LS_DAILY_REMINDER, dailyReminder);
-  }, [dailyReminder]);
+  }, [dailyReminder, loaded]);
 
   return (
     <div className="px-5 pb-8">

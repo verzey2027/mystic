@@ -14,8 +14,8 @@ export type RagChunk = {
   source: string;
 };
 
-const DOCS_DIR =
-  "/home/jameyannakon/.openclaw/agents/headpilot/workspace/projects/mysticflow/docs";
+// Use process.cwd() to resolve docs relative to project root in deployment (Next.js)
+const DOCS_DIR = path.join(process.cwd(), "public/docs");
 
 const FILES = {
   kb: "mysticg_divination_KB_full_th.md",
