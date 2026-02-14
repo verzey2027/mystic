@@ -17,19 +17,37 @@ export default function PickClient() {
   const router = useRouter();
   const rawCount = Number(searchParams.get("count") ?? "3");
   const count = allowedCounts.has(rawCount) ? rawCount : 3;
-  const shuffled = useMemo(() => shuffleCards(TAROT_DECK), []);
+  
+  const [shuffled, setShuffled] = useState<typeof TAROT_DECK>([]);
   const [selected, setSelected] = useState<string[]>([]);
   const [question, setQuestion] = useState("");
+  const [isShuffling, setIsShuffling] = useState(true);
+  
   const canSelectMore = selected.length < count;
+
+  // Initial shuffle animation
+  useEffect(() => {
+    setShuffled(shuffleCards(TAROT_DECK));
+    const timer = setTimeout(() => setIsShuffling(false), 1500);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     trackEvent("reading_start", { vertical: "tarot", step: "pick_view", count });
   }, [count]);
 
-  const onSelect = useCallback(
+  const onToggleSelect = useCallback(
     (cardId: string) => {
-      if (!canSelectMore || selected.some((token) => token.startsWith(`${cardId}.`))) return;
-      setSelected((prev) => [...prev, `${cardId}.${randomOrientation()}`]);
+      const pickedIndex = selected.findIndex((token) => token.startsWith(`${cardId}.`));
+      
+      if (pickedIndex >= 0) {
+        // Deselect
+        setSelected((prev) => prev.filter((_, i) => i !== pickedIndex));
+      } else {
+        // Select
+        if (!canSelectMore) return;
+        setSelected((prev) => [...prev, `${cardId}.${randomOrientation()}`]);
+      }
     },
     [canSelectMore, selected]
   );
@@ -47,8 +65,15 @@ export default function PickClient() {
     router.push(`/tarot/result?${params.toString()}`);
   }
 
-  // Use all 78 cards for the selection
-  const displayCards = shuffled;
+  // Split 78 cards into 5 rows (approx 15-16 cards each)
+  const rows = useMemo(() => {
+    const r = [];
+    const size = 16;
+    for (let i = 0; i < shuffled.length; i += size) {
+      r.push(shuffled.slice(i, i + size));
+    }
+    return r;
+  }, [shuffled]);
 
   const steps = [
     { num: 1, label: "เลือกสเปรด" },
@@ -153,17 +178,14 @@ export default function PickClient() {
         />
       </div>
 
-      {/* ── Overlapping Card Deck (Horizontal Scroll) ── */}
-      <div className="mt-10 relative h-64 w-full flex items-center">
-        <div 
-          className="flex overflow-x-auto px-10 gap-0 no-scrollbar"
-          style={{ 
-            maskImage: 'linear-gradient(to right, transparent, black 15%, black 85%, transparent)',
-            WebkitMaskImage: 'linear-gradient(to right, transparent, black 15%, black 85%, transparent)',
-          }}
-        >
-          <div className="flex -space-x-16 py-8">
-            {displayCards.map((card, idx) => {
+      {/* ── 5-6 Rows of Overlapping Cards ── */}
+      <div className="mt-8 flex flex-col gap-1 select-none">
+        {rows.map((row, rowIndex) => (
+          <div 
+            key={rowIndex} 
+            className="flex -space-x-12 px-8 overflow-x-auto no-scrollbar py-2"
+          >
+            {row.map((card, idx) => {
               const pickedIndex = selected.findIndex((token) => token.startsWith(`${card.id}.`));
               const isPicked = pickedIndex >= 0;
 
@@ -171,36 +193,31 @@ export default function PickClient() {
                 <button
                   key={`${card.id}-${idx}`}
                   type="button"
-                  disabled={!canSelectMore && !isPicked}
-                  onClick={() => onSelect(card.id)}
+                  onClick={() => onToggleSelect(card.id)}
                   className={cn(
-                    "relative w-32 aspect-[2.5/4] flex-shrink-0 transition-all duration-300 transform",
-                    isPicked
-                      ? "z-50 -translate-y-8 scale-110"
-                      : "hover:z-10 hover:-translate-y-4 shadow-xl",
-                    !canSelectMore && !isPicked ? "opacity-40 grayscale-[0.5]" : "opacity-100"
+                    "relative w-16 aspect-[2.5/4] flex-shrink-0 transition-all duration-500 transform",
+                    isShuffling ? "translate-x-[200%] opacity-0" : "opacity-100",
+                    isPicked ? "z-50 -translate-y-4 scale-125" : "hover:z-10 hover:-translate-y-2 shadow-sm",
+                    !canSelectMore && !isPicked ? "opacity-40" : "opacity-100"
                   )}
                   style={{
-                    // Add a slight rotation for "organic" fanned feel
-                    transform: isPicked 
-                      ? 'translateY(-32px) scale(1.1)' 
-                      : `rotate(${(idx % 5) - 2}deg)`,
+                    transitionDelay: isShuffling ? `${(idx + rowIndex * 10) * 10}ms` : '0ms',
                   }}
                 >
                   <div className={cn(
-                    "h-full w-full rounded-xl border-2 overflow-hidden bg-bg-elevated shadow-lg",
-                    isPicked ? "border-accent ring-4 ring-accent/20" : "border-white/20"
+                    "h-full w-full rounded-lg border overflow-hidden bg-bg-elevated shadow-md",
+                    isPicked ? "border-accent ring-2 ring-accent/30" : "border-border"
                   )}>
                     <Image
                       src="https://www.reffortune.com/icon/backcard.png"
                       alt="Card back"
                       fill
-                      sizes="128px"
+                      sizes="64px"
                       className="object-cover"
                     />
                     {isPicked && (
                       <div className="absolute inset-0 flex items-center justify-center bg-accent/20 backdrop-blur-[1px]">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent text-xs font-black text-accent-ink shadow-lg">
+                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-accent text-[10px] font-black text-accent-ink shadow-md">
                           {pickedIndex + 1}
                         </div>
                       </div>
@@ -210,38 +227,18 @@ export default function PickClient() {
               );
             })}
           </div>
-        </div>
+        ))}
       </div>
 
-      {/* ── Card slots ── */}
-      <div className="mt-auto pt-6 flex items-center justify-center gap-4">
+      {/* ── Card slots (Indicators) ── */}
+      <div className="mt-auto pt-6 flex items-center justify-center gap-3">
         {Array.from({ length: count }, (_, i) => (
-          <div key={i} className="flex flex-col items-center gap-1.5">
-            <div
-              className={cn(
-                "flex h-12 w-12 items-center justify-center rounded-full border-2 transition-all duration-500",
-                i < selected.length
-                  ? "border-accent bg-accent-soft scale-110 shadow-md"
-                  : "border-border border-dashed bg-transparent"
-              )}
-            >
-              {i < selected.length && (
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  className="text-accent"
-                  strokeWidth="4"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-              )}
-            </div>
-          </div>
+          <div key={i} 
+            className={cn(
+              "h-2.5 rounded-full transition-all duration-500",
+              i < selected.length ? "w-8 bg-accent" : "w-2.5 bg-border"
+            )} 
+          />
         ))}
       </div>
 
@@ -249,12 +246,12 @@ export default function PickClient() {
       <div className="mt-6 mb-4">
         <Button
           type="button"
-          disabled={selected.length !== count}
+          disabled={selected.length !== count || isShuffling}
           onClick={submitReading}
           className="w-full rounded-full"
           size="lg"
         >
-          ดูผลคำทำนาย
+          {isShuffling ? "กำลังสับไพ่..." : "ดูผลคำทำนาย"}
         </Button>
       </div>
     </main>
