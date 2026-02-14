@@ -44,7 +44,7 @@ export function spiritCardFromDob(dobIso: string): SpiritCardResult | null {
     return null;
   }
 
-  const orientation: Orientation = seed % 5 === 0 ? "reversed" : "upright";
+  const orientation: Orientation = "upright"; // Always upright (no reversed cards)
 
   return {
     card,

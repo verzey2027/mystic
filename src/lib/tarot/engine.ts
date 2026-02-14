@@ -30,7 +30,8 @@ export function shuffleCards(cards: TarotCard[]): TarotCard[] {
 }
 
 export function randomOrientation(): Orientation {
-  return Math.random() > 0.28 ? "upright" : "reversed";
+  // Always return upright as per user requirement (no reversed cards)
+  return "upright";
 }
 
 export function drawCards(count: number): DrawnCard[] {

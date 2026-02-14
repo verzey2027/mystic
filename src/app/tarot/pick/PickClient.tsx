@@ -52,9 +52,9 @@ export default function PickClient() {
         // Deselect
         setSelected((prev) => prev.filter((_, i) => i !== pickedIndex));
       } else {
-        // Select
+        // Select - Always use upright (no reversed cards)
         if (!canSelectMore) return;
-        setSelected((prev) => [...prev, `${cardId}.${randomOrientation()}`]);
+        setSelected((prev) => [...prev, `${cardId}.upright`]);
       }
     },
     [canSelectMore, selected]

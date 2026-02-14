@@ -24,7 +24,7 @@ function drawOneCard(): DrawnCard {
   const card = TAROT_DECK[Math.floor(Math.random() * TAROT_DECK.length)] ?? TAROT_DECK[0];
   return {
     card,
-    orientation: Math.random() > 0.3 ? "upright" : "reversed",
+    orientation: "upright", // No reversed cards
   };
 }
 
