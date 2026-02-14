@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/Card";
 import { HeartSave } from "@/components/ui/HeartSave";
 import { Button } from "@/components/ui/Button";
 import { Markdown } from "@/components/ui/Markdown";
+import { ShareButton } from "@/components/ui/ShareButton";
 import { useLibrary } from "@/lib/library/useLibrary";
 import type {
   SavedTarotReading,
@@ -156,7 +157,16 @@ export default function SavedReadingDetailPage() {
           </Card>
         )}
 
-        <div className="mt-6">
+        <div className="mt-6 grid grid-cols-2 gap-3">
+          <ShareButton
+            variant="primary"
+            className="w-full"
+            shareData={{
+              title: "คำทำนายจาก MysticFlow",
+              text: `ลองมาดูคำทำนายนี้สิ!`,
+              url: typeof window !== "undefined" ? window.location.href : "",
+            }}
+          />
           <Link href="/library/saved" className="block">
             <Button className="w-full" variant="secondary">
               กลับไปหน้าบันทึก

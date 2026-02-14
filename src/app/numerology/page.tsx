@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { AppBar } from "@/components/nav/AppBar";
 import { Button } from "@/components/ui/Button";
+import { ShareButton } from "@/components/ui/ShareButton";
 import { Card, CardDesc, CardTitle } from "@/components/ui/Card";
 // HeartSave removed temporarily (save builder not yet implemented for numerology)
 import { analyzeThaiPhone } from "@/lib/numerology/engine";
@@ -184,6 +185,22 @@ export default function NumerologyPage() {
                 <div className="mt-4 rounded-2xl border border-border bg-bg-elevated p-4">
                   <p className="text-xs font-medium text-fg-muted">รายละเอียด</p>
                   <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-fg-muted">{aiReading.cardStructure}</p>
+                </div>
+                
+                <div className="mt-6 flex flex-col gap-3">
+                  <ShareButton 
+                    variant="primary"
+                    className="w-full"
+                    size="lg"
+                    shareData={{
+                      title: "ผลวิเคราะห์เบอร์โทรศัพท์",
+                      text: aiReading.summary,
+                      url: typeof window !== "undefined" ? window.location.href : "",
+                    }}
+                  />
+                  <Button variant="secondary" className="w-full" onClick={() => { setSubmittedPhone(null); setPhone(""); }}>
+                    วิเคราะห์เบอร์อื่น
+                  </Button>
                 </div>
               </>
             )}

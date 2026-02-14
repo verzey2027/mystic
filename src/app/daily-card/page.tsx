@@ -3,12 +3,14 @@
 import Image from "next/image";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { HeartSave } from "@/components/ui/HeartSave";
+import { ShareButton } from "@/components/ui/ShareButton";
 import { useLibrary } from "@/lib/library/useLibrary";
 import { buildSavedDailyCardReading, removeReading, upsertReading } from "@/lib/library/storage";
 import { TAROT_DECK } from "@/lib/tarot/deck";
 import { cardMeaning } from "@/lib/tarot/engine";
 import { DrawnCard } from "@/lib/tarot/types";
 import { cn } from "@/lib/cn";
+import { Button } from "@/components/ui/Button";
 
 const STORAGE_KEY = "reffortune_daily_card";
 const BACK_IMAGE = "https://www.reffortune.com/icon/backcard.png";
@@ -131,14 +133,13 @@ export default function DailyCardPage() {
 
   useEffect(() => {
     const dayKey = getTodayKey();
-    const existing = lib.items.find(
-      (item) =>
-        "kind" in item &&
-        item.kind === "daily_card" &&
-        (item as any).dayKey === dayKey
+    const existing = lib.entries.find(
+      (entry) =>
+        entry.type === "daily_card" &&
+        (entry.data as any).dayKey === dayKey
     );
     setSavedId(existing?.id ?? null);
-  }, [lib.items]);
+  }, [lib.entries]);
 
   const handleFlip = useCallback(() => {
     if (flipped || !drawn) return;
@@ -153,19 +154,12 @@ export default function DailyCardPage() {
   const shareText = drawn
     ? `ไพ่รายวัน: ${drawn.card.nameTh ?? drawn.card.name} (${orientationLabel}) — MysticFlow`
     : "";
-  const shareUrl = "https://tarot.reffortune.com/daily-card";
+  const shareUrl = typeof window !== "undefined" ? window.location.href : "https://tarot.reffortune.com/daily-card";
 
-  const handleShare = useCallback(
-    async (platform: string) => {
+  const handleSharePlatform = useCallback(
+    (platform: string) => {
       const text = encodeURIComponent(shareText);
       const url = encodeURIComponent(shareUrl);
-
-      if (platform === "native" && typeof navigator !== "undefined" && navigator.share) {
-        try {
-          await navigator.share({ title: "ไพ่รายวัน — MysticFlow", text: shareText, url: shareUrl });
-        } catch {}
-        return;
-      }
 
       switch (platform) {
         case "line":
@@ -173,16 +167,6 @@ export default function DailyCardPage() {
           break;
         case "facebook":
           window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${text}`, "_blank");
-          break;
-        case "twitter":
-          window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, "_blank");
-          break;
-        case "copy":
-          try {
-            await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2000);
-          } catch {}
           break;
       }
     },
@@ -347,27 +331,39 @@ export default function DailyCardPage() {
             </div>
           )}
 
-          {/* Share buttons */}
-          <div className="flex items-center justify-center gap-3 pt-2">
-            <button type="button" onClick={() => handleShare("line")} className="flex h-10 w-10 items-center justify-center rounded-xl transition hover:scale-110" style={{ background: "#06C755" }} aria-label="Share LINE">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 5.82 2 10.5c0 3.26 2.36 6.1 5.88 7.46-.08.72-.5 2.7-.57 3.12-.1.54.2.53.42.39.17-.11 2.4-1.63 3.38-2.3.28.03.58.05.89.05 5.52 0 10-3.82 10-8.5S17.52 2 12 2z" /></svg>
-            </button>
-            <button type="button" onClick={() => handleShare("facebook")} className="flex h-10 w-10 items-center justify-center rounded-xl transition hover:scale-110" style={{ background: "#1877F2" }} aria-label="Share Facebook">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" /></svg>
-            </button>
-            <button type="button" onClick={() => handleShare("twitter")} className="flex h-10 w-10 items-center justify-center rounded-xl transition hover:scale-110" style={{ background: "#000" }} aria-label="Share X">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
-            </button>
-            <button type="button" onClick={() => handleShare("copy")} className="flex h-10 w-10 items-center justify-center rounded-xl border transition hover:scale-110 border-border-strong bg-bg-elevated" aria-label="Copy link">
-              {copied ? (
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
-              ) : (
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" /></svg>
-              )}
-            </button>
-          </div>
+          {/* Actions */}
+          <div className="flex flex-col gap-3 pt-2">
+            <div className="grid grid-cols-2 gap-3">
+              <Button
+                variant={savedId ? "secondary" : "primary"}
+                size="lg"
+                className="w-full"
+                onClick={toggleSaved}
+              >
+                {savedId ? "บันทึกแล้ว" : "บันทึก"}
+              </Button>
+              <ShareButton
+                variant="secondary"
+                size="lg"
+                className="w-full"
+                shareData={{
+                  title: "ไพ่รายวันของฉัน",
+                  text: aiReading?.summary || "ดูดวงรายวันกับ MysticFlow",
+                  url: typeof window !== "undefined" ? window.location.href : "",
+                }}
+              />
+            </div>
 
-          <div className="mt-4">
+            <div className="mt-2 flex items-center justify-center gap-3">
+              <p className="text-xs text-fg-subtle">แชร์ไปยัง:</p>
+              <button type="button" onClick={() => handleSharePlatform("line")} className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#06C755] transition hover:scale-110" aria-label="Share LINE">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 5.82 2 10.5c0 3.26 2.36 6.1 5.88 7.46-.08.72-.5 2.7-.57 3.12-.1.1.2.1.42.1.17-.1 2.4-1.6 3.3-2.3.2.0.5.0.8.0 5.5 0 10-3.8 10-8.5S17.5 2 12 2z" /></svg>
+              </button>
+              <button type="button" onClick={() => handleSharePlatform("facebook")} className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#1877F2] transition hover:scale-110" aria-label="Share Facebook">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" /></svg>
+              </button>
+            </div>
+
             <button
               type="button"
               onClick={() => {
@@ -378,7 +374,7 @@ export default function DailyCardPage() {
                 setAiReading(null);
                 setDrawn(drawOneCard());
               }}
-              className="w-full rounded-2xl border border-border-strong py-3 text-sm font-semibold text-fg-muted transition hover:bg-surface"
+              className="mt-2 w-full rounded-2xl border border-border-strong py-3 text-sm font-semibold text-fg-muted transition hover:bg-surface"
             >
               เปิดใหม่ (Debug เท่านั้น)
             </button>

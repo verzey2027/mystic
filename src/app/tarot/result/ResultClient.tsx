@@ -11,6 +11,7 @@ import { runReadingPipeline } from "@/lib/reading/pipeline";
 import { buildSavedTarotReading, removeReading, upsertReading } from "@/lib/library/storage";
 import { HeartSave } from "@/components/ui/HeartSave";
 import { Button } from "@/components/ui/Button";
+import { ShareButton } from "@/components/ui/ShareButton";
 import { cn } from "@/lib/cn";
 
 function normalizeText(value: unknown): string {
@@ -413,12 +414,24 @@ export default function ResultClient() {
       </section>
 
       {/* ── Bottom actions ── */}
-      <div className="mt-6 grid grid-cols-2 gap-3">
-        <Button className="w-full" size="lg" onClick={toggleSaved}>
-          {savedId ? "Saved" : "Save to Library"}
-        </Button>
+      <div className="mt-6 flex flex-col gap-3">
+        <div className="grid grid-cols-2 gap-3">
+          <Button className="w-full" size="lg" onClick={toggleSaved}>
+            {savedId ? "Saved" : "Save to Library"}
+          </Button>
+          <ShareButton
+            variant="secondary"
+            size="lg"
+            className="w-full"
+            shareData={{
+              title: "ผลคำทำนายไพ่ทาโรต์",
+              text: aiReading?.summary || "ดูดวงกับ MysticFlow",
+              url: typeof window !== "undefined" ? window.location.href : "",
+            }}
+          />
+        </div>
         <Link href="/tarot" className="block">
-          <Button className="w-full" size="lg" variant="secondary">
+          <Button className="w-full" size="lg" variant="ghost">
             New Reading
           </Button>
         </Link>

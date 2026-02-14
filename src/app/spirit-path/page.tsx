@@ -6,6 +6,7 @@ import { AppBar } from "@/components/nav/AppBar";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { HeartSave } from "@/components/ui/HeartSave";
+import { ShareButton } from "@/components/ui/ShareButton";
 import { HelperText, Input, Label } from "@/components/ui/Input";
 import { Markdown } from "@/components/ui/Markdown";
 import { trackEvent } from "@/lib/analytics/tracking";
@@ -271,12 +272,28 @@ export default function SpiritPathPage() {
             )}
 
             <Card className="p-4">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <p className="text-sm font-semibold text-fg">บันทึกไว้ในคลัง</p>
-                  <p className="mt-1 text-xs text-fg-muted">แตะหัวใจเพื่อบันทึก/ยกเลิกบันทึก</p>
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-semibold text-fg">บันทึกไว้ในคลัง</p>
+                    <p className="mt-1 text-xs text-fg-muted">แตะหัวใจเพื่อบันทึก/ยกเลิกบันทึก</p>
+                  </div>
+                  <HeartSave saved={!!savedId} onToggle={toggleSaved} label="Save spirit path" />
                 </div>
-                <HeartSave saved={!!savedId} onToggle={toggleSaved} label="Save spirit path" />
+                
+                <div className="grid grid-cols-2 gap-3">
+                   <Button variant={savedId ? "secondary" : "primary"} onClick={toggleSaved}>
+                     {savedId ? "Saved" : "Save"}
+                   </Button>
+                   <ShareButton 
+                     variant="secondary"
+                     shareData={{
+                       title: "เส้นทางจิตวิญญาณของฉัน",
+                       text: `ไพ่ราศี ${zodiacCard.nameTh} + ไพ่จิตวิญญาณ ${soulCard.nameTh}`,
+                       url: typeof window !== "undefined" ? window.location.href : "",
+                     }}
+                   />
+                </div>
               </div>
             </Card>
           </section>
