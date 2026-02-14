@@ -56,9 +56,9 @@ const exploreItems = [
     ),
   },
   {
-    title: "ไพ่จิตวิญญาณ",
-    description: "ไพ่ตามวันเกิดของคุณ",
-    href: "/spirit-card",
+    title: "เส้นทางจิตวิญญาณ",
+    description: "ไพ่ประจำราศี + ไพ่จิตวิญญาณ",
+    href: "/spirit-path",
     gradient: "from-teal-100/70 to-bg",
     icon: (
       <svg
