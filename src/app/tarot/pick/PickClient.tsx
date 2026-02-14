@@ -21,15 +21,23 @@ export default function PickClient() {
   const [shuffled, setShuffled] = useState<typeof TAROT_DECK>([]);
   const [selected, setSelected] = useState<string[]>([]);
   const [question, setQuestion] = useState("");
-  const [isShuffling, setIsShuffling] = useState(true);
+  const [shufflePhase, setShufflePhase] = useState<'stack' | 'mix' | 'fan'>('stack');
   
   const canSelectMore = selected.length < count;
 
-  // Initial shuffle animation
+  // Realistic shuffle sequence
   useEffect(() => {
     setShuffled(shuffleCards(TAROT_DECK));
-    const timer = setTimeout(() => setIsShuffling(false), 1500);
-    return () => clearTimeout(timer);
+    
+    // 1. Start stacked
+    const t1 = setTimeout(() => setShufflePhase('mix'), 200);
+    // 2. Mix around in center
+    const t2 = setTimeout(() => setShufflePhase('fan'), 1000);
+    
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
   }, []);
 
   useEffect(() => {
@@ -179,55 +187,84 @@ export default function PickClient() {
       </div>
 
       {/* ── 5-6 Rows of Overlapping Cards ── */}
-      <div className="mt-8 flex flex-col gap-1 select-none">
-        {rows.map((row, rowIndex) => (
-          <div 
-            key={rowIndex} 
-            className="flex -space-x-12 px-8 overflow-x-auto no-scrollbar py-2"
-          >
-            {row.map((card, idx) => {
-              const pickedIndex = selected.findIndex((token) => token.startsWith(`${card.id}.`));
-              const isPicked = pickedIndex >= 0;
+      <div className="mt-8 relative h-[420px] w-full select-none overflow-hidden rounded-3xl border border-white/10 bg-black/5 p-4">
+        {shufflePhase === 'fan' ? (
+          <div className="flex flex-col gap-1 h-full overflow-y-auto no-scrollbar py-2">
+            {rows.map((row, rowIndex) => (
+              <div 
+                key={rowIndex} 
+                className="flex -space-x-12 px-8 py-2 animate-[tarot-fade-up_0.6s_ease-out_both]"
+                style={{ animationDelay: `${rowIndex * 100}ms` }}
+              >
+                {row.map((card, idx) => {
+                  const pickedIndex = selected.findIndex((token) => token.startsWith(`${card.id}.`));
+                  const isPicked = pickedIndex >= 0;
 
-              return (
-                <button
-                  key={`${card.id}-${idx}`}
-                  type="button"
-                  onClick={() => onToggleSelect(card.id)}
-                  className={cn(
-                    "relative w-16 aspect-[2.5/4] flex-shrink-0 transition-all duration-500 transform",
-                    isShuffling ? "translate-x-[200%] opacity-0" : "opacity-100",
-                    isPicked ? "z-50 -translate-y-4 scale-125" : "hover:z-10 hover:-translate-y-2 shadow-sm",
-                    !canSelectMore && !isPicked ? "opacity-40" : "opacity-100"
-                  )}
-                  style={{
-                    transitionDelay: isShuffling ? `${(idx + rowIndex * 10) * 10}ms` : '0ms',
-                  }}
-                >
-                  <div className={cn(
-                    "h-full w-full rounded-lg border overflow-hidden bg-bg-elevated shadow-md",
-                    isPicked ? "border-accent ring-2 ring-accent/30" : "border-border"
-                  )}>
-                    <Image
-                      src="https://www.reffortune.com/icon/backcard.png"
-                      alt="Card back"
-                      fill
-                      sizes="64px"
-                      className="object-cover"
-                    />
-                    {isPicked && (
-                      <div className="absolute inset-0 flex items-center justify-center bg-accent/20 backdrop-blur-[1px]">
-                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-accent text-[10px] font-black text-accent-ink shadow-md">
-                          {pickedIndex + 1}
-                        </div>
+                  return (
+                    <button
+                      key={`${card.id}-${idx}`}
+                      type="button"
+                      onClick={() => onToggleSelect(card.id)}
+                      className={cn(
+                        "relative w-16 aspect-[2.5/4] flex-shrink-0 transition-all duration-300 transform",
+                        isPicked ? "z-50 -translate-y-4 scale-125" : "hover:z-10 hover:-translate-y-2 shadow-sm",
+                        !canSelectMore && !isPicked ? "opacity-40" : "opacity-100"
+                      )}
+                    >
+                      <div className={cn(
+                        "h-full w-full rounded-lg border overflow-hidden bg-bg-elevated shadow-md",
+                        isPicked ? "border-accent ring-2 ring-accent/30" : "border-border"
+                      )}>
+                        <Image
+                          src="https://www.reffortune.com/icon/backcard.png"
+                          alt="Card back"
+                          fill
+                          sizes="64px"
+                          className="object-cover"
+                        />
+                        {isPicked && (
+                          <div className="absolute inset-0 flex items-center justify-center bg-accent/20 backdrop-blur-[1px]">
+                            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-accent text-[10px] font-black text-accent-ink shadow-md">
+                              {pickedIndex + 1}
+                            </div>
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
-                </button>
-              );
-            })}
+                    </button>
+                  );
+                })}
+              </div>
+            ))}
           </div>
-        ))}
+        ) : (
+          /* Shuffle Animation View */
+          <div className="relative h-full w-full flex items-center justify-center">
+            {shuffled.slice(0, 40).map((card, idx) => (
+              <div
+                key={idx}
+                className="absolute w-20 aspect-[2.5/4] rounded-lg border-2 border-white/20 overflow-hidden bg-bg-elevated shadow-2xl transition-all duration-500"
+                style={{
+                  transform: shufflePhase === 'stack' 
+                    ? `translateY(${idx * 0.2}px) rotate(${idx * 0.5}deg)`
+                    : `translate(${(Math.random() - 0.5) * 100}px, ${(Math.random() - 0.5) * 50}px) rotate(${(Math.random() - 0.5) * 30}deg)`,
+                  zIndex: idx,
+                  opacity: 1 - (idx * 0.02),
+                }}
+              >
+                <Image
+                  src="https://www.reffortune.com/icon/backcard.png"
+                  alt="Shuffling"
+                  fill
+                  sizes="80px"
+                  className="object-cover"
+                />
+              </div>
+            ))}
+            <div className="absolute bottom-10 animate-bounce text-xs font-bold text-accent uppercase tracking-widest">
+              Shuffling Deck...
+            </div>
+          </div>
+        )}
       </div>
 
       {/* ── Card slots (Indicators) ── */}
@@ -246,12 +283,12 @@ export default function PickClient() {
       <div className="mt-6 mb-4">
         <Button
           type="button"
-          disabled={selected.length !== count || isShuffling}
+          disabled={selected.length !== count || shufflePhase !== 'fan'}
           onClick={submitReading}
           className="w-full rounded-full"
           size="lg"
         >
-          {isShuffling ? "กำลังสับไพ่..." : "ดูผลคำทำนาย"}
+          {shufflePhase !== 'fan' ? "กำลังสับไพ่..." : "ดูผลคำทำนาย"}
         </Button>
       </div>
     </main>
