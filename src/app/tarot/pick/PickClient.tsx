@@ -47,8 +47,8 @@ export default function PickClient() {
     router.push(`/tarot/result?${params.toString()}`);
   }
 
-  // Use first 9 cards for the 3x3 grid display
-  const displayCards = shuffled.slice(0, 9);
+  // Use all 78 cards for the selection
+  const displayCards = shuffled;
 
   const steps = [
     { num: 1, label: "เลือกสเปรด" },
@@ -57,7 +57,7 @@ export default function PickClient() {
   ];
 
   return (
-    <main className="mx-auto w-full max-w-lg px-5 py-4">
+    <main className="mx-auto w-full max-w-lg px-5 py-4 overflow-hidden flex flex-col min-h-screen">
       {/* ── Top bar ── */}
       <div className="flex items-center justify-between">
         <Link
@@ -153,66 +153,87 @@ export default function PickClient() {
         />
       </div>
 
-      {/* ── 3×3 Card Grid ── */}
-      <div className="mt-5 grid grid-cols-3 gap-3">
-        {displayCards.map((card) => {
-          const pickedIndex = selected.findIndex((token) => token.startsWith(`${card.id}.`));
-          const isPicked = pickedIndex >= 0;
+      {/* ── Overlapping Card Deck (Horizontal Scroll) ── */}
+      <div className="mt-10 relative h-64 w-full flex items-center">
+        <div 
+          className="flex overflow-x-auto px-10 gap-0 no-scrollbar"
+          style={{ 
+            maskImage: 'linear-gradient(to right, transparent, black 15%, black 85%, transparent)',
+            WebkitMaskImage: 'linear-gradient(to right, transparent, black 15%, black 85%, transparent)',
+          }}
+        >
+          <div className="flex -space-x-16 py-8">
+            {displayCards.map((card, idx) => {
+              const pickedIndex = selected.findIndex((token) => token.startsWith(`${card.id}.`));
+              const isPicked = pickedIndex >= 0;
 
-          return (
-            <button
-              key={card.id}
-              type="button"
-              disabled={!canSelectMore && !isPicked}
-              onClick={() => onSelect(card.id)}
-              className={cn(
-                "relative aspect-[2.5/3.5] overflow-hidden rounded-xl border-2 bg-bg-elevated transition-all duration-300",
-                isPicked
-                  ? "border-accent ring-2 ring-ring scale-[0.97]"
-                  : "border-border shadow-sm",
-                !canSelectMore && !isPicked ? "opacity-50" : "opacity-100"
-              )}
-            >
-              <Image
-                src="https://www.reffortune.com/icon/backcard.png"
-                alt="Card back"
-                fill
-                sizes="120px"
-                className="object-cover opacity-15"
-              />
-              {isPicked && (
-                <div className="absolute inset-0 flex items-center justify-center bg-accent-soft">
-                  <div className="rounded-full bg-accent px-3 py-1 text-xs font-bold text-accent-ink">
-                    {pickedIndex + 1}
+              return (
+                <button
+                  key={`${card.id}-${idx}`}
+                  type="button"
+                  disabled={!canSelectMore && !isPicked}
+                  onClick={() => onSelect(card.id)}
+                  className={cn(
+                    "relative w-32 aspect-[2.5/4] flex-shrink-0 transition-all duration-300 transform",
+                    isPicked
+                      ? "z-50 -translate-y-8 scale-110"
+                      : "hover:z-10 hover:-translate-y-4 shadow-xl",
+                    !canSelectMore && !isPicked ? "opacity-40 grayscale-[0.5]" : "opacity-100"
+                  )}
+                  style={{
+                    // Add a slight rotation for "organic" fanned feel
+                    transform: isPicked 
+                      ? 'translateY(-32px) scale(1.1)' 
+                      : `rotate(${(idx % 5) - 2}deg)`,
+                  }}
+                >
+                  <div className={cn(
+                    "h-full w-full rounded-xl border-2 overflow-hidden bg-bg-elevated shadow-lg",
+                    isPicked ? "border-accent ring-4 ring-accent/20" : "border-white/20"
+                  )}>
+                    <Image
+                      src="https://www.reffortune.com/icon/backcard.png"
+                      alt="Card back"
+                      fill
+                      sizes="128px"
+                      className="object-cover"
+                    />
+                    {isPicked && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-accent/20 backdrop-blur-[1px]">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent text-xs font-black text-accent-ink shadow-lg">
+                          {pickedIndex + 1}
+                        </div>
+                      </div>
+                    )}
                   </div>
-                </div>
-              )}
-            </button>
-          );
-        })}
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </div>
 
       {/* ── Card slots ── */}
-      <div className="mt-6 flex items-center justify-center gap-4">
+      <div className="mt-auto pt-6 flex items-center justify-center gap-4">
         {Array.from({ length: count }, (_, i) => (
           <div key={i} className="flex flex-col items-center gap-1.5">
             <div
               className={cn(
-                "flex h-14 w-14 items-center justify-center rounded-full border-2",
+                "flex h-12 w-12 items-center justify-center rounded-full border-2 transition-all duration-500",
                 i < selected.length
-                  ? "border-accent bg-accent-soft"
+                  ? "border-accent bg-accent-soft scale-110 shadow-md"
                   : "border-border border-dashed bg-transparent"
               )}
             >
               {i < selected.length && (
                 <svg
-                  width="16"
-                  height="16"
+                  width="14"
+                  height="14"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
                   className="text-accent"
-                  strokeWidth="3"
+                  strokeWidth="4"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 >
@@ -220,13 +241,12 @@ export default function PickClient() {
                 </svg>
               )}
             </div>
-            <span className="text-xs font-medium text-fg-subtle">ใบที่ {i + 1}</span>
           </div>
         ))}
       </div>
 
       {/* ── CTA Button ── */}
-      <div className="mt-6">
+      <div className="mt-6 mb-4">
         <Button
           type="button"
           disabled={selected.length !== count}
