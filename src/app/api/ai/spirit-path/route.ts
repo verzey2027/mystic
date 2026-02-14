@@ -62,7 +62,7 @@ export async function POST(req: Request) {
         body: JSON.stringify({
           generationConfig: {
             temperature: 0.7,
-            responseMimeType: "text/plain",
+            responseMimeType: "application/json",
           },
           contents: [{ role: "user", parts: [{ text: prompt }] }],
         }),
@@ -73,7 +73,21 @@ export async function POST(req: Request) {
     const data = await resp.json();
 
     const raw = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-    const markdown = normalizeMarkdown(raw);
+    let markdown = "";
+    
+    try {
+      const parsed = JSON.parse(raw);
+      markdown = [
+        parsed.summary,
+        ...(parsed.sections || []).map((s: any) => `#### ${s.title}\n\n${s.content}`),
+        `#### จุดแข็งที่ใช้ได้ทันที\n\n${(parsed.highlights?.strengths || []).map((t: string) => `- ${t}`).join('\n')}`,
+        `#### จุดที่ควรระวัง/กับดัก\n\n${(parsed.highlights?.risks || []).map((t: string) => `- ${t}`).join('\n')}`,
+        `#### แผนปฏิบัติ 7 วัน\n\n${(parsed.highlights?.action_plan || []).map((t: string) => `- ${t}`).join('\n')}`,
+        `#### คำถามสะท้อนตัวเอง (Journaling)\n\n${parsed.journal_question || ""}`
+      ].join('\n\n');
+    } catch (e) {
+      markdown = normalizeMarkdown(raw);
+    }
 
     if (!markdown) {
       return NextResponse.json({ ok: true, markdown: "#### ภาพรวมพลังงานของเส้นทางนี้\n\nยังไม่สามารถสร้างคำทำนายได้ในขณะนี้ ลองใหม่อีกครั้งนะคะ/ครับ" });

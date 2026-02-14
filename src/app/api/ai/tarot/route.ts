@@ -5,52 +5,36 @@ import { retrieveRag, formatRagContext, guessIntentsFromText } from "@/lib/rag/r
 
 type GeminiTarotResponse = {
   summary: string;
-  cardStructure: string;
+  opportunities?: string[];
+  risks?: string[];
+  actions?: string[];
+  timeframe?: string;
+  confidence?: string;
+  disclaimer?: string;
 };
 
-function toReadable(value: unknown): string {
-  if (typeof value === "string") return value;
-  if (typeof value === "number" || typeof value === "boolean") return String(value);
-  if (Array.isArray(value)) return value.map((v) => toReadable(v)).join("\n");
-  if (value && typeof value === "object") {
-    const obj = value as Record<string, unknown>;
-    if (obj.card || obj.direction || obj.mainMeaning || obj.position) {
-      return [
-        obj.position ? `ตำแหน่ง: ${toReadable(obj.position)}` : "",
-        obj.card ? `ไพ่: ${toReadable(obj.card)}` : "",
-        obj.direction ? `ทิศทาง: ${toReadable(obj.direction)}` : "",
-        obj.mainMeaning ? `ใจความ: ${toReadable(obj.mainMeaning)}` : "",
-      ]
-        .filter(Boolean)
-        .join(" • ");
-    }
-    return Object.entries(obj)
-      .map(([k, v]) => `${k}: ${toReadable(v)}`)
-      .join("\n");
+function formatAsCardStructure(parsed: GeminiTarotResponse): string {
+  const parts = [];
+  
+  if (parsed.opportunities?.length) {
+    parts.push(`✨ โอกาสและจุดเด่น:\n${parsed.opportunities.map(o => `• ${o}`).join('\n')}`);
   }
-  return "";
-}
-
-
-function ensureFortuneStructure(input: string, summary: string): string {
-  const text = input.replace(/\s+/g, " ").trim();
-  if (!text) {
-    return [
-      `ภาพรวมสถานการณ์: ${summary}`,
-      "จุดที่ควรระวัง: อย่ารีบตัดสินใจจากอารมณ์หรือข้อมูลที่ยังไม่ครบ",
-      "แนวทางที่ควรทำ: โฟกัส 1 ประเด็นหลัก วางขั้นตอน แล้วลงมือทีละส่วน",
-    ].join("\n");
+  
+  if (parsed.risks?.length) {
+    parts.push(`⚠️ สิ่งที่ควรระวัง:\n${parsed.risks.map(r => `• ${r}`).join('\n')}`);
+  }
+  
+  if (parsed.actions?.length) {
+    parts.push(`📋 แนวทางที่ควรทำ:\n${parsed.actions.map(a => `• ${a}`).join('\n')}`);
+  }
+  
+  if (parsed.timeframe) {
+    parts.push(`⏳ กรอบเวลา: ${parsed.timeframe}`);
   }
 
-  const hasLabels = text.includes("ภาพรวมสถานการณ์") || text.includes("จุดที่ควรระวัง") || text.includes("แนวทางที่ควรทำ");
-  if (hasLabels) return text;
-
-  return [
-    `ภาพรวมสถานการณ์: ${summary || text}`,
-    `จุดที่ควรระวัง: ${text}`,
-    "แนวทางที่ควรทำ: ตั้งกรอบเวลาให้ชัด เช็กความเสี่ยง และตัดสินใจจากข้อเท็จจริง",
-  ].join("\n");
+  return parts.join('\n\n');
 }
+
 export async function POST(req: Request) {
   try {
     const apiKey = process.env.GEMINI_API_KEY;
@@ -133,7 +117,7 @@ export async function POST(req: Request) {
         detail: text,
         ai: {
           summary: "ช่วงนี้ระบบอ่านเชิงลึกหนาแน่น จึงสรุปจากโครงไพ่พื้นฐานให้ก่อน",
-          cardStructure: ensureFortuneStructure(fallbackStructure, "ช่วงนี้ระบบอ่านเชิงลึกหนาแน่น จึงสรุปจากโครงไพ่พื้นฐานให้ก่อน"),
+          cardStructure: fallbackStructure,
         },
       });
     }
@@ -141,21 +125,21 @@ export async function POST(req: Request) {
     const data = await resp.json();
     const raw = data?.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
 
-    let parsed: GeminiTarotResponse;
+    let ai: { summary: string; cardStructure: string };
     try {
-      const obj = JSON.parse(raw) as Record<string, unknown>;
-      parsed = {
-        summary: toReadable(obj.summary) || "สรุปคำทำนายยังไม่สมบูรณ์ในรอบนี้",
-        cardStructure: ensureFortuneStructure(toReadable(obj.cardStructure), toReadable(obj.summary)),
+      const parsed = JSON.parse(raw) as GeminiTarotResponse;
+      ai = {
+        summary: parsed.summary || "สรุปคำทำนายยังไม่สมบูรณ์",
+        cardStructure: formatAsCardStructure(parsed) || "ไม่สามารถระบุรายละเอียดได้",
       };
     } catch {
-      parsed = {
-        summary: "สรุปคำทำนายยังไม่สมบูรณ์ในรอบนี้",
-        cardStructure: ensureFortuneStructure(fallbackStructure, "สรุปคำทำนายยังไม่สมบูรณ์"),
+      ai = {
+        summary: "สรุปคำทำนายยังไม่สมบูรณ์ (Parse Error)",
+        cardStructure: fallbackStructure,
       };
     }
 
-    return NextResponse.json({ ok: true, ai: parsed });
+    return NextResponse.json({ ok: true, ai });
   } catch (error) {
     return NextResponse.json(
       { error: "unexpected_error", detail: error instanceof Error ? error.message : String(error) },
