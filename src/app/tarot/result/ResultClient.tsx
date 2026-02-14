@@ -98,6 +98,23 @@ export default function ResultClient() {
 
     const controller = new AbortController();
 
+    const fallback = {
+      summary: result.summary,
+      cardStructure: drawnCards
+        .map((drawn, i) => {
+          const orient = drawn.orientation === "upright" ? "ตั้งตรง" : "กลับหัว";
+          return `${i + 1}) ${drawn.card.nameTh ?? drawn.card.name} (${orient}) — ${
+            drawn.orientation === "upright" ? drawn.card.meaningUpright : drawn.card.meaningReversed
+          }`;
+        })
+        .join("\n"),
+    };
+
+    // If API is unavailable (e.g. missing key on deploy), don't keep users stuck on loading.
+    const fallbackTimer = setTimeout(() => {
+      setAiReading((prev) => prev ?? fallback);
+    }, 7000);
+
     fetch("/api/ai/tarot", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -110,10 +127,13 @@ export default function ResultClient() {
         return data?.ai ?? null;
       })
       .then((ai) => {
-        if (!ai) return;
+        if (!ai) {
+          setAiReading((prev) => prev ?? fallback);
+          return;
+        }
         const next = {
-          summary: normalizeText(ai.summary),
-          cardStructure: normalizeText(ai.cardStructure),
+          summary: normalizeText(ai.summary) || fallback.summary,
+          cardStructure: normalizeText(ai.cardStructure) || fallback.cardStructure,
         };
         setAiReading(next);
 
@@ -136,9 +156,16 @@ export default function ResultClient() {
           );
         }
       })
-      .catch(() => {});
+      .catch(() => {
+        setAiReading((prev) => prev ?? fallback);
+      })
+      .finally(() => {
+        clearTimeout(fallbackTimer);
+      });
 
-    return () => controller.abort();
+    return () => {
+      controller.abort();
+    };
   }, [cardsToken, count, question, result, savedCreatedAt, savedId]);
 
   async function sendFollowUpQuestion() {

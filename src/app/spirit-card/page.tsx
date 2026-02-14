@@ -137,6 +137,15 @@ export default function SpiritCardPage() {
     }
 
     const controller = new AbortController();
+    const fallback = {
+      summary: session.summary,
+      cardStructure: session.blocks.map((b) => `${b.title}: ${b.body}`).join("\n\n"),
+    };
+
+    const fallbackTimer = setTimeout(() => {
+      setAiReading((prev) => prev ?? fallback);
+    }, 7000);
+
     fetch("/api/ai/spirit", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -149,13 +158,21 @@ export default function SpiritCardPage() {
         return data?.ai ?? null;
       })
       .then((ai) => {
-        if (!ai) return;
+        if (!ai) {
+          setAiReading((prev) => prev ?? fallback);
+          return;
+        }
         setAiReading({
-          summary: normalizeText(ai.summary),
-          cardStructure: normalizeText(ai.cardStructure),
+          summary: normalizeText(ai.summary) || fallback.summary,
+          cardStructure: normalizeText(ai.cardStructure) || fallback.cardStructure,
         });
       })
-      .catch(() => {});
+      .catch(() => {
+        setAiReading((prev) => prev ?? fallback);
+      })
+      .finally(() => {
+        clearTimeout(fallbackTimer);
+      });
 
     return () => controller.abort();
   }, [session, submittedDob, paywall]);
