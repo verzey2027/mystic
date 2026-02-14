@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { ZodiacSign, TimePeriod } from "@/lib/horoscope/types";
+import { retrieveRag, formatRagContext } from "@/lib/rag/retriever";
 
 interface HoroscopeAIRequest {
   zodiacSign: ZodiacSign;
@@ -66,47 +67,32 @@ function buildHoroscopePrompt(request: HoroscopeAIRequest): string {
   return `คุณเป็นนักโหราศาสตร์ไทยที่มีความเชี่ยวชาญในการทำนายดวงชะตา
 
 ## บริบททางวัฒนธรรมไทย
-
-ในการทำนายดวงชะตาแบบไทย เราเชื่อในหลักพุทธศาสนาเรื่องกรรม บุญ และการใช้ชีวิตแบบทางสายกลาง การทำนายควรให้คำแนะนำที่เป็นประโยชน์และสร้างสรรค์ ไม่ใช่การทำนายที่คลุมเครือหรือน่ากลัว
-
-## คำแนะนำ
-
-สร้างคำทำนายดวงชะตาสำหรับราศี${zodiacThai} ช่วง${periodThai} โดย:
-
-1. ใช้ข้อมูลพื้นฐานที่ให้มาเป็นแนวทาง
-2. เพิ่มรายละเอียดที่เป็นส่วนตัวและเฉพาะเจาะจง
-3. ใช้ภาษาไทยที่เป็นกันเองและเข้าใจง่าย
-4. ให้คำแนะนำที่ปฏิบัติได้จริง
-5. เน้นแง่บวกและโอกาสในการพัฒนา
+ในการทำนายดวงชะตาแบบไทย เราเชื่อในหลักพุทธศาสนาเรื่องกรรม บุญ และการใช้ชีวิตแบบทางสายกลาง การทำนายควรให้คำแนะนำที่เป็นประโยชน์และสร้างสรรค์
 
 ## ข้อมูลพื้นฐาน
-
 ราศี: ${zodiacThai}
 ช่วงเวลา: ${periodThai}
+พื้นฐาน:
+- ความรัก: ${request.baseline.aspects.love}
+- การงาน: ${request.baseline.aspects.career}
+- การเงิน: ${request.baseline.aspects.finance}
+- สุขภาพ: ${request.baseline.aspects.health}
 
-ด้านความรัก: ${request.baseline.aspects.love}
-ด้านการงาน: ${request.baseline.aspects.career}
-ด้านการเงิน: ${request.baseline.aspects.finance}
-ด้านสุขภาพ: ${request.baseline.aspects.health}
-
-เลขนำโชค: ${request.baseline.luckyNumbers.join(", ")}
-สีนำโชค: ${request.baseline.luckyColors.join(", ")}
-
-คำแนะนำพื้นฐาน: ${request.baseline.advice}
-
-## รูปแบบผลลัพธ์ (JSON)
-
-ตอบกลับในรูปแบบ JSON ที่มีโครงสร้างดังนี้:
+## รูปแบบการตอบกลับ (JSON Schema-First)
+คุณต้องตอบกลับเป็น JSON ที่ถูกต้องตามโครงสร้างนี้เท่านั้น:
 {
-  "summary": "สรุปภาพรวมดวงชะตาในช่วงนี้ (100-150 คำ)",
-  "enhancedAspects": {
-    "love": "คำทำนายด้านความรักที่เพิ่มรายละเอียด (80-100 คำ)",
-    "career": "คำทำนายด้านการงานที่เพิ่มรายละเอียด (80-100 คำ)",
-    "finance": "คำทำนายด้านการเงินที่เพิ่มรายละเอียด (80-100 คำ)",
-    "health": "คำทำนายด้านสุขภาพที่เพิ่มรายละเอียด (80-100 คำ)"
-  },
-  "advice": "คำแนะนำที่ปฏิบัติได้จริงสำหรับช่วงนี้ (100-120 คำ)"
-}`;
+  "summary": "สรุปภาพรวมดวงชะตา (2-4 บรรทัด)",
+  "opportunities": ["จุดเด่น/โอกาสด้านต่างๆ 1", "จุดเด่น 2"],
+  "risks": ["สิ่งที่ต้องระวัง/อุปสรรค 1", "จุดระวัง 2"],
+  "actions": ["แนวทางปฏิบัติ/วิธีแก้เคล็ด 1", "แนวทาง 2"],
+  "timeframe": "ช่วงเวลาที่คาดหวังในรอบนี้",
+  "confidence": "low|med|high",
+  "disclaimer": "คำเตือนมาตรฐาน (ความเชื่อส่วนบุคคล)"
+}
+
+### หลักการทำนาย
+1. **คุณภาพคำตอบ**: อ้างอิงข้อมูลจาก Knowledge Base ที่แนบมาให้มากที่สุด
+2. **ความเฉพาะเจาะจง**: เน้นสถานการณ์ที่เป็นรูปธรรมและเข้ากับวัฒนธรรมไทย`;
 }
 
 function validateResponse(parsed: unknown): parsed is HoroscopeAIResponse {
@@ -147,12 +133,18 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "invalid_request" }, { status: 400 });
     }
 
-    const prompt = buildHoroscopePrompt(body);
+    // --- RAG (local-file prototype) ---
+    const rag = retrieveRag({
+      query: `ดวงราศี${body.zodiacSign} ช่วง${body.period}`,
+      systemId: "thai_astrology",
+      limit: 6,
+    });
+
+    const prompt = buildHoroscopePrompt(body) + formatRagContext(rag.chunks);
 
     const model = process.env.GEMINI_MODEL || "gemini-2.0-flash";
     
-    // First attempt
-    let resp = await fetch(
+    const resp = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
       {
         method: "POST",
@@ -168,11 +160,9 @@ export async function POST(req: Request) {
     );
 
     if (!resp.ok) {
-      // API unavailable - return baseline
       return NextResponse.json({
         ok: true,
         fallback: true,
-        reason: "gemini_unavailable",
         ai: {
           summary: body.baseline.advice,
           enhancedAspects: body.baseline.aspects,
@@ -181,84 +171,38 @@ export async function POST(req: Request) {
       });
     }
 
-    let data = await resp.json();
-    let raw = data?.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
+    const data = await resp.json();
+    const raw = data?.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
 
-    let parsed: unknown;
     try {
-      parsed = JSON.parse(raw);
+      const parsed = JSON.parse(raw);
+      // Transform new schema back to UI expectation or update UI?
+      // To keep compatibility with existing Horoscope UI, we transform it:
+      return NextResponse.json({
+        ok: true,
+        ai: {
+          summary: parsed.summary,
+          enhancedAspects: {
+            love: parsed.opportunities?.[0] || "ปกติ",
+            career: parsed.opportunities?.[1] || "ปกติ",
+            finance: parsed.opportunities?.[2] || "ปกติ",
+            health: parsed.risks?.[0] || "ปกติ",
+          },
+          advice: parsed.actions?.join(". ") || parsed.summary,
+        }
+      });
     } catch {
-      parsed = null;
-    }
-
-    // Validate response
-    if (!validateResponse(parsed)) {
-      // Retry once
-      resp = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            generationConfig: {
-              temperature: 0.7,
-              responseMimeType: "application/json",
-            },
-            contents: [{ role: "user", parts: [{ text: prompt }] }],
-          }),
+      return NextResponse.json({
+        ok: true,
+        fallback: true,
+        ai: {
+          summary: body.baseline.advice,
+          enhancedAspects: body.baseline.aspects,
+          advice: body.baseline.advice,
         },
-      );
-
-      if (!resp.ok) {
-        // Return baseline on retry failure
-        return NextResponse.json({
-          ok: true,
-          fallback: true,
-          reason: "retry_failed",
-          ai: {
-            summary: body.baseline.advice,
-            enhancedAspects: body.baseline.aspects,
-            advice: body.baseline.advice,
-          },
-        });
-      }
-
-      data = await resp.json();
-      raw = data?.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
-
-      try {
-        parsed = JSON.parse(raw);
-      } catch {
-        parsed = null;
-      }
-
-      if (!validateResponse(parsed)) {
-        // Return baseline after retry
-        return NextResponse.json({
-          ok: true,
-          fallback: true,
-          reason: "validation_failed",
-          ai: {
-            summary: body.baseline.advice,
-            enhancedAspects: body.baseline.aspects,
-            advice: body.baseline.advice,
-          },
-        });
-      }
+      });
     }
-
-    // Success - return AI-enhanced interpretation
-    return NextResponse.json({
-      ok: true,
-      ai: parsed as HoroscopeAIResponse,
-    });
   } catch (error) {
-    return NextResponse.json(
-      {
-        error: "unexpected_error",
-        detail: error instanceof Error ? error.message : String(error),
-      },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "unexpected_error" }, { status: 500 });
   }
 }

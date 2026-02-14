@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { retrieveRag, formatRagContext } from "@/lib/rag/retriever";
 
 interface NameNumerologyAIRequest {
   firstName: string;
@@ -23,107 +24,31 @@ interface NameNumerologyAIRequest {
   };
 }
 
-interface NameNumerologyAIResponse {
-  summary: string;
-  enhancedInterpretation: {
-    personality: string;
-    lifePath: string;
-    career: string;
-    relationships: string;
-  };
-  personalizedAdvice: string;
-  strengthsInsight: string;
-  growthGuidance: string;
-}
-
 function buildNameNumerologyPrompt(request: NameNumerologyAIRequest): string {
-  return `คุณเป็นนักเลขศาสตร์ไทยที่เชี่ยวชาญในการวิเคราะห์ชื่อและทำนายเส้นทางชีวิต
-
-## บริบททางวัฒนธรรมไทย
-
-ในการวิเคราะห์ชื่อด้วยเลขศาสตร์แบบไทย เราเชื่อในหลักพุทธศาสนาเรื่องกรรม บุญ และพลังของชื่อที่มีต่อชีวิต การวิเคราะห์ควรให้คำแนะนำที่สร้างสรรค์และช่วยให้เข้าใจตนเองมากขึ้น ไม่ใช่การทำนายที่คลุมเครือหรือสร้างความกังวล
-
-## คำแนะนำ
-
-วิเคราะห์ชื่อ "${request.firstName} ${request.lastName}" ด้วยเลขศาสตร์ โดย:
-
-1. ใช้ข้อมูลพื้นฐานที่ให้มาเป็นแนวทาง
-2. เพิ่มรายละเอียดที่เป็นส่วนตัวและเฉพาะเจาะจงสำหรับชื่อนี้
-3. ใช้ภาษาไทยที่เป็นกันเองและเข้าใจง่าย
-4. ให้คำแนะนำที่ปฏิบัติได้จริงสำหรับการพัฒนาตนเอง
-5. เน้นแง่บวกและโอกาสในการเติบโต พร้อมคำแนะนำสำหรับจุดที่ควรพัฒนา
+  return `คุณเป็นนักเลขศาสตร์ไทยที่เชี่ยวชาญในการวิเคราะห์ชื่อ
 
 ## ข้อมูลพื้นฐาน
-
-ชื่อ: ${request.firstName}
-นามสกุล: ${request.lastName}
-
+ชื่อ: ${request.firstName} ${request.lastName}
 เลขชื่อ: ${request.scores.firstName}
 เลขนามสกุล: ${request.scores.lastName}
 เลขชื่อเต็ม: ${request.scores.fullName}
 เลขชะตา: ${request.scores.destiny}
 
-บุคลิกภาพ: ${request.baseline.interpretation.personality}
-
-จุดแข็ง:
-${request.baseline.interpretation.strengths.map((s, i) => `${i + 1}. ${s}`).join("\n")}
-
-จุดที่ควรพัฒนา:
-${request.baseline.interpretation.weaknesses.map((w, i) => `${i + 1}. ${w}`).join("\n")}
-
-เส้นทางชีวิต: ${request.baseline.interpretation.lifePath}
-ด้านการงาน: ${request.baseline.interpretation.career}
-ด้านความสัมพันธ์: ${request.baseline.interpretation.relationships}
-
-เลขนำโชค: ${request.baseline.luckyNumbers.join(", ")}
-
-คำแนะนำพื้นฐาน: ${request.baseline.advice}
-
-## รูปแบบผลลัพธ์ (JSON)
-
-ตอบกลับในรูปแบบ JSON ที่มีโครงสร้างดังนี้:
+## รูปแบบการตอบกลับ (JSON Schema-First)
+คุณต้องตอบกลับเป็น JSON ที่ถูกต้องตามโครงสร้างนี้เท่านั้น:
 {
-  "summary": "สรุปภาพรวมความหมายของชื่อและเส้นทางชีวิต (120-150 คำ)",
-  "enhancedInterpretation": {
-    "personality": "วิเคราะห์เชิงลึกด้านบุคลิกภาพที่เพิ่มรายละเอียด (80-100 คำ)",
-    "lifePath": "วิเคราะห์เชิงลึกด้านเส้นทางชีวิตที่เพิ่มรายละเอียด (80-100 คำ)",
-    "career": "วิเคราะห์เชิงลึกด้านการงานที่เพิ่มรายละเอียด (80-100 คำ)",
-    "relationships": "วิเคราะห์เชิงลึกด้านความสัมพันธ์ที่เพิ่มรายละเอียด (80-100 คำ)"
-  },
-  "personalizedAdvice": "คำแนะนำเฉพาะสำหรับชื่อนี้ที่ปฏิบัติได้จริง (120-150 คำ)",
-  "strengthsInsight": "ข้อมูลเชิงลึกเกี่ยวกับจุดแข็งและวิธีใช้ประโยชน์ (80-100 คำ)",
-  "growthGuidance": "คำแนะนำในการพัฒนาจุดที่ควรปรับปรุงและเติบโตเป็นคนที่ดีขึ้น (80-100 คำ)"
-}`;
+  "summary": "สรุปภาพรวมพลังของชื่อ (2-4 บรรทัด)",
+  "opportunities": ["จุดแข็ง/โอกาสของชื่อ 1", "จุดแข็ง 2"],
+  "risks": ["จุดอ่อน/ข้อควรระวัง 1", "จุดควรระวัง 2"],
+  "actions": ["แนวทางปฏิบัติ/การเสริมบุญ 1", "แนวทาง 2"],
+  "timeframe": "ภาพรวมระยะยาวของพลังชื่อ",
+  "confidence": "low|med|high",
+  "disclaimer": "คำเตือนมาตรฐาน (ความเชื่อส่วนบุคคล)"
 }
 
-function validateResponse(parsed: unknown): parsed is NameNumerologyAIResponse {
-  if (!parsed || typeof parsed !== "object") return false;
-  
-  const obj = parsed as Record<string, unknown>;
-  
-  // Check summary
-  if (typeof obj.summary !== "string" || obj.summary.length < 100) return false;
-  
-  // Check enhancedInterpretation
-  if (!obj.enhancedInterpretation || typeof obj.enhancedInterpretation !== "object") return false;
-  const interpretation = obj.enhancedInterpretation as Record<string, unknown>;
-  if (
-    typeof interpretation.personality !== "string" || interpretation.personality.length < 50 ||
-    typeof interpretation.lifePath !== "string" || interpretation.lifePath.length < 50 ||
-    typeof interpretation.career !== "string" || interpretation.career.length < 50 ||
-    typeof interpretation.relationships !== "string" || interpretation.relationships.length < 50
-  ) return false;
-  
-  // Check personalizedAdvice
-  if (typeof obj.personalizedAdvice !== "string" || obj.personalizedAdvice.length < 100) return false;
-  
-  // Check strengthsInsight
-  if (typeof obj.strengthsInsight !== "string" || obj.strengthsInsight.length < 50) return false;
-  
-  // Check growthGuidance
-  if (typeof obj.growthGuidance !== "string" || obj.growthGuidance.length < 50) return false;
-  
-  return true;
+### หลักการทำนาย
+1. **คุณภาพคำตอบ**: อ้างอิงข้อมูลจาก Knowledge Base ที่แนบมาให้มากที่สุด
+2. **ความเฉพาะเจาะจง**: เน้นสถานการณ์จริงที่เจ้าของชื่อจะได้เจอ`;
 }
 
 export async function POST(req: Request) {
@@ -135,17 +60,20 @@ export async function POST(req: Request) {
 
     const body = (await req.json()) as NameNumerologyAIRequest;
 
-    // Validate input
     if (!body.firstName || !body.lastName || !body.scores || !body.baseline) {
       return NextResponse.json({ error: "invalid_request" }, { status: 400 });
     }
 
-    const prompt = buildNameNumerologyPrompt(body);
+    const rag = retrieveRag({
+      query: `วิเคราะห์ชื่อ ${body.firstName} ${body.lastName} เลขชะตา ${body.scores.destiny}`,
+      systemId: "numerology",
+      limit: 6,
+    });
 
+    const prompt = buildNameNumerologyPrompt(body) + formatRagContext(rag.chunks);
     const model = process.env.GEMINI_MODEL || "gemini-2.0-flash";
     
-    // First attempt
-    let resp = await fetch(
+    const resp = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
       {
         method: "POST",
@@ -161,11 +89,9 @@ export async function POST(req: Request) {
     );
 
     if (!resp.ok) {
-      // API unavailable - return baseline
       return NextResponse.json({
         ok: true,
         fallback: true,
-        reason: "gemini_unavailable",
         ai: {
           summary: body.baseline.advice,
           enhancedInterpretation: {
@@ -181,98 +107,45 @@ export async function POST(req: Request) {
       });
     }
 
-    let data = await resp.json();
-    let raw = data?.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
+    const data = await resp.json();
+    const raw = data?.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
 
-    let parsed: unknown;
     try {
-      parsed = JSON.parse(raw);
-    } catch {
-      parsed = null;
-    }
-
-    // Validate response
-    if (!validateResponse(parsed)) {
-      // Retry once
-      resp = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            generationConfig: {
-              temperature: 0.7,
-              responseMimeType: "application/json",
-            },
-            contents: [{ role: "user", parts: [{ text: prompt }] }],
-          }),
+      const parsed = JSON.parse(raw);
+      return NextResponse.json({
+        ok: true,
+        ai: {
+          summary: parsed.summary,
+          enhancedInterpretation: {
+            personality: parsed.summary,
+            lifePath: parsed.timeframe || "ปกติ",
+            career: parsed.opportunities?.[0] || "ปกติ",
+            relationships: parsed.opportunities?.[1] || "ปกติ",
+          },
+          personalizedAdvice: parsed.actions?.join(". ") || parsed.summary,
+          strengthsInsight: parsed.opportunities?.join(". "),
+          growthGuidance: parsed.risks?.join(". "),
         },
-      );
-
-      if (!resp.ok) {
-        // Return baseline on retry failure
-        return NextResponse.json({
-          ok: true,
-          fallback: true,
-          reason: "retry_failed",
-          ai: {
-            summary: body.baseline.advice,
-            enhancedInterpretation: {
-              personality: body.baseline.interpretation.personality,
-              lifePath: body.baseline.interpretation.lifePath,
-              career: body.baseline.interpretation.career,
-              relationships: body.baseline.interpretation.relationships,
-            },
-            personalizedAdvice: body.baseline.advice,
-            strengthsInsight: body.baseline.interpretation.strengths.join(" "),
-            growthGuidance: body.baseline.interpretation.weaknesses.join(" "),
+      });
+    } catch {
+      return NextResponse.json({
+        ok: true,
+        fallback: true,
+        ai: {
+          summary: body.baseline.advice,
+          enhancedInterpretation: {
+            personality: body.baseline.interpretation.personality,
+            lifePath: body.baseline.interpretation.lifePath,
+            career: body.baseline.interpretation.career,
+            relationships: body.baseline.interpretation.relationships,
           },
-        });
-      }
-
-      data = await resp.json();
-      raw = data?.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
-
-      try {
-        parsed = JSON.parse(raw);
-      } catch {
-        parsed = null;
-      }
-
-      if (!validateResponse(parsed)) {
-        // Return baseline after retry
-        return NextResponse.json({
-          ok: true,
-          fallback: true,
-          reason: "validation_failed",
-          ai: {
-            summary: body.baseline.advice,
-            enhancedInterpretation: {
-              personality: body.baseline.interpretation.personality,
-              lifePath: body.baseline.interpretation.lifePath,
-              career: body.baseline.interpretation.career,
-              relationships: body.baseline.interpretation.relationships,
-            },
-            personalizedAdvice: body.baseline.advice,
-            strengthsInsight: body.baseline.interpretation.strengths.join(" "),
-            growthGuidance: body.baseline.interpretation.weaknesses.join(" "),
-          },
-        });
-      }
+          personalizedAdvice: body.baseline.advice,
+          strengthsInsight: body.baseline.interpretation.strengths.join(" "),
+          growthGuidance: body.baseline.interpretation.weaknesses.join(" "),
+        },
+      });
     }
-
-    // Success - return AI-enhanced interpretation
-    return NextResponse.json({
-      ok: true,
-      ai: parsed as NameNumerologyAIResponse,
-    });
   } catch (error) {
-    return NextResponse.json(
-      {
-        error: "unexpected_error",
-        detail: error instanceof Error ? error.message : String(error),
-      },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "unexpected_error" }, { status: 500 });
   }
 }
