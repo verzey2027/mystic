@@ -107,10 +107,9 @@ html[data-theme="light"] {
   --bg: #ffffff;
   --bg-elevated: #ffffff;
 
-  --bg-gradient: radial-gradient(1200px 600px at 10% -10%, rgba(167, 139, 250, 0.22), transparent 55%),
-    radial-gradient(900px 500px at 92% 0%, rgba(20, 184, 166, 0.10), transparent 55%),
-    radial-gradient(900px 520px at 40% 110%, rgba(244, 63, 94, 0.10), transparent 55%),
-    linear-gradient(180deg, #ffffff 0%, #fbfbff 55%, #ffffff 100%);
+  --bg-gradient: radial-gradient(1200px 600px at 12% -10%, rgba(157, 147, 201, 0.12), transparent 58%),
+    radial-gradient(900px 520px at 85% 0%, rgba(17, 24, 39, 0.035), transparent 60%),
+    linear-gradient(180deg, #ffffff 0%, #fbfbfd 55%, #ffffff 100%);
 
   --surface-1: #f3f4f6;
   --surface-2: #f9fafb;
@@ -126,12 +125,12 @@ html[data-theme="light"] {
   --text-muted: #6b7280;
   --text-subtle: #9ca3af;
 
-  --accent: #a78bfa;
-  --accent-hover: #8b5cf6;
-  --accent-ink: #111827;
-  --accent-soft: rgba(167, 139, 250, 0.14);
+  --accent: #9d93c9;
+  --accent-hover: #8f86c2;
+  --accent-ink: #ffffff;
+  --accent-soft: rgba(157, 147, 201, 0.10);
 
-  --ring: rgba(167, 139, 250, 0.42);
+  --ring: rgba(157, 147, 201, 0.30);
 
   --shadow-soft: 0 10px 30px rgba(17, 24, 39, 0.08), 0 1px 0 rgba(255, 255, 255, 0.8) inset;
 }
@@ -140,9 +139,8 @@ html[data-theme="dark"] {
   --bg: #070710;
   --bg-elevated: #0c0c16;
 
-  --bg-gradient: radial-gradient(1200px 600px at 10% -10%, rgba(167, 139, 250, 0.22), transparent 55%),
-    radial-gradient(900px 520px at 92% 0%, rgba(20, 184, 166, 0.10), transparent 55%),
-    radial-gradient(900px 520px at 40% 110%, rgba(244, 63, 94, 0.10), transparent 55%),
+  --bg-gradient: radial-gradient(1200px 600px at 12% -10%, rgba(157, 147, 201, 0.16), transparent 58%),
+    radial-gradient(900px 520px at 85% 0%, rgba(255, 255, 255, 0.06), transparent 60%),
     linear-gradient(180deg, #070710 0%, #080818 55%, #070710 100%);
 
   --surface-1: rgba(255, 255, 255, 0.06);
@@ -159,12 +157,12 @@ html[data-theme="dark"] {
   --text-muted: rgba(255, 255, 255, 0.68);
   --text-subtle: rgba(255, 255, 255, 0.45);
 
-  --accent: #b8a0ff;
-  --accent-hover: #9f7bff;
-  --accent-ink: #090916;
-  --accent-soft: rgba(184, 160, 255, 0.16);
+  --accent: #a99fe0;
+  --accent-hover: #9b90d8;
+  --accent-ink: #0a0a14;
+  --accent-soft: rgba(169, 159, 224, 0.14);
 
-  --ring: rgba(184, 160, 255, 0.42);
+  --ring: rgba(169, 159, 224, 0.32);
 
   --shadow-soft: 0 16px 45px rgba(0, 0, 0, 0.55), 0 1px 0 rgba(255, 255, 255, 0.05) inset;
 }
