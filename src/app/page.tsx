@@ -4,6 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect } from "react";
 import { Sparkles, Star, ChevronRight, Crown } from "lucide-react";
+import { useTheme } from "@/lib/theme/ThemeProvider";
+import { cn } from "@/lib/cn";
 
 function trackEvent(event: string, data?: Record<string, unknown>) {
   console.log("[Analytics]", event, data);
@@ -122,19 +124,22 @@ const packages = [
 ];
 
 export default function Home() {
+  const { theme } = useTheme();
+  const isPastel = theme === "pastel";
+
   useEffect(() => {
     trackEvent("landing_view", { step: "home" });
   }, []);
 
   return (
-    <main className="min-h-screen bg-white pb-24">
+    <main className={cn("min-h-screen pb-24", isPastel ? "bg-transparent" : "bg-white")}>
       {/* Header - Redesigned */}
       <header className="px-5 pt-6 pb-4">
         <Link href="/" className="flex flex-col items-center">
           {/* Logo with background glow effect */}
           <div className="relative">
             {/* Glow effect */}
-            <div className="absolute inset-0 bg-violet-400/20 blur-3xl rounded-full scale-150" />
+            <div className={cn("absolute inset-0 blur-3xl rounded-full scale-150", isPastel ? "bg-white/30" : "bg-violet-400/20")} />
             {/* Logo image */}
             <Image 
               src="/logo.png" 
@@ -150,23 +155,33 @@ export default function Home() {
 
       {/* Hero Section */}
       <section className="px-5 pt-4">
-        <div className="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-violet-600 via-violet-500 to-purple-500 p-6 text-white shadow-xl shadow-violet-200">
+        <div className={cn(
+          "relative overflow-hidden rounded-[28px] p-6 text-white shadow-xl",
+          isPastel 
+            ? "bg-white/20 backdrop-blur-xl border border-white/30 shadow-[0_8px_32px_rgba(199,125,255,0.3)]"
+            : "bg-gradient-to-br from-violet-600 via-violet-500 to-purple-500 shadow-violet-200"
+        )}>
           {/* Decorative elements */}
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
           <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full translate-y-1/2 -translate-x-1/2" />
           
           <div className="relative z-10">
-            <p className="text-violet-100 text-sm mb-1">{greeting()}</p>
+            <p className={cn("text-sm mb-1", isPastel ? "text-white/80" : "text-violet-100")}>{greeting()}</p>
             <h1 className="font-serif text-2xl font-semibold leading-tight">
               ค้นหาคำตอบที่คุณตามหา
             </h1>
-            <p className="mt-2 text-violet-100 text-sm leading-relaxed">
+            <p className={cn("mt-2 text-sm leading-relaxed", isPastel ? "text-white/70" : "text-violet-100")}>
               ไพ่ทาโรต์ • ดวงชะตา • ความรัก • เลขศาสตร์
             </p>
 
             <div className="mt-5 flex gap-3">
               <Link href="/tarot" className="flex-1">
-                <button className="w-full h-12 rounded-xl bg-white text-violet-600 font-semibold shadow-lg hover:bg-violet-50 transition-all active:scale-[0.98]">
+                <button className={cn(
+                  "w-full h-12 rounded-xl font-semibold shadow-lg transition-all active:scale-[0.98]",
+                  isPastel 
+                    ? "bg-white/30 backdrop-blur text-white border border-white/50 hover:bg-white/50"
+                    : "bg-white text-violet-600 hover:bg-violet-50"
+                )}>
                   เริ่มดูดวง
                 </button>
               </Link>
@@ -177,22 +192,32 @@ export default function Home() {
         {/* Quick Stats */}
         <div className="mt-4 grid grid-cols-2 gap-3">
           <Link href="/daily-card">
-            <div className="p-4 bg-violet-50 rounded-2xl border border-violet-100">
-              <div className="flex items-center gap-2 text-violet-600 mb-1">
+            <div className={cn(
+              "p-4 rounded-2xl border transition-all",
+              isPastel
+                ? "bg-white/20 backdrop-blur border-white/30"
+                : "bg-violet-50 border-violet-100"
+            )}>
+              <div className={cn("flex items-center gap-2 mb-1", isPastel ? "text-white" : "text-violet-600")}>
                 <Star className="w-4 h-4" />
                 <span className="text-xs font-medium">ไพ่ประจำวัน</span>
               </div>
-              <p className="text-xs text-gray-500">{todayDate()}</p>
+              <p className={cn("text-xs", isPastel ? "text-white/70" : "text-gray-500")}>{todayDate()}</p>
             </div>
           </Link>
 
           <Link href="/library/saved">
-            <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
-              <div className="flex items-center gap-2 text-gray-600 mb-1">
+            <div className={cn(
+              "p-4 rounded-2xl border transition-all",
+              isPastel
+                ? "bg-white/20 backdrop-blur border-white/30"
+                : "bg-gray-50 border-gray-100"
+            )}>
+              <div className={cn("flex items-center gap-2 mb-1", isPastel ? "text-white" : "text-gray-600")}>
                 <Sparkles className="w-4 h-4" />
                 <span className="text-xs font-medium">การอ่านของฉัน</span>
               </div>
-              <p className="text-xs text-gray-500">ดูย้อนหลัง</p>
+              <p className={cn("text-xs", isPastel ? "text-white/70" : "text-gray-500")}>ดูย้อนหลัง</p>
             </div>
           </Link>
         </div>
@@ -201,8 +226,8 @@ export default function Home() {
       {/* Packages Section */}
       <section className="px-5 pt-8">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="font-serif text-xl font-semibold text-gray-900">แพ็กเกจแนะนำ</h2>
-          <Link href="/pricing" className="text-violet-600 text-sm flex items-center gap-1">
+          <h2 className={cn("font-serif text-xl font-semibold", isPastel ? "text-white" : "text-gray-900")}>แพ็กเกจแนะนำ</h2>
+          <Link href="/pricing" className={cn("text-sm flex items-center gap-1", isPastel ? "text-white/80" : "text-violet-600")}>
             ดูทั้งหมด <ChevronRight className="w-4 h-4" />
           </Link>
         </div>
@@ -211,53 +236,68 @@ export default function Home() {
           {packages.map((pkg) => (
             <Link key={pkg.id} href={`/pricing/${pkg.id}`} className="block">
               <div
-                className={`relative p-5 rounded-2xl border transition-all active:scale-[0.98] ${
-                  pkg.popular
-                    ? "bg-violet-50 border-violet-200 shadow-lg shadow-violet-100"
-                    : "bg-white border-gray-200 hover:border-violet-200"
-                }`}
+                className={cn(
+                  "relative p-5 rounded-2xl border transition-all active:scale-[0.98]",
+                  isPastel
+                    ? pkg.popular
+                      ? "bg-white/25 backdrop-blur border-white/40 shadow-lg shadow-purple-500/20"
+                      : "bg-white/20 backdrop-blur border-white/30 hover:bg-white/30"
+                    : pkg.popular
+                      ? "bg-violet-50 border-violet-200 shadow-lg shadow-violet-100"
+                      : "bg-white border-gray-200 hover:border-violet-200"
+                )}
               >
                 {pkg.popular && (
-                  <div className="absolute -top-3 left-5 px-3 py-1 bg-violet-600 text-white text-xs font-medium rounded-full flex items-center gap-1">
+                  <div className={cn(
+                    "absolute -top-3 left-5 px-3 py-1 text-white text-xs font-medium rounded-full flex items-center gap-1",
+                    isPastel ? "bg-white/30 backdrop-blur" : "bg-violet-600"
+                  )}>
                     <Crown className="w-3 h-3" /> ยอดนิยม
                   </div>
                 )}
                 {pkg.subtitle && !pkg.popular && (
-                  <div className={`absolute -top-3 left-5 px-3 py-1 text-xs font-medium rounded-full ${
-                    pkg.id === 'qa-3' || pkg.id === 'qa-1' 
-                      ? "bg-amber-500 text-white" 
-                      : "bg-gray-100 text-gray-600"
-                  }`}>
+                  <div className={cn(
+                    "absolute -top-3 left-5 px-3 py-1 text-xs font-medium rounded-full",
+                    pkg.id === 'qa-3' || pkg.id === 'qa-1'
+                      ? isPastel ? "bg-white/30 backdrop-blur text-white" : "bg-amber-500 text-white"
+                      : isPastel ? "bg-white/20 backdrop-blur text-white" : "bg-gray-100 text-gray-600"
+                  )}>
                     {pkg.subtitle}
                   </div>
                 )}
 
                 <div className="flex items-start justify-between mb-2 mt-2">
                   <div className="flex-1 pr-4">
-                    <h3 className="font-semibold text-gray-900">{pkg.name}</h3>
-                    <p className="text-sm text-gray-500 mt-0.5">{pkg.description}</p>
+                    <h3 className={cn("font-semibold", isPastel ? "text-white" : "text-gray-900")}>{pkg.name}</h3>
+                    <p className={cn("text-sm mt-0.5", isPastel ? "text-white/70" : "text-gray-500")}>{pkg.description}</p>
                     {pkg.detail && (
-                      <p className="text-xs text-violet-500 mt-1">{pkg.detail}</p>
+                      <p className={cn("text-xs mt-1", isPastel ? "text-white/60" : "text-violet-500")}>{pkg.detail}</p>
                     )}
                   </div>
                   <div className="text-right flex-shrink-0">
-                    <p className="text-2xl font-bold text-violet-600">{pkg.price}</p>
+                    <p className={cn("text-2xl font-bold", isPastel ? "text-white" : "text-violet-600")}>{pkg.price}</p>
                     {pkg.priceAlt && (
-                      <p className="text-xs text-gray-400">{pkg.priceAlt}</p>
+                      <p className={cn("text-xs", isPastel ? "text-white/60" : "text-gray-400")}>{pkg.priceAlt}</p>
                     )}
                   </div>
                 </div>
 
-                <div className="mt-3 pt-3 border-t border-gray-100">
-                  <p className="text-xs text-gray-400 mb-2">รวม:</p>
+                <div className={cn("mt-3 pt-3 border-t", isPastel ? "border-white/20" : "border-gray-100")}>
+                  <p className={cn("text-xs mb-2", isPastel ? "text-white/60" : "text-gray-400")}>รวม:</p>
                   <ul className="flex flex-wrap gap-2">
                     {pkg.features.slice(0, 4).map((feature) => (
-                      <li key={feature} className="text-xs text-gray-600 bg-gray-50 px-2 py-1 rounded-full">
+                      <li key={feature} className={cn(
+                        "text-xs px-2 py-1 rounded-full",
+                        isPastel ? "text-white bg-white/20" : "text-gray-600 bg-gray-50"
+                      )}>
                         {feature}
                       </li>
                     ))}
                     {pkg.features.length > 4 && (
-                      <li className="text-xs text-violet-500 bg-violet-50 px-2 py-1 rounded-full">
+                      <li className={cn(
+                        "text-xs px-2 py-1 rounded-full",
+                        isPastel ? "text-white bg-white/30" : "text-violet-500 bg-violet-50"
+                      )}>
                         +{pkg.features.length - 4} รายการ
                       </li>
                     )}
@@ -271,12 +311,17 @@ export default function Home() {
 
       {/* Daily Tip */}
       <section className="px-5 pt-8">
-        <div className="p-5 bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl border border-amber-100">
-          <div className="flex items-center gap-2 text-amber-600 mb-2">
+        <div className={cn(
+          "p-5 rounded-2xl border",
+          isPastel
+            ? "bg-white/20 backdrop-blur border-white/30"
+            : "bg-gradient-to-br from-amber-50 to-orange-50 border-amber-100"
+        )}>
+          <div className={cn("flex items-center gap-2 mb-2", isPastel ? "text-white" : "text-amber-600")}>
             <Sparkles className="w-4 h-4" />
             <span className="text-xs font-medium">คำแนะนำวันนี้</span>
           </div>
-          <p className="text-gray-700 text-sm leading-relaxed">
+          <p className={cn("text-sm leading-relaxed", isPastel ? "text-white/90" : "text-gray-700")}>
             "การเปิดรับพลังงานบวกจะช่วยให้คุณผ่านพ้นวันที่ท้าทายไปได้ด้วยดี"
           </p>
         </div>

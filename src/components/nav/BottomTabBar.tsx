@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/cn";
 import { Home, Compass, Sparkles, Settings, Bookmark } from "lucide-react";
+import { useTheme } from "@/lib/theme/ThemeProvider";
 
 const bottomTabs = [
   { label: "หน้าแรก", href: "/", icon: Home },
@@ -22,13 +23,20 @@ function isActive(pathname: string, href: string) {
 
 export function BottomTabBar() {
   const pathname = usePathname();
+  const { theme } = useTheme();
+
+  const isPastel = theme === "pastel";
 
   return (
     <nav
       className={cn(
         "fixed bottom-0 left-0 right-0 z-[9999] w-full",
-        "border-t border-violet-100 bg-white/90 backdrop-blur-xl",
-        "shadow-[0_-4px_20px_rgba(124,58,237,0.08)]"
+        isPastel 
+          ? "border-t border-white/30 bg-white/20 backdrop-blur-xl"
+          : "border-t border-violet-100 bg-white/90 backdrop-blur-xl",
+        isPastel 
+          ? "shadow-[0_-4px_20px_rgba(199,125,255,0.3)]" 
+          : "shadow-[0_-4px_20px_rgba(124,58,237,0.08)]"
       )}
       style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
     >
@@ -43,19 +51,24 @@ export function BottomTabBar() {
               className={cn(
                 "relative flex h-14 min-w-[64px] flex-1 flex-col items-center justify-center gap-1 rounded-2xl px-1",
                 "transition-all duration-200",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400",
-                active
-                  ? "bg-violet-50 text-violet-600"
-                  : "text-gray-400 hover:text-gray-600 hover:bg-gray-50"
+                "focus-visible:outline-none focus-visible:ring-2",
+                isPastel 
+                  ? active
+                    ? "bg-white/30 text-white"
+                    : "text-white/70 hover:text-white hover:bg-white/20"
+                  : active
+                    ? "bg-violet-50 text-violet-600"
+                    : "text-gray-400 hover:text-gray-600 hover:bg-gray-50",
+                isPastel && "focus-visible:ring-white/50"
               )}
               aria-current={active ? "page" : undefined}
             >
-              <Icon className={cn("w-5 h-5", active && "text-violet-600")} />
-              <span className={cn("text-[10px] font-medium", active && "text-violet-600")}>
+              <Icon className={cn("w-5 h-5", active && (isPastel ? "text-white" : "text-violet-600"))} />
+              <span className={cn("text-[10px] font-medium", active && (isPastel ? "text-white" : "text-violet-600"))}>
                 {tab.label}
               </span>
               {active && (
-                <span className="absolute -top-0.5 w-1 h-1 rounded-full bg-violet-600" />
+                <span className={cn("absolute -top-0.5 w-1 h-1 rounded-full", isPastel ? "bg-white" : "bg-violet-600")} />
               )}
             </Link>
           );
