@@ -69,26 +69,27 @@ function applyThemeVariables(theme: Theme) {
   
   switch (theme) {
     case "pastel":
-      root.style.setProperty("--bg", "linear-gradient(135deg, #C77DFF 0%, #FF9ECD 50%, #FFB8E0 100%)");
+      // More contrasting gradient - deeper purple to vibrant pink
+      root.style.setProperty("--bg", "linear-gradient(135deg, #7B2CBF 0%, #C77DFF 30%, #FF006E 70%, #FF9ECD 100%)");
       root.style.setProperty("--bg-elevated", "rgba(255, 255, 255, 0.25)");
       root.style.setProperty("--bg-soft", "rgba(255, 255, 255, 0.15)");
       root.style.setProperty("--bg-muted", "rgba(255, 255, 255, 0.1)");
       root.style.setProperty("--text", "#FFFFFF");
-      root.style.setProperty("--text-muted", "rgba(255, 255, 255, 0.8)");
-      root.style.setProperty("--text-subtle", "rgba(255, 255, 255, 0.6)");
-      root.style.setProperty("--accent", "#FF6B9D");
-      root.style.setProperty("--accent-hover", "#FF8FB0");
-      root.style.setProperty("--accent-light", "#FFB8C9");
-      root.style.setProperty("--border", "rgba(255, 255, 255, 0.3)");
-      root.style.setProperty("--border-mystical", "rgba(255, 255, 255, 0.5)");
-      root.style.setProperty("--surface-1", "rgba(255, 255, 255, 0.2)");
-      root.style.setProperty("--surface-2", "rgba(255, 255, 255, 0.15)");
-      root.style.setProperty("--surface-3", "rgba(255, 255, 255, 0.1)");
-      root.style.setProperty("--shadow-soft", "0 8px 32px rgba(199, 125, 255, 0.3)");
-      root.style.setProperty("--shadow-card", "0 4px 24px rgba(255, 158, 205, 0.2)");
-      root.style.setProperty("--shadow-card-hover", "0 12px 40px rgba(255, 107, 157, 0.35)");
+      root.style.setProperty("--text-muted", "rgba(255, 255, 255, 0.9)");
+      root.style.setProperty("--text-subtle", "rgba(255, 255, 255, 0.7)");
+      root.style.setProperty("--accent", "#FF006E");
+      root.style.setProperty("--accent-hover", "#FF4D9E");
+      root.style.setProperty("--accent-light", "#FF9ECD");
+      root.style.setProperty("--border", "rgba(255, 255, 255, 0.4)");
+      root.style.setProperty("--border-mystical", "rgba(255, 255, 255, 0.6)");
+      root.style.setProperty("--surface-1", "rgba(255, 255, 255, 0.25)");
+      root.style.setProperty("--surface-2", "rgba(255, 255, 255, 0.2)");
+      root.style.setProperty("--surface-3", "rgba(255, 255, 255, 0.15)");
+      root.style.setProperty("--shadow-soft", "0 8px 32px rgba(123, 44, 191, 0.4)");
+      root.style.setProperty("--shadow-card", "0 4px 24px rgba(255, 0, 110, 0.3)");
+      root.style.setProperty("--shadow-card-hover", "0 12px 40px rgba(255, 0, 110, 0.45)");
       root.style.setProperty("--bg-gradient", `
-        linear-gradient(135deg, #C77DFF 0%, #E8A4FF 25%, #FF9ECD 50%, #FFB8E0 75%, #FFC9E9 100%)
+        linear-gradient(135deg, #5A189A 0%, #7B2CBF 15%, #9D4EDD 35%, #C77DFF 50%, #FF006E 75%, #FF9ECD 100%)
       `);
       
       // Add pastel Memphis styles
@@ -97,18 +98,18 @@ function applyThemeVariables(theme: Theme) {
         style.id = "pastel-styles";
         style.textContent = `
           [data-theme="pastel"] {
-            background: linear-gradient(135deg, #C77DFF 0%, #E8A4FF 25%, #FF9ECD 50%, #FFB8E0 75%, #FFC9E9 100%);
+            background: linear-gradient(135deg, #5A189A 0%, #7B2CBF 15%, #9D4EDD 35%, #C77DFF 50%, #FF006E 75%, #FF9ECD 100%);
             min-height: 100vh;
           }
           [data-theme="pastel"] .memphis-circle {
             position: absolute;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.2);
             backdrop-filter: blur(2px);
           }
           [data-theme="pastel"] .memphis-x {
             position: absolute;
-            color: rgba(255, 255, 255, 0.4);
+            color: rgba(255, 255, 255, 0.5);
             font-size: 24px;
             font-weight: 300;
           }
@@ -118,8 +119,8 @@ function applyThemeVariables(theme: Theme) {
             height: 8px;
             background: repeating-linear-gradient(
               90deg,
-              rgba(255, 255, 255, 0.3) 0px,
-              rgba(255, 255, 255, 0.3) 4px,
+              rgba(255, 255, 255, 0.4) 0px,
+              rgba(255, 255, 255, 0.4) 4px,
               transparent 4px,
               transparent 8px
             );
@@ -130,7 +131,7 @@ function applyThemeVariables(theme: Theme) {
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.4);
             border-radius: 24px;
-            box-shadow: 0 8px 32px rgba(199, 125, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(90, 24, 154, 0.3);
           }
           [data-theme="pastel"] .glass-button {
             background: rgba(255, 255, 255, 0.35);
@@ -139,17 +140,17 @@ function applyThemeVariables(theme: Theme) {
             border-radius: 50px;
             color: white;
             font-weight: 600;
-            box-shadow: 0 4px 20px rgba(255, 107, 157, 0.3);
+            box-shadow: 0 4px 20px rgba(255, 0, 110, 0.35);
             transition: all 0.3s ease;
           }
           [data-theme="pastel"] .glass-button:hover {
             background: rgba(255, 255, 255, 0.5);
             transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(255, 107, 157, 0.4);
+            box-shadow: 0 8px 30px rgba(255, 0, 110, 0.5);
           }
           [data-theme="pastel"] h1, [data-theme="pastel"] h2, [data-theme="pastel"] h3 {
             color: white;
-            text-shadow: 0 2px 20px rgba(199, 125, 255, 0.5);
+            text-shadow: 0 2px 10px rgba(90, 24, 154, 0.5), 0 4px 20px rgba(0, 0, 0, 0.3);
           }
           [data-theme="pastel"] .gradient-text {
             background: linear-gradient(90deg, #FFFFFF, #FFE4F0);
