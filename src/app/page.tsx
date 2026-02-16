@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect } from "react";
 import { Sparkles, Star, ChevronRight, Crown } from "lucide-react";
@@ -130,8 +131,14 @@ export default function Home() {
       {/* Header */}
       <header className="flex items-center justify-between px-5 pt-4 pb-2">
         <div className="flex items-center gap-2">
-          <Sparkles className="w-6 h-6 text-violet-600" />
-          <span className="font-serif text-xl font-semibold text-violet-600">MysticFlow</span>
+          <Image 
+            src="/logo.png" 
+            alt="REFFORTUNE" 
+            width={40} 
+            height={40} 
+            className="w-10 h-10"
+          />
+          <span className="font-serif text-xl font-semibold text-violet-600">REFFORTUNE</span>
         </div>
       </header>
 
