@@ -54,7 +54,7 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        <{/* Theme Options */}>
+        {/* Theme Options */}
         <div className="space-y-3">
           {themes.map((t) => {
             const Icon = t.icon;
@@ -89,7 +89,7 @@ export default function SettingsPage() {
           })}
         </div>
 
-        <{/* Preview Card */}>
+        {/* Preview Card */}
         <div className="mt-8 p-5 rounded-2xl border border-gray-200 bg-gray-50">
           <h3 className="font-semibold text-gray-900 mb-4">ตัวอย่าง</h3>
           
@@ -126,7 +126,7 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        <{/* Additional Settings */}>
+        {/* Additional Settings */}
         <div className="mt-8 space-y-3">
           <Link href="/pricing" className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-2xl hover:border-violet-300 transition-colors">
             <div className="flex items-center gap-3">
