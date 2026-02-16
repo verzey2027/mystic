@@ -131,7 +131,7 @@ export default function TarotHomePage() {
         <div className="fixed bottom-20 left-0 right-0 px-5 z-30">
           <div className="max-w-lg mx-auto">
             <Link href="/tarot/pick?count=3" className="block">
-              <button className="w-full h-12 rounded-xl bg-violet-600 text-white font-medium shadow-lg shadow-violet-200 hover:bg-violet-700 hover:shadow-xl transition-all active:scale-[0.98]">
+              <button className="w-full h-12 rounded-xl bg-violet-300 text-violet-800 font-medium shadow-lg shadow-violet-100 hover:bg-violet-400 hover:shadow-violet-200 transition-all active:scale-[0.98]">
                 เริ่มดูไพ่ 3 ใบ
               </button>
             </Link>
