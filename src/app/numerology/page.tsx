@@ -1,11 +1,8 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
-import { AppBar } from "@/components/nav/AppBar";
-import { Button } from "@/components/ui/Button";
-import { ShareButton } from "@/components/ui/ShareButton";
-import { Card, CardDesc, CardTitle } from "@/components/ui/Card";
-// HeartSave removed temporarily (save builder not yet implemented for numerology)
+import Link from "next/link";
+import { Sparkles, Share2, RefreshCw } from "lucide-react";
 import { analyzeThaiPhone } from "@/lib/numerology/engine";
 import { runReadingPipeline } from "@/lib/reading/pipeline";
 import { removeReading } from "@/lib/library/storage";
@@ -125,88 +122,110 @@ export default function NumerologyPage() {
 
     const id = typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : String(Date.now());
     setSavedId(id);
-
-    // TODO: add buildSavedNumerologyReading to storage; for now, disable saving to avoid broken build
-    // upsertReading(...)
-    
   }
 
   return (
-    <main className="mx-auto w-full max-w-lg px-5 pb-10 pt-8">
-      <header className="space-y-2">
-        <AppBar title="เลขศาสตร์" className="px-0 pt-0 pb-0" />
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-semibold tracking-tight text-fg">วิเคราะห์เบอร์โทรศัพท์</h1>
-          {/* Save coming soon */}
-        </div>
-        <p className="text-sm text-fg-muted">กรอกเบอร์ แล้วดูคะแนน/แนวโน้มงาน-เงิน-ความสัมพันธ์</p>
+    <main className="min-h-screen bg-white">
+      <!-- Header -->
+      <header className="flex items-center justify-between px-5 pt-4 pb-2">
+        <Link href="/" className="flex items-center gap-2">
+          <Sparkles className="w-5 h-5 text-violet-600" />
+          <span className="font-serif text-lg font-semibold text-violet-600">MysticFlow</span>
+        </Link>
       </header>
 
-      <Card className="mt-6 p-5">
-        <CardTitle>คำนวณ</CardTitle>
-        <CardDesc className="mt-1">ใส่เบอร์โทรศัพท์ (ระบบจะจัดรูปแบบให้เอง)</CardDesc>
+      <div className="px-5 pb-10 pt-6">
+        <header className="space-y-2">
+          <h1 className="font-serif text-2xl font-semibold text-gray-900">วิเคราะห์เบอร์โทรศัพท์</h1>
+          <p className="text-sm text-gray-500">กรอกเบอร์ แล้วดูคะแนน/แนวโน้มงาน-เงิน-ความสัมพันธ์</p>
+        </header>
 
-        <form onSubmit={onSubmit} className="mt-5 space-y-4">
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-fg-muted">เบอร์โทรศัพท์</label>
-            <input
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              inputMode="tel"
-              placeholder="เช่น 0812345678"
-              className="w-full rounded-xl border border-border bg-bg-elevated px-3 py-3 text-sm text-fg outline-none transition focus:ring-2 focus:ring-ring"
-              required
-            />
-            {error ? <p className="text-sm text-danger">{error}</p> : null}
-          </div>
+        <div className="mt-6 rounded-[24px] border border-gray-200 bg-white p-5 shadow-sm">
+          <h2 className="text-lg font-semibold text-gray-900">คำนวณ</h2>
+          <p className="mt-1 text-sm text-gray-500">ใส่เบอร์โทรศัพท์ (ระบบจะจัดรูปแบบให้เอง)</p>
 
-          <Button type="submit" size="lg" className="w-full">
-            วิเคราะห์
-          </Button>
-        </form>
-      </Card>
+          <form onSubmit={onSubmit} className="mt-5 space-y-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-600">เบอร์โทรศัพท์</label>
+              <input
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                inputMode="tel"
+                placeholder="เช่น 0812345678"
+                className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100"
+                required
+              />
+              {error ? <p className="text-sm text-red-500">{error}</p> : null}
+            </div>
 
-      {baseline && session && (
-        <section className="mt-6 space-y-3">
-          <Card className="p-5">
-            <CardTitle>สรุปคะแนน</CardTitle>
-            <p className="mt-2 text-sm text-fg-muted">
-              คะแนน {baseline.score}/99 ({baseline.tier}) • เลขรวม {baseline.total} • เลขราก {baseline.root}
-            </p>
-          </Card>
+            <button
+              type="submit"
+              className="w-full h-12 rounded-xl bg-violet-600 text-white font-medium shadow-lg shadow-violet-200 hover:bg-violet-700 hover:shadow-xl transition-all active:scale-[0.98]"
+            >
+              วิเคราะห์
+            </button>
+          </form>
+        </div>
 
-          <Card className="p-5">
-            <CardTitle>คำทำนาย</CardTitle>
-            {!aiReading ? (
-              <p className="mt-2 text-sm text-fg-subtle">กำลังสรุปคำทำนาย...</p>
-            ) : (
-              <>
-                <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-fg-muted">{aiReading.summary}</p>
-                <div className="mt-4 rounded-2xl border border-border bg-bg-elevated p-4">
-                  <p className="text-xs font-medium text-fg-muted">รายละเอียด</p>
-                  <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-fg-muted">{aiReading.cardStructure}</p>
-                </div>
-                
-                <div className="mt-6 flex flex-col gap-3">
-                  <ShareButton 
-                    variant="primary"
-                    className="w-full"
-                    size="lg"
-                    shareData={{
-                      title: "ผลวิเคราะห์เบอร์โทรศัพท์",
-                      text: aiReading.summary,
-                      url: typeof window !== "undefined" ? window.location.href : "",
-                    }}
-                  />
-                  <Button variant="secondary" className="w-full" onClick={() => { setSubmittedPhone(null); setPhone(""); }}>
-                    วิเคราะห์เบอร์อื่น
-                  </Button>
-                </div>
-              </>
-            )}
-          </Card>
-        </section>
-      )}
+        {baseline && session && (
+          <section className="mt-6 space-y-4">
+            <div className="rounded-[24px] border border-gray-200 bg-white p-5 shadow-sm">
+              <h2 className="text-lg font-semibold text-gray-900">สรุปคะแนน</h2>
+              <p className="mt-2 text-sm text-gray-600">
+                คะแนน {" "}
+                <span className="font-semibold text-violet-600">{baseline.score}/99</span> ({baseline.tier}) •
+                เลขรวม {baseline.total} • เลขราก {baseline.root}
+              </p>
+            </div>
+
+            <div className="rounded-[24px] border border-gray-200 bg-white p-5 shadow-sm">
+              <h2 className="text-lg font-semibold text-gray-900">คำทำนาย</h2>
+              {!aiReading ? (
+                <p className="mt-2 text-sm text-gray-400">กำลังสรุปคำทำนาย...</p>
+              ) : (
+                <>
+                  <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-gray-600">{aiReading.summary}</p>
+                  <div className="mt-4 rounded-xl border border-violet-100 bg-violet-50/50 p-4">
+                    <p className="text-xs font-medium text-violet-600">รายละเอียด</p>
+                    <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-gray-600">{aiReading.cardStructure}</p>
+                  </div>
+
+                  <div className="mt-6 flex flex-col gap-3">
+                    <button
+                      className="w-full h-12 rounded-xl bg-violet-600 text-white font-medium shadow-lg shadow-violet-200 hover:bg-violet-700 hover:shadow-xl transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+                      onClick={() => {
+                        if (navigator.share) {
+                          navigator.share({
+                            title: "ผลวิเคราะห์เบอร์โทรศัพท์",
+                            text: aiReading.summary,
+                            url: window.location.href,
+                          });
+                        } else {
+                          navigator.clipboard.writeText(window.location.href);
+                          alert("คัดลอกลิงก์แล้ว!");
+                        }
+                      }}
+                    >
+                      <Share2 className="w-4 h-4" />
+                      แชร์ผลลัพธ์
+                    </button>
+                    <button
+                      className="w-full h-12 rounded-xl bg-white border border-gray-200 text-gray-700 font-medium hover:bg-gray-50 hover:border-gray-300 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+                      onClick={() => {
+                        setSubmittedPhone(null);
+                        setPhone("");
+                      }}
+                    >
+                      <RefreshCw className="w-4 h-4" />
+                      วิเคราะห์เบอร์อื่น
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          </section>
+        )}
+      </div>
     </main>
   );
 }
