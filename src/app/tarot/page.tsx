@@ -1,18 +1,9 @@
-import type { Metadata } from "next";
+"use client";
+
 import Link from "next/link";
 import { Sparkles, Clock, Layers, Grid3X3, LayoutGrid } from "lucide-react";
-
-export const metadata: Metadata = {
-  title: "ทาโรต์ — เลือกสเปรดที่เหมาะกับคุณ",
-  description:
-    "เปิดไพ่ทาโรต์ออนไลน์กับ MysticFlow เลือกสเปรด 1, 3, 5 หรือ 10 ใบ รับคำทำนายแม่นยำ เข้าใจง่าย ใช้ได้จริง",
-  alternates: { canonical: "/tarot" },
-  openGraph: {
-    title: "ทาโรต์ — MysticFlow",
-    description: "เลือกสเปรดไพ่ทาโรต์ที่เหมาะกับคำถามของคุณ",
-    url: "/tarot",
-  },
-};
+import { useTheme } from "@/lib/theme/ThemeProvider";
+import { cn } from "@/lib/cn";
 
 const categories = ["ทั้งหมด", "ความรัก", "การงาน", "การเงิน"];
 
@@ -62,22 +53,25 @@ const spreads = [
 ];
 
 export default function TarotHomePage() {
+  const { theme } = useTheme();
+  const isPastel = theme === "pastel";
+
   return (
-    <main className="min-h-screen bg-white">
+    <main className={cn("min-h-screen", isPastel ? "bg-transparent" : "bg-white")}>
       {/* Header */}
       <header className="flex items-center justify-between px-5 pt-4 pb-2">
         <Link href="/" className="flex items-center gap-2">
-          <Sparkles className="w-5 h-5 text-violet-600" />
-          <span className="font-serif text-lg font-semibold text-violet-600">MysticFlow</span>
+          <Sparkles className={cn("w-5 h-5", isPastel ? "text-white" : "text-violet-600")} />
+          <span className={cn("font-serif text-lg font-semibold", isPastel ? "text-white" : "text-violet-600")}>MysticFlow</span>
         </Link>
       </header>
 
       {/* Title Section */}
       <section className="px-5 pt-4 pb-3">
-        <h1 className="font-serif text-3xl font-semibold tracking-tight text-gray-900">
+        <h1 className={cn("font-serif text-3xl font-semibold tracking-tight", isPastel ? "text-white" : "text-gray-900")}>
           ทาโรต์
         </h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <p className={cn("mt-1 text-sm", isPastel ? "text-white/70" : "text-gray-500")}>
           เลือกสเปรดที่เหมาะกับคำถามของคุณ
         </p>
 
@@ -86,11 +80,16 @@ export default function TarotHomePage() {
           {categories.map((cat, i) => (
             <button
               key={cat}
-              className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all ${
+              className={cn(
+                "flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all",
                 i === 0
-                  ? "bg-violet-600 text-white"
-                  : "bg-gray-100 text-gray-600 hover:bg-violet-50 hover:text-violet-600"
-              }`}
+                  ? isPastel 
+                    ? "bg-white/30 text-white border border-white/50"
+                    : "bg-violet-600 text-white"
+                  : isPastel
+                    ? "bg-white/20 text-white/80 hover:bg-white/30"
+                    : "bg-gray-100 text-gray-600 hover:bg-violet-50 hover:text-violet-600"
+              )}
             >
               {cat}
             </button>
@@ -107,21 +106,28 @@ export default function TarotHomePage() {
               href={`/tarot/pick?count=${spread.count}`}
               className="block"
             >
-              <div className="p-5 bg-white border border-gray-200 rounded-[24px] transition-all hover:border-violet-300 hover:shadow-[0_8px_32px_rgba(124,58,237,0.12)] hover:-translate-y-0.5"
-              >
+              <div className={cn(
+                "p-5 rounded-[24px] transition-all hover:-translate-y-0.5",
+                isPastel
+                  ? "bg-white/20 backdrop-blur border border-white/30 hover:bg-white/30 hover:shadow-[0_8px_32px_rgba(199,125,255,0.3)]"
+                  : "bg-white border border-gray-200 hover:border-violet-300 hover:shadow-[0_8px_32px_rgba(124,58,237,0.12)]"
+              )}>
                 <div className="flex items-start gap-4">
-                  <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-violet-50 text-violet-600">
+                  <div className={cn(
+                    "flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl",
+                    isPastel ? "bg-white/20 text-white" : "bg-violet-50 text-violet-600"
+                  )}>
                     <spread.icon className="w-6 h-6" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-base font-semibold text-gray-900">{spread.title}</h3>
-                    <div className="mt-0.5 flex items-center gap-1.5 text-xs text-gray-400">
+                    <h3 className={cn("text-base font-semibold", isPastel ? "text-white" : "text-gray-900")}>{spread.title}</h3>
+                    <div className={cn("mt-0.5 flex items-center gap-1.5 text-xs", isPastel ? "text-white/60" : "text-gray-400")}>
                       <Clock className="w-3 h-3" />
                       {spread.eta}
                     </div>
                   </div>
                 </div>
-                <p className="mt-3 text-sm leading-relaxed text-gray-500">{spread.description}</p>
+                <p className={cn("mt-3 text-sm leading-relaxed", isPastel ? "text-white/70" : "text-gray-500")}>{spread.description}</p>
               </div>
             </Link>
           ))}
