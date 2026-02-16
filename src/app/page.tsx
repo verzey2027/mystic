@@ -130,16 +130,16 @@ export default function Home() {
     <main className="min-h-screen bg-white pb-24">
       {/* Header */}
       <header className="flex items-center justify-between px-5 pt-4 pb-2">
-        <div className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-2">
           <Image 
             src="/logo.png" 
             alt="REFFORTUNE" 
-            width={40} 
-            height={40} 
-            className="w-10 h-10"
+            width={200} 
+            height={60} 
+            className="h-12 w-auto object-contain"
+            priority
           />
-          <span className="font-serif text-xl font-semibold text-violet-600">REFFORTUNE</span>
-        </div>
+        </Link>
       </header>
 
       {/* Hero Section */}
