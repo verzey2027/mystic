@@ -128,17 +128,23 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-white pb-24">
-      {/* Header */}
-      <header className="flex items-center justify-between px-5 pt-4 pb-2">
-        <Link href="/" className="flex items-center gap-2">
-          <Image 
-            src="/logo.png" 
-            alt="REFFORTUNE" 
-            width={200} 
-            height={60} 
-            className="h-12 w-auto object-contain"
-            priority
-          />
+      {/* Header - Redesigned */}
+      <header className="px-5 pt-6 pb-4">
+        <Link href="/" className="flex flex-col items-center">
+          {/* Logo with background glow effect */}
+          <div className="relative">
+            {/* Glow effect */}
+            <div className="absolute inset-0 bg-violet-400/20 blur-3xl rounded-full scale-150" />
+            {/* Logo image */}
+            <Image 
+              src="/logo.png" 
+              alt="REFFORTUNE" 
+              width={280} 
+              height={100} 
+              className="relative h-20 w-auto object-contain drop-shadow-lg"
+              priority
+            />
+          </div>
         </Link>
       </header>
 
