@@ -219,3 +219,268 @@ a {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ============================================
+   RAINBOW THEME STYLES
+   ============================================ */
+
+/* Rainbow Theme - Global Styles */
+[data-theme="rainbow"] {
+  /* Animated Background */
+  background: 
+    radial-gradient(1200px 600px at 12% -10%, rgba(255, 0, 255, 0.2), transparent 58%),
+    radial-gradient(900px 520px at 85% 0%, rgba(0, 255, 255, 0.15), transparent 60%),
+    radial-gradient(800px 400px at 50% 100%, rgba(255, 215, 0, 0.1), transparent 50%),
+    linear-gradient(180deg, #0f0f1a 0%, #1a1a2e 55%, #0f0f1a 100%);
+  background-attachment: fixed;
+}
+
+/* Rainbow Text Effects */
+[data-theme="rainbow"] .rainbow-text,
+[data-theme="rainbow"] .font-serif {
+  background: linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3, #ff0000);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: rainbow-shift 3s linear infinite;
+}
+
+[data-theme="rainbow"] h1,
+[data-theme="rainbow"] h2,
+[data-theme="rainbow"] h3 {
+  background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3, #54a0ff, #5f27cd, #ff6b6b);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: rainbow-shift 4s linear infinite;
+}
+
+@keyframes rainbow-shift {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+/* Rainbow Glow Effects */
+[data-theme="rainbow"] .glow-soft {
+  box-shadow: 0 0 20px rgba(255, 0, 255, 0.3), 0 0 40px rgba(0, 255, 255, 0.2);
+}
+
+[data-theme="rainbow"] .glow-medium {
+  box-shadow: 0 0 30px rgba(255, 0, 255, 0.4), 0 0 60px rgba(0, 255, 255, 0.3);
+}
+
+/* Rainbow Cards */
+[data-theme="rainbow"] .rounded-2xl,
+[data-theme="rainbow"] .rounded-\[28px\],
+[data-theme="rainbow"] .rounded-\[24px\],
+[data-theme="rainbow"] [class*="rounded-2xl"] {
+  border: 1px solid transparent;
+  background: linear-gradient(#1a1a2e, #1a1a2e) padding-box,
+              linear-gradient(135deg, #ff00ff, #00ffff, #ffff00, #ff00ff) border-box;
+  box-shadow: 0 4px 20px rgba(255, 0, 255, 0.15), 0 0 20px rgba(0, 255, 255, 0.1);
+}
+
+[data-theme="rainbow"] .rounded-2xl:hover,
+[data-theme="rainbow"] .rounded-\[28px\]:hover,
+[data-theme="rainbow"] .rounded-\[24px\]:hover {
+  box-shadow: 0 8px 32px rgba(255, 0, 255, 0.3), 0 0 30px rgba(0, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+/* Rainbow Buttons */
+[data-theme="rainbow"] button,
+[data-theme="rainbow"] [role="button"] {
+  background: linear-gradient(135deg, #ff00ff, #00ffff) !important;
+  border: none !important;
+  color: white !important;
+  box-shadow: 0 4px 15px rgba(255, 0, 255, 0.4) !important;
+  transition: all 0.3s ease;
+}
+
+[data-theme="rainbow"] button:hover,
+[data-theme="rainbow"] [role="button"]:hover {
+  box-shadow: 0 6px 25px rgba(255, 0, 255, 0.6), 0 0 20px rgba(0, 255, 255, 0.4) !important;
+  transform: translateY(-1px);
+}
+
+[data-theme="rainbow"] button:active,
+[data-theme="rainbow"] [role="button"]:active {
+  transform: scale(0.98);
+}
+
+/* Secondary buttons in rainbow */
+[data-theme="rainbow"] .bg-white,
+[data-theme="rainbow"] .bg-gray-100,
+[data-theme="rainbow"] .bg-gray-50 {
+  background: linear-gradient(135deg, #252545, #1a1a2e) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 0, 255, 0.3) !important;
+}
+
+/* Rainbow Accent Elements */
+[data-theme="rainbow"] .text-violet-600,
+[data-theme="rainbow"] .text-violet-500 {
+  background: linear-gradient(90deg, #ff00ff, #00ffff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+[data-theme="rainbow"] .bg-violet-600,
+[data-theme="rainbow"] .bg-violet-500,
+[data-theme="rainbow"] .bg-violet-100 {
+  background: linear-gradient(135deg, #ff00ff, #00ffff) !important;
+  color: white !important;
+}
+
+[data-theme="rainbow"] .border-violet-200,
+[data-theme="rainbow"] .border-violet-100 {
+  border-color: rgba(255, 0, 255, 0.3) !important;
+}
+
+/* Rainbow Backgrounds for different sections */
+[data-theme="rainbow"] .bg-violet-50 {
+  background: linear-gradient(135deg, rgba(255, 0, 255, 0.1), rgba(0, 255, 255, 0.1)) !important;
+}
+
+[data-theme="rainbow"] .bg-rose-50 {
+  background: linear-gradient(135deg, rgba(255, 0, 128, 0.15), rgba(255, 0, 255, 0.1)) !important;
+}
+
+[data-theme="rainbow"] .bg-indigo-50 {
+  background: linear-gradient(135deg, rgba(0, 128, 255, 0.15), rgba(0, 255, 255, 0.1)) !important;
+}
+
+[data-theme="rainbow"] .bg-amber-50 {
+  background: linear-gradient(135deg, rgba(255, 200, 0, 0.15), rgba(255, 100, 0, 0.1)) !important;
+}
+
+/* Rainbow Input Fields */
+[data-theme="rainbow"] input,
+[data-theme="rainbow"] textarea {
+  background: rgba(26, 26, 46, 0.8) !important;
+  border: 1px solid rgba(255, 0, 255, 0.3) !important;
+  color: white !important;
+}
+
+[data-theme="rainbow"] input:focus,
+[data-theme="rainbow"] textarea:focus {
+  border-color: #ff00ff !important;
+  box-shadow: 0 0 20px rgba(255, 0, 255, 0.3) !important;
+}
+
+[data-theme="rainbow"] input::placeholder,
+[data-theme="rainbow"] textarea::placeholder {
+  color: rgba(200, 200, 220, 0.6) !important;
+}
+
+/* Rainbow Navigation */
+[data-theme="rainbow"] nav,
+[data-theme="rainbow"] header {
+  background: rgba(15, 15, 26, 0.95) !important;
+  backdrop-filter: blur(10px);
+  border-color: rgba(255, 0, 255, 0.2) !important;
+}
+
+/* Rainbow Bottom Tab Bar */
+[data-theme="rainbow"] .fixed.bottom-0 {
+  background: rgba(15, 15, 26, 0.95) !important;
+  border-top: 1px solid rgba(255, 0, 255, 0.2) !important;
+  box-shadow: 0 -4px 20px rgba(255, 0, 255, 0.15) !important;
+}
+
+[data-theme="rainbow"] .fixed.bottom-0 a {
+  color: rgba(200, 200, 220, 0.8) !important;
+}
+
+[data-theme="rainbow"] .fixed.bottom-0 a[class*="bg-violet-50"],
+[data-theme="rainbow"] .fixed.bottom-0 a[class*="text-violet-600"] {
+  background: linear-gradient(135deg, rgba(255, 0, 255, 0.2), rgba(0, 255, 255, 0.2)) !important;
+  color: white !important;
+}
+
+/* Magical Floating Animation */
+[data-theme="rainbow"] .magical-float {
+  animation: magical-float 3s ease-in-out infinite;
+}
+
+@keyframes magical-float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Rainbow Sparkle Effect */
+[data-theme="rainbow"] .sparkle {
+  position: relative;
+}
+
+[data-theme="rainbow"] .sparkle::before,
+[data-theme="rainbow"] .sparkle::after {
+  content: "✨";
+  position: absolute;
+  animation: sparkle-float 2s ease-in-out infinite;
+}
+
+[data-theme="rainbow"] .sparkle::before {
+  top: -10px;
+  left: -10px;
+  animation-delay: 0s;
+}
+
+[data-theme="rainbow"] .sparkle::after {
+  bottom: -10px;
+  right: -10px;
+  animation-delay: 1s;
+}
+
+@keyframes sparkle-float {
+  0%, 100% { opacity: 0; transform: scale(0.5); }
+  50% { opacity: 1; transform: scale(1); }
+}
+
+/* Rainbow Loading/Processing */
+[data-theme="rainbow"] .animate-pulse {
+  background: linear-gradient(90deg, #ff00ff, #00ffff, #ffff00, #ff00ff);
+  background-size: 300% 100%;
+  animation: rainbow-loading 2s linear infinite !important;
+}
+
+@keyframes rainbow-loading {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 300% 50%; }
+}
+
+/* Rainbow Scrollbar */
+[data-theme="rainbow"] ::-webkit-scrollbar {
+  width: 8px;
+}
+
+[data-theme="rainbow"] ::-webkit-scrollbar-track {
+  background: #0f0f1a;
+}
+
+[data-theme="rainbow"] ::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #ff00ff, #00ffff);
+  border-radius: 4px;
+}
+
+[data-theme="rainbow"] ::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #ff44ff, #44ffff);
+}
+
+/* Text Colors for Rainbow Mode */
+[data-theme="rainbow"] .text-gray-900,
+[data-theme="rainbow"] .text-gray-800 {
+  color: #ffffff !important;
+}
+
+[data-theme="rainbow"] .text-gray-600,
+[data-theme="rainbow"] .text-gray-500 {
+  color: rgba(200, 200, 220, 0.9) !important;
+}
+
+[data-theme="rainbow"] .text-gray-400 {
+  color: rgba(180, 180, 200, 0.7) !important;
+}
