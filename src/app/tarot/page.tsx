@@ -50,7 +50,7 @@ const spreads = [
 export default function TarotHomePage() {
   return (
     <main className="min-h-screen bg-white">
-      <!-- Header -->
+      {/* Header */}
       <header className="flex items-center justify-between px-5 pt-4 pb-2">
         <Link href="/" className="flex items-center gap-2">
           <Sparkles className="w-5 h-5 text-violet-600" />
@@ -58,7 +58,7 @@ export default function TarotHomePage() {
         </Link>
       </header>
 
-      <!-- Title Section -->
+      {/* Title Section */}
       <section className="px-5 pt-4 pb-3">
         <h1 className="font-serif text-3xl font-semibold tracking-tight text-gray-900">
           ทาโรต์
@@ -67,7 +67,7 @@ export default function TarotHomePage() {
           เลือกสเปรดที่เหมาะกับคำถามของคุณ
         </p>
 
-        <!-- Category Chips -->
+        {/* Category Chips */}
         <div className="mt-4 flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
           {categories.map((cat, i) => (
             <button
@@ -84,7 +84,7 @@ export default function TarotHomePage() {
         </div>
       </section>
 
-      <!-- Spread Cards -->
+      {/* Spread Cards */}
       <section className="px-5 pb-6">
         <div className="flex flex-col gap-3">
           {spreads.map((spread) => (
@@ -113,7 +113,7 @@ export default function TarotHomePage() {
           ))}
         </div>
 
-        <!-- Sticky CTA -->
+        {/* Sticky CTA */}
         <div className="fixed bottom-20 left-0 right-0 px-5 z-30">
           <div className="max-w-lg mx-auto">
             <Link href="/tarot/pick?count=3" className="block">

@@ -198,7 +198,7 @@ export default function SpiritCardPage() {
 
   return (
     <main className="min-h-screen bg-white">
-      <!-- Header -->
+      {/* Header */}
       <header className="flex items-center justify-between px-5 pt-4 pb-2">
         <Link href="/" className="flex items-center gap-2">
           <Sparkles className="w-5 h-5 text-violet-600" />
