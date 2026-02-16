@@ -87,7 +87,7 @@ const categories = [
 export default function ExplorePage() {
   return (
     <main className="min-h-screen bg-white pb-24">
-      <!-- Header -->
+      {/* Header */}
       <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-sm border-b border-gray-100">
         <div className="flex items-center gap-3 px-5 py-4">
           <Link href="/" className="flex items-center gap-2">
@@ -96,7 +96,7 @@ export default function ExplorePage() {
           </Link>
         </div>
         
-        <{/* Search Bar */}>
+        {/* Search Bar */}
         <div className="px-5 pb-4">
           <div className="relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -109,7 +109,7 @@ export default function ExplorePage() {
         </div>
       </header>
 
-      <{/* Categories Grid */}>
+      {/* Categories Grid */}
       <section className="px-5 py-6">
         <h1 className="font-serif text-2xl font-semibold text-gray-900 mb-2">สำรวจศาสตร์</h1>
         <p className="text-gray-500 text-sm mb-6">เลือกศาสตร์ที่คุณสนใจเพื่อเริ่มดูดวง</p>
@@ -134,7 +134,7 @@ export default function ExplorePage() {
         </div>
       </section>
 
-      <{/* Popular Section */}>
+      {/* Popular Section */}
       <section className="px-5 pb-6">
         <h2 className="font-serif text-xl font-semibold text-gray-900 mb-4">ยอดนิยม</h2>
         

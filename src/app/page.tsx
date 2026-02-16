@@ -55,7 +55,7 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-white pb-24">
-      <{/* Header */}>
+      {/* Header */}
       <header className="flex items-center justify-between px-5 pt-4 pb-2">
         <div className="flex items-center gap-2">
           <Sparkles className="w-6 h-6 text-violet-600" />
@@ -63,10 +63,10 @@ export default function Home() {
         </div>
       </header>
 
-      <{/* Hero Section */}>
+      {/* Hero Section */}
       <section className="px-5 pt-4">
         <div className="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-violet-600 via-violet-500 to-purple-500 p-6 text-white shadow-xl shadow-violet-200">
-          <{/* Decorative elements */}>
+          {/* Decorative elements */}
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
           <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full translate-y-1/2 -translate-x-1/2" />
           
@@ -89,7 +89,7 @@ export default function Home() {
           </div>
         </div>
 
-        <{/* Quick Stats */}>
+        {/* Quick Stats */}
         <div className="mt-4 grid grid-cols-2 gap-3">
           <Link href="/daily-card">
             <div className="p-4 bg-violet-50 rounded-2xl border border-violet-100">
@@ -113,7 +113,7 @@ export default function Home() {
         </div>
       </section>
 
-      <{/* Packages Section */}>
+      {/* Packages Section */}
       <section className="px-5 pt-8">
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-serif text-xl font-semibold text-gray-900">แพ็กเกจแนะนำ</h2>
@@ -172,7 +172,7 @@ export default function Home() {
         </div>
       </section>
 
-      <{/* Daily Tip */}>
+      {/* Daily Tip */}
       <section className="px-5 pt-8">
         <div className="p-5 bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl border border-amber-100">
           <div className="flex items-center gap-2 text-amber-600 mb-2">
