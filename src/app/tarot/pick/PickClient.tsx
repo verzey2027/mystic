@@ -10,7 +10,7 @@ import { TAROT_DECK } from "@/lib/tarot/deck";
 import { randomOrientation, shuffleCards } from "@/lib/tarot/engine";
 import { trackEvent } from "@/lib/analytics/tracking";
 
-const allowedCounts = new Set([1, 2, 3, 4, 10]);
+const allowedCounts = new Set([1, 2, 3, 4, 5, 6, 10]);
 
 export default function PickClient() {
   const searchParams = useSearchParams();

@@ -66,7 +66,7 @@ function buildTarotRole(): string {
 /**
  * Select appropriate few-shot examples based on spread type
  */
-function selectExamplesForSpread(spreadType: 1 | 2 | 3 | 4 | 10) {
+function selectExamplesForSpread(spreadType: 1 | 2 | 3 | 4 | 5 | 6 | 10) {
   switch (spreadType) {
     case 1:
       return TAROT_EXAMPLES_BY_SPREAD.single;
@@ -76,6 +76,10 @@ function selectExamplesForSpread(spreadType: 1 | 2 | 3 | 4 | 10) {
       return TAROT_EXAMPLES_BY_SPREAD.three;
     case 4:
       return TAROT_EXAMPLES_BY_SPREAD.action;
+    case 5:
+      return TAROT_EXAMPLES_BY_SPREAD.five;
+    case 6:
+      return TAROT_EXAMPLES_BY_SPREAD.relationship;
     case 10:
       return TAROT_EXAMPLES_BY_SPREAD.celtic;
     default:
@@ -164,7 +168,7 @@ ${spreadInstructions}`;
 /**
  * Build instructions specific to the spread type
  */
-function buildSpreadSpecificInstructions(spreadType: 1 | 2 | 3 | 4 | 10, cards: TarotPromptParams['cards']): string {
+function buildSpreadSpecificInstructions(spreadType: 1 | 2 | 3 | 4 | 5 | 6 | 10, cards: TarotPromptParams['cards']): string {
   switch (spreadType) {
     case 1:
       return `### คำแนะนำเฉพาะสำหรับไพ่ 1 ใบ
@@ -190,13 +194,36 @@ function buildSpreadSpecificInstructions(spreadType: 1 | 2 | 3 | 4 | 10, cards: 
 - ชี้ให้เห็นว่าอดีตส่งผลต่อปัจจุบันอย่างไร และปัจจุบันจะนำไปสู่อนาคตอย่างไร`;
 
     case 4:
-      return `### คำแนะนำเฉพาะสำหรับไพ่ 4 ใบ (Action Plan)
+      return `### คำแนะนำเฉพาะสำหรับไพ่ 4 ใบ (Action Plan Spread)
 - **ไพ่ใบที่ 1 (สถานการณ์)**: อธิบายสถานการณ์ปัจจุบันที่ผู้ถามกำลังเผชิญ
 - **ไพ่ใบที่ 2 (อุปสรรค)**: ระบุอุปสรรค ความท้าทาย หรือสิ่งที่ขัดขวางความสำเร็จ
 - **ไพ่ใบที่ 3 (คำแนะนำ)**: ให้คำแนะนำที่ชัดเจนว่าควรทำอย่างไร ขั้นตอนปฏิบัติ
 - **ไพ่ใบที่ 4 (ผลลัพธ์)**: บอกผลลัพธ์ที่เป็นไปได้หากทำตามคำแนะนำ
 - วิเคราะห์ความเชื่อมโยงระหว่าง 4 ตำแหน่ง เป็นแผนปฏิบัติการที่ชัดเจน
 - ให้กรอบเวลาที่เฉพาะเจาะจงในส่วนคำแนะนำ`;
+
+    case 5:
+      return `### คำแนะนำเฉพาะสำหรับไพ่ 5 ใบ (Five Card Cross)
+- **ไพ่ใบที่ 1 (ศูนย์กลาง - สถานการณ์หลัก)**: อธิบายสถานการณ์หรือประเด็นหลักที่กำลังเผชิญ
+- **ไพ่ใบที่ 2 (ขวา - อดีต)**: สิ่งที่ผ่านมาและมีอิทธิพลต่อปัจจุบัน
+- **ไพ่ใบที่ 3 (ซ้าย - อนาคต)**: แนวโน้มที่กำลังจะเกิดขึ้น
+- **ไพ่ใบที่ 4 (บน - เป้าหมาย/ความท้าทาย)**: สิ่งที่ต้องการบรรลุหรืออุปสรรคสูงสุด
+- **ไพ่ใบที่ 5 (ล่าง - รากฐาน/จิตใต้สำนึก)**: พื้นฐานหรือปัจจัยลึกๆ ที่ขับเคลื่อนสถานการณ์
+- วิเคราะห์การไหลเวียนของพลังงานในทั้ง 5 ตำแหน่ง
+- เน้นความสัมพันธ์ระหว่างศูนย์กลางกับไพ่อื่นๆ
+- ให้คำแนะนำที่ครอบคลุมทั้งรากเหง้าและแนวโน้ม`;
+
+    case 6:
+      return `### คำแนะนำเฉพาะสำหรับไพ่ 6 ใบ (Relationship Spread)
+- **ไพ่ใบที่ 1 (คุณ)**: ตัวตน ความรู้สึก และมุมมองของคุณในความสัมพันธ์
+- **ไพ่ใบที่ 2 (เขา/อีกฝ่าย)**: ตัวตน ความรู้สึก และมุมมองของอีกฝ่าย
+- **ไพ่ใบที่ 3 (อดีตของความสัมพันธ์)**: พื้นฐานหรือประวัติความสัมพันธ์
+- **ไพ่ใบที่ 4 (ปัจจุบัน)**: สถานการณ์ปัจจุบันของความสัมพันธ์
+- **ไพ่ใบที่ 5 (อนาคต)**: แนวโน้มที่เป็นไปได้ของความสัมพันธ์
+- **ไพ่ใบที่ 6 (ผลลัพธ์/คำแนะนำ)**: ผลลัพธ์ที่เป็นไปได้หรือคำแนะนำสำคัญ
+- วิเคราะห์ความสัมพันธ์ระหว่างคุณกับอีกฝ่ายอย่างชัดเจน
+- ชี้ให้เห็นจุดแข็ง จุดอ่อน และโอกาสในการพัฒนาความสัมพันธ์
+- ให้คำแนะนำที่สร้างสรรค์สำหรับทั้งสองฝ่าย`;
 
     case 10:
       return `### คำแนะนำเฉพาะสำหรับไพ่ 10 ใบ (Celtic Cross)

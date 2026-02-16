@@ -132,6 +132,49 @@ export const TAROT_4_CARD_ACTION: FewShotExample = {
 };
 
 /**
+ * Example 7: 5-card spread - Five Card Cross scenario
+ * Demonstrates: Cross-shaped spread with situation, past, future, goal, and foundation
+ */
+export const TAROT_5_CARD_CROSS: FewShotExample = {
+  scenario: "5-card cross - understanding current challenge",
+  input: `คำถามผู้ใช้: ทำไมงานถึงไม่ก้าวหน้า
+จำนวนไพ่: 5
+ไพ่ที่เปิดได้:
+1. Eight of Swords (ตั้งตรง) => ความรู้สึกติดกับดัก การถูกจำกัด ขาดทางออก
+2. Five of Cups (ตั้งตรง) => ความผิดหวัง การสูญเสีย มองแต่สิ่งที่เสียไป
+3. Three of Wands (ตั้งตรง) => การรอคอยผล การวางแผน การมองไปข้างหน้า
+4. The Chariot (ตั้งตรง) => ชัยชนะ ความมุ่งมั่น การเดินหน้า
+5. The Hermit (ตั้งตรง) => การใคร่ครวญ การค้นหาภายใน ปัญญา`,
+  output: `{
+  "summary": "ไพ่บอกว่าคุณกำลังรู้สึกติดกับดัก (Eight of Swords) เพราะยังผูกพันกับความผิดหวังในอดีต (Five of Cups) แต่แนวโน้มอนาคตดี (Three of Wands) เป้าหมายคือความก้าวหน้า (The Chariot) แต่ต้องเริ่มจากการค้นหาคำตอบจากภายใน (The Hermit) ก่อน",
+  "cardStructure": "สถานการณ์หลัก (ศูนย์): Eight of Swords บอกว่าคุณรู้สึกเหมือนติดกับดัก ขาดทางเลือก แต่ความจริงคือข้อจำกัดส่วนใหญ่อยู่ในความคิด ไม่ใช่สถานการณ์จริง\\n\\nอดีต (ขวา): Five of Cups อธิบายว่าคุณผ่านความผิดหวังหรือความสูญเสียมา และยังมองแต่สิ่งที่เสียไปมากกว่าสิ่งที่เหลืออยู่ นี่คือพื้นฐานที่ทำให้รู้สึกติด\\n\\nอนาคต (ซ้าย): Three of Wands บอกว่าหากคุณยอมรับและปล่อยวาง โอกาสใหม่จะปรากฏ ต้องอดทนรอผลจากความพยายามที่ผ่านมา\\n\\nเป้าหมาย/ความท้าทาย (บน): The Chariot แสดงว่าเป้าหมายของคุณคือการเดินหน้าอย่างมุ่งมั่น แต่ต้องควบคุมทั้งความคิดและอารมณ์ให้เป็นอันหนึ่งอันเดียวกัน\\n\\nรากฐาน/จิตใต้สำนึก (ล่าง): The Hermit บอกว่าคำตอบอยู่ภายใน คุณต้องใช้เวลาอยู่กับตัวเองเพื่อเข้าใจว่าอะไรคือสิ่งที่แท้จริงต้องการ\\n\\nจุดที่ควรระวัง: อย่าหลอกตัวเองว่าไม่มีทางเลือก Eight of Swords บอกว่าคุณมีทางออกเสมอ แค่ยังมองไม่เห็น อย่าให้อดีตมากำหนดอนาคต\\n\\nแนวทางที่ควรทำ: (1) สัปดาห์นี้: หาเวลาอยู่กับตัวเอง ทบทวนว่าอะไรทำให้รู้สึกติด (The Hermit) (2) สัปดาห์หน้า: ลิสต์สิ่งที่ยังมีอยู่และสิ่งที่ทำได้ ไม่ใช่แค่สิ่งที่เสียไป (3) เดือนหน้า: ตั้งเป้าหมายก้าวหน้าที่ชัดเจนและลงมือทำทีละขั้น (The Chariot)"
+}`,
+  notes: "Shows 5-card cross spread with center, past, future, goal/challenge, and foundation positions"
+};
+
+/**
+ * Example 8: 6-card spread - Relationship Spread scenario
+ * Demonstrates: Deep relationship analysis with you, partner, past, present, future, outcome
+ */
+export const TAROT_6_CARD_RELATIONSHIP: FewShotExample = {
+  scenario: "6-card relationship - understanding dynamics",
+  input: `คำถามผู้ใช้: ความสัมพันธ์จะพัฒนาไปอย่างไร
+จำนวนไพ่: 6
+ไพ่ที่เปิดได้:
+1. Queen of Cups (ตั้งตรง) => อารมณ์ ความเห็นอกเห็นใจ การดูแล
+2. King of Swords (ตั้งตรง) => ความคิด ความยุติธรรม การตัดสินใจ
+3. Two of Cups (ตั้งตรง) => ความรัก การเชื่อมโยง พันธมิตร
+4. Five of Wands (ตั้งตรง) => ความขัดแย้ง การแข่งขัน ความเข้าใจผิด
+5. The Lovers (ตั้งตรง) => ความรัก การเลือก ความสามัคคี
+6. Ten of Cups (ตั้งตรง) => ความสุข ความสมบูรณ์ ครอบครัว`,
+  output: `{
+  "summary": "ไพ่บอกว่าคุณ (Queen of Cups) แสดงอารมณ์และความเห็นอกเห็นใจ ส่วนเขา (King of Swords) ใช้ความคิดและเหตุผล อดีตมีความรักและเชื่อมโยงดี (Two of Cups) แต่ปัจจุบันมีความขัดแย้ง (Five of Wands) อนาคตมีโอกาสเลือกความสามัคคี (The Lovers) และผลลัพธ์ชี้ไปที่ความสุข (Ten of Cups)",
+  "cardStructure": "คุณ (ตำแหน่ง 1): Queen of Cups บอกว่าคุณเป็นคนอ่อนไหว ใส่ใจ และแสดงความรักผ่านการดูแล คุณให้คุณค่ากับความสัมพันธ์ทางอารมณ์\\n\\nเขา/อีกฝ่าย (ตำแหน่ง 2): King of Swords แสดงว่าเขาเป็นคนใช้เหตุผล ตัดสินใจจากข้อเท็จจริง อาจดูเย็นชาแต่ซื่อสัตย์ ความแตกต่างนี้คือทั้งจุดแข็งและจุดอ่อน\\n\\nอดีตความสัมพันธ์ (ตำแหน่ง 3): Two of Cups บอกว่าความสัมพันธ์เริ่มต้นด้วยความเชื่อมโยงที่ลึกซึ้ง มีความเข้าใจและรู้สึกว่าเป็นเนื้อคู่\\n\\nปัจจุบัน (ตำแหน่ง 4): Five of Wands แสดงว่าตอนนี้มีความขัดแย้งหรือความเข้าใจผิด อาจทะเลาะเรื่องเล็กน้อยหรือมีความเห็นไม่ตรงกัน\\n\\nอนาคต (ตำแหน่ง 5): The Lovers บอกว่าทั้งคู่จะต้องเลือกว่าจะรักษาความสัมพันธ์ไว้หรือไม่ ถ้าเลือกที่จะอยู่ด้วยกัน ความรักจะลึกซึ้งขึ้น\\n\\nผลลัพธ์ (ตำแหน่ง 6): Ten of Cups เป็นผลลัพธ์ที่ดีที่สุด บอกว่าหากผ่านช่วงทดสอบนี้ไปได้ ความสัมพันธ์จะเต็มไปด้วยความสุขและความสมบูรณ์\\n\\nจุดที่ควรระวัง: ความแตกต่างระหว่างอารมณ์กับเหตุผล (Queen vs King) อาจทำให้เข้าใจผิดกัน คุณอาจรู้สึกว่าเขาไม่ใส่ใจ เขาอาจรู้สึกว่าคุณอ่อนไหวเกินไป\\n\\nแนวทางที่ควรทำ: (1) คุยกันตรงๆ ว่าต่างคนต่างแสดงความรักแบบไหน (2) เมื่อทะเลาะ ให้เขาอธิบายเหตุผลก่อน แล้วคุณค่อยบอกความรู้สึก (3) ตั้งเป้าร่วมกันและทำให้ชัดเจนว่าทั้งคู่ต้องการความสัมพันธ์นี้จริงๆ"
+}`,
+  notes: "Shows 6-card relationship spread with you, partner, past, present, future, and outcome positions"
+};
+
+/**
  * All tarot examples grouped by spread type
  */
 export const TAROT_EXAMPLES_BY_SPREAD = {
@@ -139,6 +182,8 @@ export const TAROT_EXAMPLES_BY_SPREAD = {
   dual: [TAROT_2_CARD_CHOICE],
   three: [TAROT_3_CARD_POSITIVE, TAROT_3_CARD_CHALLENGING],
   action: [TAROT_4_CARD_ACTION],
+  five: [TAROT_5_CARD_CROSS],
+  relationship: [TAROT_6_CARD_RELATIONSHIP],
   celtic: [TAROT_10_CARD_COMPLEX]
 };
 
@@ -151,5 +196,7 @@ export const TAROT_EXAMPLES: FewShotExample[] = [
   TAROT_3_CARD_POSITIVE,
   TAROT_3_CARD_CHALLENGING,
   TAROT_4_CARD_ACTION,
+  TAROT_5_CARD_CROSS,
+  TAROT_6_CARD_RELATIONSHIP,
   TAROT_10_CARD_COMPLEX
 ];

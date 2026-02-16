@@ -54,7 +54,7 @@ export async function POST(req: Request) {
     }
 
     // Determine spread type based on card count
-    const countMap: Record<number, 1 | 2 | 3 | 4 | 10> = { 1: 1, 2: 2, 3: 3, 4: 4, 10: 10 };
+    const countMap: Record<number, 1 | 2 | 3 | 4 | 5 | 6 | 10> = { 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 10: 10 };
     const spreadType = countMap[body.count ?? cards.length] ?? 3;
 
     const question = body.question;

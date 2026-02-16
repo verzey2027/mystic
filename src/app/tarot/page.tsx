@@ -32,10 +32,24 @@ const spreads = [
     icon: Grid3X3,
   },
   {
+    count: 4,
+    title: "ไพ่ 4 ใบ",
+    description: "แผนปฏิบัติการ - สถานการณ์ อุปสรรค คำแนะนำ ผลลัพธ์",
+    eta: "8 นาที",
+    icon: LayoutGrid,
+  },
+  {
     count: 5,
     title: "ไพ่ 5 ใบ",
     description: "วิเคราะห์เจาะลึกสำหรับคำถามซับซ้อน",
     eta: "10 นาที",
+    icon: LayoutGrid,
+  },
+  {
+    count: 6,
+    title: "ไพ่ 6 ใบ",
+    description: "ความสัมพันธ์เชิงลึก - คุณ เขา อดีต ปัจจุบัน อนาคต ผลลัพธ์",
+    eta: "12 นาที",
     icon: LayoutGrid,
   },
   {
