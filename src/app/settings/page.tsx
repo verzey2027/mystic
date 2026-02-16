@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Sparkles, Sun, Moon, Rainbow, ChevronRight, Palette } from "lucide-react";
+import { Sparkles, Sun, Palette, Rainbow, ChevronRight } from "lucide-react";
 import { useTheme } from "@/lib/theme/ThemeProvider";
 
 export default function SettingsPage() {
@@ -16,11 +16,11 @@ export default function SettingsPage() {
       color: "bg-amber-100 text-amber-600",
     },
     {
-      id: "dark" as const,
-      name: "โหมดมืด",
-      description: "ลึกลับ นุ่มนวล",
-      icon: Moon,
-      color: "bg-violet-100 text-violet-600",
+      id: "pastel" as const,
+      name: "โหมดพาสเทล",
+      description: "ม่วง-ชมพู สดใส",
+      icon: Palette,
+      color: "bg-gradient-to-r from-purple-100 via-pink-100 to-rose-100 text-pink-600",
     },
     {
       id: "rainbow" as const,
@@ -96,28 +96,31 @@ export default function SettingsPage() {
           <div className={`p-4 rounded-xl ${
             theme === "rainbow" 
               ? "bg-gradient-to-r from-purple-900 via-pink-900 to-cyan-900 text-white" 
-              : theme === "dark" 
-                ? "bg-gray-900 text-white" 
+              : theme === "pastel" 
+                ? "bg-gradient-to-r from-purple-400 via-pink-400 to-rose-400 text-white" 
                 : "bg-white border border-gray-200"
           }`}>
             <div className="flex items-center gap-3">
               <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
                 theme === "rainbow"
                   ? "bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500"
-                  : "bg-violet-100 text-violet-600"
+                  : theme === "pastel"
+                    ? "bg-white/30 backdrop-blur"
+                    : "bg-violet-100 text-violet-600"
               }`}>
-                <Sparkles className={`w-5 h-5 ${theme === "rainbow" ? "text-white" : ""}`} />
+                <Sparkles className={`w-5 h-5 ${theme === "rainbow" || theme === "pastel" ? "text-white" : ""}`} />
               </div>
               <div>
                 <p className={`text-sm font-medium ${
                   theme === "rainbow" ? "rainbow-text" : ""
                 }`}>
-                  {theme === "rainbow" ? "✨ เวทมนตร์สีรุ้ง ✨" : "ตัวอย่างการ์ด"}
+                  {theme === "rainbow" ? "✨ เวทมนตร์สีรุ้ง ✨" : 
+                   theme === "pastel" ? "🎨 พาสเทลเมมฟิส" : "ตัวอย่างการ์ด"}
                 </p>
                 <p className={`text-xs ${
-                  theme === "light" ? "text-gray-500" : "text-gray-300"
+                  theme === "light" ? "text-gray-500" : "text-white/80"
                 }`}>
-                  {theme === "dark" && "🌙 โหมดกลางคืน"}
+                  {theme === "pastel" && "🌸 ม่วง-ชมพู สดใส"}
                   {theme === "light" && "☀️ โหมดกลางวัน"}
                   {theme === "rainbow" && "🌈 เต็มไปด้วยพลังงานบวก"}
                 </p>

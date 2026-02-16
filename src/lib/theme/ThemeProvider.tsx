@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react";
 
-type Theme = "light" | "dark" | "rainbow";
+type Theme = "light" | "pastel" | "rainbow";
 
 interface ThemeContextType {
   theme: Theme;
@@ -43,7 +43,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   };
 
   const toggleTheme = () => {
-    const themes: Theme[] = ["light", "dark", "rainbow"];
+    const themes: Theme[] = ["light", "pastel", "rainbow"];
     const currentIndex = themes.indexOf(theme);
     const nextIndex = (currentIndex + 1) % themes.length;
     setThemeState(themes[nextIndex]);
@@ -68,30 +68,112 @@ function applyThemeVariables(theme: Theme) {
   const root = document.documentElement;
   
   switch (theme) {
-    case "dark":
-      root.style.setProperty("--bg", "#0a0a0f");
-      root.style.setProperty("--bg-elevated", "#12121a");
-      root.style.setProperty("--bg-soft", "#1a1a2e");
-      root.style.setProperty("--bg-muted", "#16161f");
-      root.style.setProperty("--text", "#f8f8fc");
-      root.style.setProperty("--text-muted", "#a0a0b0");
-      root.style.setProperty("--text-subtle", "#707080");
-      root.style.setProperty("--accent", "#a855f7");
-      root.style.setProperty("--accent-hover", "#c084fc");
-      root.style.setProperty("--accent-light", "#d8b4fe");
-      root.style.setProperty("--border", "#2a2a3a");
-      root.style.setProperty("--border-mystical", "#4c1d95");
-      root.style.setProperty("--surface-1", "#12121a");
-      root.style.setProperty("--surface-2", "#1a1a2e");
-      root.style.setProperty("--surface-3", "#2d1f4f");
-      root.style.setProperty("--shadow-soft", "0 4px 20px rgba(168, 85, 247, 0.15)");
-      root.style.setProperty("--shadow-card", "0 4px 24px rgba(0, 0, 0, 0.3)");
-      root.style.setProperty("--shadow-card-hover", "0 8px 32px rgba(168, 85, 247, 0.25)");
+    case "pastel":
+      root.style.setProperty("--bg", "linear-gradient(135deg, #C77DFF 0%, #FF9ECD 50%, #FFB8E0 100%)");
+      root.style.setProperty("--bg-elevated", "rgba(255, 255, 255, 0.25)");
+      root.style.setProperty("--bg-soft", "rgba(255, 255, 255, 0.15)");
+      root.style.setProperty("--bg-muted", "rgba(255, 255, 255, 0.1)");
+      root.style.setProperty("--text", "#FFFFFF");
+      root.style.setProperty("--text-muted", "rgba(255, 255, 255, 0.8)");
+      root.style.setProperty("--text-subtle", "rgba(255, 255, 255, 0.6)");
+      root.style.setProperty("--accent", "#FF6B9D");
+      root.style.setProperty("--accent-hover", "#FF8FB0");
+      root.style.setProperty("--accent-light", "#FFB8C9");
+      root.style.setProperty("--border", "rgba(255, 255, 255, 0.3)");
+      root.style.setProperty("--border-mystical", "rgba(255, 255, 255, 0.5)");
+      root.style.setProperty("--surface-1", "rgba(255, 255, 255, 0.2)");
+      root.style.setProperty("--surface-2", "rgba(255, 255, 255, 0.15)");
+      root.style.setProperty("--surface-3", "rgba(255, 255, 255, 0.1)");
+      root.style.setProperty("--shadow-soft", "0 8px 32px rgba(199, 125, 255, 0.3)");
+      root.style.setProperty("--shadow-card", "0 4px 24px rgba(255, 158, 205, 0.2)");
+      root.style.setProperty("--shadow-card-hover", "0 12px 40px rgba(255, 107, 157, 0.35)");
       root.style.setProperty("--bg-gradient", `
-        radial-gradient(1200px 600px at 12% -10%, rgba(168, 85, 247, 0.15), transparent 58%),
-        radial-gradient(900px 520px at 85% 0%, rgba(168, 85, 247, 0.08), transparent 60%),
-        linear-gradient(180deg, #0a0a0f 0%, #12121a 55%, #0a0a0f 100%)
+        linear-gradient(135deg, #C77DFF 0%, #E8A4FF 25%, #FF9ECD 50%, #FFB8E0 75%, #FFC9E9 100%)
       `);
+      
+      // Add pastel Memphis styles
+      if (!document.getElementById("pastel-styles")) {
+        const style = document.createElement("style");
+        style.id = "pastel-styles";
+        style.textContent = `
+          [data-theme="pastel"] {
+            background: linear-gradient(135deg, #C77DFF 0%, #E8A4FF 25%, #FF9ECD 50%, #FFB8E0 75%, #FFC9E9 100%);
+            min-height: 100vh;
+          }
+          [data-theme="pastel"] .memphis-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(2px);
+          }
+          [data-theme="pastel"] .memphis-x {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 24px;
+            font-weight: 300;
+          }
+          [data-theme="pastel"] .memphis-wave {
+            position: absolute;
+            width: 60px;
+            height: 8px;
+            background: repeating-linear-gradient(
+              90deg,
+              rgba(255, 255, 255, 0.3) 0px,
+              rgba(255, 255, 255, 0.3) 4px,
+              transparent 4px,
+              transparent 8px
+            );
+            border-radius: 4px;
+          }
+          [data-theme="pastel"] .glass-card {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 24px;
+            box-shadow: 0 8px 32px rgba(199, 125, 255, 0.2);
+          }
+          [data-theme="pastel"] .glass-button {
+            background: rgba(255, 255, 255, 0.35);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 50px;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 4px 20px rgba(255, 107, 157, 0.3);
+            transition: all 0.3s ease;
+          }
+          [data-theme="pastel"] .glass-button:hover {
+            background: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(255, 107, 157, 0.4);
+          }
+          [data-theme="pastel"] h1, [data-theme="pastel"] h2, [data-theme="pastel"] h3 {
+            color: white;
+            text-shadow: 0 2px 20px rgba(199, 125, 255, 0.5);
+          }
+          [data-theme="pastel"] .gradient-text {
+            background: linear-gradient(90deg, #FFFFFF, #FFE4F0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+          }
+          @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+          }
+          [data-theme="pastel"] .floating {
+            animation: float 6s ease-in-out infinite;
+          }
+          @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(255, 255, 255, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(255, 255, 255, 0.6); }
+          }
+          [data-theme="pastel"] .pulse-glow {
+            animation: pulse-glow 3s ease-in-out infinite;
+          }
+        `;
+        document.head.appendChild(style);
+      }
       break;
       
     case "rainbow":

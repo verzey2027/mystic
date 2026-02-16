@@ -3,6 +3,7 @@ import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { BottomTabBar } from "@/components/nav/BottomTabBar";
 import { ThemeProvider } from "@/lib/theme/ThemeProvider";
+import { MemphisBackground } from "@/components/effects/MemphisBackground";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -130,6 +131,7 @@ export default function RootLayout({
       </head>
       <body className={`${inter.variable} ${playfair.variable} font-sans antialiased bg-bg pb-20 text-fg`}>
         <ThemeProvider>
+          <MemphisBackground />
           {children}
           <BottomTabBar />
         </ThemeProvider>
