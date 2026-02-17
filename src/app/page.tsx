@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect } from "react";
 import { Sparkles, Star, ChevronRight, Crown } from "lucide-react";
 import { useTheme } from "@/lib/theme/ThemeProvider";
+import { SocialFooter } from "@/components/ui/SocialFooter";
 import { cn } from "@/lib/cn";
 
 function trackEvent(event: string, data?: Record<string, unknown>) {
@@ -326,6 +327,9 @@ export default function Home() {
           </p>
         </div>
       </section>
+
+      {/* Social Footer */}
+      <SocialFooter />
     </main>
   );
 }
