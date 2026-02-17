@@ -13,7 +13,7 @@ import { ChevronLeft, RefreshCcw } from "lucide-react";
 
 const allowedCounts = new Set([1, 2, 3, 4, 5, 6, 10]);
 
-const CardBackImage = "/card/birth.webp"; // Use local asset
+const CardBackImage = "/card/draw.webp"; // Use 'draw' or 'birth' as requested (user mentioned 'bg', let's stick to draw/birth for now)
 
 export default function PickClient() {
   const searchParams = useSearchParams();
@@ -56,19 +56,18 @@ export default function PickClient() {
     
     const updateSize = () => {
         const { clientWidth, clientHeight } = containerRef.current!;
-        // Try to fit 78 cards in a grid
-        // Approx ratio for tarot card is 2:3.5
-        // Let's find best cols/rows
         const totalCards = 78;
         
-        // Simple heuristic for mobile: 6 cols x 13 rows
-        // Desktop: 13 cols x 6 rows
-        const isMobile = window.innerWidth < 768;
-        const cols = isMobile ? 6 : 13;
-        const rows = Math.ceil(totalCards / cols);
+        // Tarot card aspect ratio ~ 7:12 (e.g. 70x120)
+        const aspectRatio = 7/12;
         
-        const w = (clientWidth / cols) - 2; // -2 for gap
-        const h = (clientHeight / rows) - 2;
+        // We want overlap, so we can pack more densely
+        // Let's use a fixed card width based on screen width
+        const isMobile = window.innerWidth < 768;
+        const cols = isMobile ? 7 : 14; // Increased cols for overlap
+        
+        const w = (clientWidth / cols) * 1.4; // 1.4x width for overlap
+        const h = w / aspectRatio;
         
         setCardSize({ width: w, height: h });
     };
@@ -133,7 +132,7 @@ export default function PickClient() {
       </div>
 
       {/* ── Grid Wall ── */}
-      <div ref={containerRef} className="flex-1 relative w-full h-full p-1 pb-32 overflow-hidden">
+      <div ref={containerRef} className="flex-1 relative w-full h-full p-2 pb-32 overflow-hidden flex flex-wrap content-start justify-center gap-1">
         {isShuffling ? (
              <div className="absolute inset-0 flex items-center justify-center">
                  <div className="flex flex-col items-center gap-4">
@@ -148,39 +147,45 @@ export default function PickClient() {
                  </div>
              </div>
         ) : (
-            <div className="w-full h-full grid grid-cols-6 md:grid-cols-13 gap-0.5 content-center justify-items-center">
+            <div className="w-full flex flex-wrap content-start justify-center" style={{ gap: '-12px' }}>
                 {shuffled.map((card, idx) => {
                     const isSelected = selected.some(s => s.startsWith(card.id));
                     const isDimmed = !isSelected && !canSelectMore;
 
+                    // Calculate row overlap
+                    const marginBottom = -cardSize.height * 0.4; // 40% vertical overlap
+                    const marginRight = -cardSize.width * 0.2; // 20% horizontal overlap
+                    
                     return (
                         <div 
                             key={card.id}
                             onClick={() => onToggleSelect(card.id)}
                             className={cn(
                                 "relative cursor-pointer transition-all duration-300 ease-out",
-                                isSelected ? "z-10 scale-110 brightness-110" : "hover:scale-105 hover:z-10",
-                                isDimmed && "opacity-30 grayscale scale-95"
+                                isSelected ? "z-20 scale-110 brightness-110 translate-y-[-10px]" : "hover:z-10 hover:translate-y-[-5px]",
+                                isDimmed && "opacity-40 grayscale"
                             )}
                             style={{ 
                                 width: `${cardSize.width}px`, 
                                 height: `${cardSize.height}px`,
+                                marginBottom: `${marginBottom}px`,
+                                marginRight: `${marginRight}px`,
                                 animation: `fadeIn 0.5s ease-out ${idx * 0.005}s backwards`
                             }}
                         >
                             <div className={cn(
-                                "w-full h-full rounded-sm border border-white/10 overflow-hidden shadow-sm",
-                                isSelected ? "ring-2 ring-accent border-transparent" : "bg-[#2a2a2a]"
+                                "w-full h-full rounded-md border border-white/10 overflow-hidden shadow-md",
+                                isSelected ? "ring-2 ring-accent border-transparent shadow-lg shadow-accent/20" : "bg-[#2a2a2a]"
                             )}>
                                 {/* Card Back Pattern */}
                                 <div 
-                                    className="w-full h-full bg-cover bg-center opacity-80" 
+                                    className="w-full h-full bg-cover bg-center" 
                                     style={{ backgroundImage: `url(${CardBackImage})` }}
                                 />
                                 
                                 {isSelected && (
                                     <div className="absolute inset-0 flex items-center justify-center bg-accent/40 backdrop-blur-[1px]">
-                                        <span className="text-xs font-bold text-white drop-shadow-md">
+                                        <span className="text-sm font-bold text-white drop-shadow-md bg-black/20 w-6 h-6 rounded-full flex items-center justify-center">
                                             {selected.findIndex(s => s.startsWith(card.id)) + 1}
                                         </span>
                                     </div>
