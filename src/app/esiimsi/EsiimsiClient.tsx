@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/Button";
 import { ChevronLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
@@ -20,26 +20,24 @@ export default function EsiimsiClient() {
     setShowResult(false);
     setInterpretation(null);
 
-    // Vibration API
     if (typeof navigator !== 'undefined' && navigator.vibrate) {
-      navigator.vibrate([100, 50, 100, 50, 200, 50, 150]);
+      navigator.vibrate([100, 50, 100, 50, 200]);
     }
 
-    // Sequence of animations
+    // After 2.5s of shaking, show result
     setTimeout(() => {
       const num = Math.floor(Math.random() * 28) + 1;
       setResult(num);
       setIsShaking(false);
       setShowResult(true);
-    }, 2800);
+    }, 2500);
   };
 
   const fetchInterpretation = async () => {
     if (!result || isReading) return;
     setIsReading(true);
-
     try {
-      const res = await fetch("/api/ai/tarot", { // Reusing tarot engine with Esiimsi context
+      const res = await fetch("/api/ai/tarot", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
@@ -48,13 +46,10 @@ export default function EsiimsiClient() {
           question: `ทำนายเซียมซีหมายเลข ${result}` 
         }),
       });
-
       const data = await res.json();
-      if (data.ok) {
-        setInterpretation(data.ai);
-      }
+      if (data.ok) setInterpretation(data.ai);
     } catch (err) {
-      console.error("Failed to fetch interpretation:", err);
+      console.error(err);
     } finally {
       setIsReading(false);
     }
@@ -62,141 +57,113 @@ export default function EsiimsiClient() {
 
   return (
     <main className="fixed inset-0 bg-[#0a0a0a] text-white overflow-hidden flex flex-col items-center justify-center p-6">
-      <div className="absolute inset-0 opacity-30 pointer-events-none bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-red-900/20 via-transparent to-black" />
-
       <div className="absolute top-0 left-0 right-0 p-4 flex items-center z-50">
         <Link href="/explore" className="p-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
           <ChevronLeft className="w-6 h-6" />
         </Link>
-        <h1 className="flex-1 text-center font-bold tracking-[0.3em] text-yellow-500 text-sm uppercase">Esiimsi Oracle</h1>
+        <h1 className="flex-1 text-center font-bold tracking-[0.3em] text-yellow-500 text-xs uppercase">Esiimsi Oracle</h1>
       </div>
 
-      <div className="relative flex flex-col items-center justify-center w-full max-w-md">
+      <div className="relative flex flex-col items-center justify-center w-full max-w-md h-full pt-12">
         
-        {/* Shaking Container with Perspective */}
+        {/* Shaker Perspective Container */}
         <div className={cn(
-          "relative transition-all duration-100",
-          isShaking && "animate-physical-shake"
-        )} style={{ perspective: '1000px' }}>
+          "relative w-48 h-80 transition-all duration-300",
+          isShaking ? "animate-physical-shake" : ""
+        )} style={{ transformStyle: 'preserve-3d' }}>
           
-          {/* Rattle Sticks (Behind) */}
-          <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-24 h-40 flex justify-center items-end overflow-visible">
-             {[...Array(12)].map((_, i) => (
+          {/* STICKS: Now placed ABOVE/INSIDE the cylinder visually */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-full flex justify-center items-start pt-4 z-10">
+             {[...Array(15)].map((_, i) => (
                 <div 
                     key={i} 
                     className={cn(
-                        "absolute w-2 bg-[#8b4513] rounded-t-full border-t-2 border-orange-400/30",
-                        isShaking ? "animate-rattle" : "h-32"
+                        "w-2 bg-[#d4a373] rounded-full border-b border-black/20 shadow-sm transition-all duration-500",
+                        isShaking ? "animate-rattle-inner h-48" : "h-40"
                     )}
                     style={{ 
-                        left: `${(i * 8)}%`,
-                        transform: `rotate(${(i - 6) * 5}deg)`,
+                        transform: `rotate(${(i - 7) * 4}deg)`,
                         transformOrigin: 'bottom center',
-                        animationDelay: `${i * 40}ms`,
-                        boxShadow: '0 -2px 10px rgba(0,0,0,0.5)'
+                        marginLeft: '-4px',
+                        animationDelay: `${i * 30}ms`
                     }}
                 />
             ))}
           </div>
 
-          {/* Cylinder (Premium Design) */}
-          <div className="relative w-40 h-64 z-20">
-             {/* Body */}
-            <div className="absolute inset-0 bg-gradient-to-b from-[#7f1d1d] via-[#b91c1c] to-[#450a0a] rounded-b-[50px] border-x-[3px] border-b-[6px] border-[#fbbf24]/30 shadow-[0_30px_60px_-12px_rgba(0,0,0,0.8)] overflow-hidden">
-                {/* Visual Ornaments */}
-                <div className="absolute top-10 left-1/2 -translate-x-1/2 flex flex-col items-center">
-                    <div className="text-[#fbbf24] font-serif text-6xl font-bold opacity-90 drop-shadow-[0_0_15px_rgba(251,191,36,0.5)]">福</div>
-                    <div className="mt-2 text-[8px] tracking-[0.4em] text-yellow-500/40 uppercase font-black">Ref Fortune</div>
+          {/* THE CYLINDER: Brought forward with z-20 */}
+          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-44 h-64 z-20">
+            <div className="absolute inset-0 bg-gradient-to-r from-[#7f1d1d] via-[#dc2626] to-[#7f1d1d] rounded-b-[40px] border-x-4 border-b-8 border-yellow-600/40 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.8)] overflow-hidden">
+                <div className="absolute top-12 left-1/2 -translate-x-1/2 flex flex-col items-center">
+                    <div className="text-yellow-400 font-serif text-6xl font-bold opacity-80 select-none drop-shadow-glow">福</div>
+                    <div className="mt-4 w-12 h-0.5 bg-yellow-500/30" />
+                    <div className="mt-2 text-[10px] tracking-[0.3em] text-yellow-500/40 uppercase">Ref Fortune</div>
                 </div>
-                {/* Shine Effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+                {/* Surface Polish */}
+                <div className="absolute top-0 left-4 w-4 h-full bg-white/10 blur-sm -skew-x-12" />
             </div>
-            {/* Top Rim */}
-            <div className="absolute -top-1 left-0 right-0 h-4 bg-[#450a0a] rounded-full border-2 border-[#fbbf24]/20 shadow-inner" />
+            {/* Top Rim shadow to make sticks look inside */}
+            <div className="absolute top-0 left-0 right-0 h-6 bg-black/40 rounded-full border-t border-white/10" />
           </div>
 
-          {/* Winning Stick (The Pop-Out) */}
+          {/* THE WINNING STICK: Elevated z-index and explicit animation */}
           {showResult && (
-            <div className="absolute -top-56 left-1/2 -translate-x-1/2 z-30 animate-stick-emergence">
-                 <div className="w-5 h-64 bg-gradient-to-b from-[#fbbf24] via-[#f59e0b] to-[#d97706] rounded-xl shadow-[0_20px_40px_rgba(0,0,0,0.6)] flex flex-col items-center py-8 border-2 border-white/20 relative">
+            <div className="absolute -top-40 left-1/2 -translate-x-1/2 z-50 animate-stick-pop-v2">
+                 <div className="w-5 h-64 bg-gradient-to-b from-yellow-300 via-yellow-500 to-amber-700 rounded-xl shadow-2xl flex flex-col items-center py-6 border-2 border-yellow-200 relative">
                     <div className="absolute top-4 w-full text-center">
-                         <span className="text-[#450a0a] font-black text-3xl drop-shadow-sm">{result}</span>
+                         <span className="text-red-950 font-black text-3xl drop-shadow-sm">{result}</span>
                     </div>
-                    <div className="mt-12 flex-1 w-[1px] bg-[#450a0a]/20" />
-                    <div className="absolute bottom-4 rotate-90 whitespace-nowrap">
-                        <span className="text-[10px] text-[#450a0a] font-bold tracking-[0.2em] uppercase opacity-60">Lucky Stick</span>
-                    </div>
+                    <div className="mt-12 flex-1 w-px bg-red-950/20" />
+                    <div className="absolute bottom-4 uppercase font-bold text-[#450a0a] text-[8px] tracking-widest opacity-60">Lucky</div>
                  </div>
             </div>
           )}
         </div>
 
-        {/* Dynamic UI Content */}
-        <div className="mt-20 w-full text-center z-40">
+        {/* UI Controls */}
+        <div className="mt-12 w-full text-center z-40 px-4 min-h-[250px]">
           {!showResult ? (
-              <div className="space-y-12">
-                  <div className="space-y-2">
-                    <p className="text-xl font-serif text-yellow-500/90 italic">
-                        {isShaking ? "โชคชะตากำลังเคลื่อนไหว..." : "ตั้งจิตอธิษฐาน"}
+              <div className="space-y-10">
+                  <div className="animate-pulse">
+                    <p className="text-xl font-medium text-yellow-500/90 italic">
+                        {isShaking ? "กำลังสื่อจิตถึงสิ่งศักดิ์สิทธิ์..." : "ตั้งจิตอธิษฐาน"}
                     </p>
-                    <p className="text-xs text-white/40 tracking-widest uppercase">ถอดรหัสความลับผ่านติ้วเซียมซี</p>
+                    <p className="text-[10px] text-white/40 tracking-[0.3em] uppercase mt-1">Focus on your question</p>
                   </div>
                   
                   <button 
                     disabled={isShaking}
                     onClick={startShake}
                     className={cn(
-                        "group relative w-32 h-32 mx-auto rounded-full transition-all duration-500 outline-none",
-                        isShaking ? "scale-95 opacity-50" : "hover:scale-110 active:scale-90"
+                        "group relative w-32 h-32 mx-auto rounded-full transition-all duration-300 active:scale-90",
+                        isShaking ? "opacity-40" : "hover:scale-105"
                     )}
                   >
-                    <div className="absolute inset-0 rounded-full bg-red-600 animate-ping opacity-10" />
-                    <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-[#991b1b] to-[#dc2626] border-4 border-yellow-500/50 shadow-[0_0_40px_rgba(220,38,38,0.4)] flex items-center justify-center">
-                        <span className="text-xl font-black tracking-widest text-white uppercase drop-shadow-md">
-                            {isShaking ? "..." : "เขย่า"}
-                        </span>
+                    <div className="absolute inset-0 rounded-full bg-red-600 animate-ping opacity-20" />
+                    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-red-600 to-red-900 border-4 border-yellow-500/40 shadow-2xl flex items-center justify-center">
+                        <span className="text-xl font-black text-white">เขย่า</span>
                     </div>
                   </button>
               </div>
           ) : (
-              <div className="animate-in fade-in slide-in-from-bottom-10 duration-700 w-full">
-                  {!interpretation ? (
-                    <>
-                      <p className="text-sm text-yellow-500 uppercase tracking-[0.5em] mb-4 font-bold">หมายเลขมงคล</p>
-                      <h2 className="text-9xl font-black text-white drop-shadow-[0_0_30px_rgba(255,255,255,0.3)] mb-12">{result}</h2>
-                      
-                      <Button 
-                        size="lg" 
-                        onClick={fetchInterpretation}
-                        disabled={isReading}
-                        className="w-full max-w-xs bg-yellow-500 hover:bg-yellow-400 text-black rounded-2xl h-16 text-xl font-black shadow-[0_15px_40px_rgba(234,179,8,0.3)] transition-all"
-                      >
-                        {isReading ? <Loader2 className="animate-spin" /> : "อ่านคำทำนาย"}
-                      </Button>
-                    </>
+              <div className="animate-in fade-in slide-in-from-bottom-8 duration-500">
+                  {interpretation ? (
+                    <div className="bg-white/5 border border-white/10 rounded-3xl p-6 backdrop-blur-xl text-left animate-in zoom-in duration-300">
+                         <h3 className="text-xl font-bold text-yellow-500 mb-3 border-b border-white/10 pb-2">คำทำนายใบที่ {result}</h3>
+                         <p className="text-base text-white/90 leading-relaxed mb-6 italic">{interpretation.summary}</p>
+                         <Button onClick={() => setShowResult(false)} variant="ghost" className="w-full text-white/30 hover:text-white">เสี่ยงทายอีกครั้ง</Button>
+                    </div>
                   ) : (
-                    <div className="bg-white/5 border border-white/10 rounded-[32px] p-8 backdrop-blur-xl text-left max-h-[60vh] overflow-y-auto custom-scrollbar">
-                        <div className="flex items-center justify-between mb-6">
-                            <h3 className="text-2xl font-bold text-yellow-500">ใบที่ {result}</h3>
-                            <div className="h-px flex-1 bg-yellow-500/20 mx-4" />
-                        </div>
-                        <p className="text-lg leading-relaxed text-white/90 mb-6 font-medium whitespace-pre-line">
-                            {interpretation.summary}
-                        </p>
-                        <div className="space-y-4 pt-4 border-t border-white/10">
-                             {interpretation.opportunities?.map((o: string, i: number) => (
-                                <div key={i} className="flex gap-3 text-sm text-white/70">
-                                    <span className="text-yellow-500">✨</span> {o}
-                                </div>
-                             ))}
-                        </div>
-                        <Button 
-                            variant="ghost" 
-                            onClick={() => setShowResult(false)} 
-                            className="mt-8 w-full text-white/30 hover:text-white"
-                        >
-                            เขย่าใหม่อีกครั้ง
-                        </Button>
+                    <div className="flex flex-col items-center">
+                         <p className="text-sm text-yellow-500 uppercase tracking-widest mb-4">หมายเลขที่ออก</p>
+                         <h2 className="text-8xl font-black text-white drop-shadow-glow mb-10">{result}</h2>
+                         <Button 
+                            onClick={fetchInterpretation}
+                            disabled={isReading}
+                            className="w-full max-w-xs bg-yellow-500 hover:bg-yellow-400 text-black rounded-2xl h-14 text-lg font-bold shadow-xl"
+                         >
+                            {isReading ? <Loader2 className="animate-spin" /> : "ดูคำทำนาย"}
+                         </Button>
                     </div>
                   )}
               </div>
@@ -206,39 +173,38 @@ export default function EsiimsiClient() {
 
       <style jsx global>{`
         @keyframes physical-shake {
-            0%, 100% { transform: rotate(0deg) translateY(0); }
-            15% { transform: rotate(12deg) translateY(-10px) translateX(5px); }
-            30% { transform: rotate(-12deg) translateY(10px) translateX(-5px); }
-            45% { transform: rotate(15deg) translateY(-15px) translateX(8px); }
-            60% { transform: rotate(-15deg) translateY(15px) translateX(-8px); }
-            75% { transform: rotate(8deg) translateY(-5px); }
-            90% { transform: rotate(-8deg) translateY(5px); }
+            0%, 100% { transform: translate(0,0) rotate(0); }
+            10% { transform: translate(-10px, -15px) rotate(-10deg); }
+            30% { transform: translate(15px, 20px) rotate(15deg); }
+            50% { transform: translate(-20px, -10px) rotate(-12deg); }
+            70% { transform: translate(10px, 15px) rotate(10deg); }
+            90% { transform: translate(-5px, -5px) rotate(-5deg); }
         }
         .animate-physical-shake {
             animation: physical-shake 0.3s infinite ease-in-out;
         }
 
-        @keyframes rattle {
-            0%, 100% { transform: translateY(0) rotate(var(--rot)); }
-            50% { transform: translateY(-25px) rotate(calc(var(--rot) + 2deg)); }
+        @keyframes rattle-inner {
+            0%, 100% { transform: translateY(0) rotate(var(--r)); }
+            50% { transform: translateY(-40px) rotate(calc(var(--r) + 5deg)); }
         }
-        .animate-rattle {
-            animation: rattle 0.15s infinite alternate ease-in-out;
-        }
-
-        @keyframes stick-emergence {
-            0% { transform: translate(-50%, 150px) scaleY(0.5); opacity: 0; }
-            40% { transform: translate(-50%, -40px) scaleY(1.1); opacity: 1; }
-            70% { transform: translate(-50%, 10px) scaleY(0.95); opacity: 1; }
-            100% { transform: translate(-50%, 0) scaleY(1); opacity: 1; }
-        }
-        .animate-stick-emergence {
-            animation: stick-emergence 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        .animate-rattle-inner {
+            animation: rattle-inner 0.15s infinite ease-in-out;
         }
 
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(251, 191, 36, 0.2); border-radius: 10px; }
+        @keyframes stick-pop-v2 {
+            0% { transform: translate(-50%, 150px); opacity: 0; }
+            40% { transform: translate(-50%, -60px); opacity: 1; }
+            70% { transform: translate(-50%, 10px); }
+            100% { transform: translate(-50%, 0); opacity: 1; }
+        }
+        .animate-stick-pop-v2 {
+            animation: stick-pop-v2 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        .drop-shadow-glow {
+            filter: drop-shadow(0 0 15px rgba(234, 179, 8, 0.4));
+        }
       `}</style>
     </main>
   );
