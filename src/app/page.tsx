@@ -28,6 +28,22 @@ function greeting() {
 
 const packages = [
   {
+    id: "esiimsi-promo",
+    name: "เซียมซีเสี่ยงทาย",
+    subtitle: "มาใหม่",
+    price: "FREE",
+    description: "เขย่าติ้วรับคำทำนายโบราณ",
+    features: [
+      "ระบบเขย่าแบบ Physical 3D",
+      "AI ถอดรหัสคำทำนายเชิงลึก",
+      "แนะนำแนวทางแก้ไขและโอกาส",
+      "น้อมรับคำทำนายได้ไม่จำกัด",
+    ],
+    popular: true,
+    detail: "ศาสตร์การเสี่ยงทายจากวัดดังทั่วไทย",
+    href: "/esiimsi"
+  },
+  {
     id: "horoscope-full",
     name: "เปิดดวงชะตาฉบับเต็ม",
     subtitle: "Personal Horoscope Report",
@@ -235,7 +251,7 @@ export default function Home() {
 
         <div className="space-y-4">
           {packages.map((pkg) => (
-            <Link key={pkg.id} href={`/pricing/${pkg.id}`} className="block">
+            <Link key={pkg.id} href={pkg.href || `/pricing/${pkg.id}`} className="block">
               <div
                 className={cn(
                   "relative p-5 rounded-2xl border transition-all active:scale-[0.98]",
@@ -248,6 +264,14 @@ export default function Home() {
                       : "bg-white border-gray-200 hover:border-violet-200"
                 )}
               >
+                {pkg.id === 'esiimsi-promo' && (
+                  <div className="absolute right-4 top-4 w-12 h-12 bg-red-600 rounded-xl shadow-lg flex items-center justify-center animate-bounce duration-[2000ms]">
+                    <div className="flex flex-col items-center">
+                      <div className="w-1 h-6 bg-yellow-400 rounded-full mb-1" />
+                      <div className="w-6 h-4 bg-red-800 rounded-b-lg border border-yellow-600/30" />
+                    </div>
+                  </div>
+                )}
                 {pkg.popular && (
                   <div className={cn(
                     "absolute -top-3 left-5 px-3 py-1 text-white text-xs font-medium rounded-full flex items-center gap-1",
