@@ -49,7 +49,11 @@ export async function POST(req: Request) {
     };
 
     const cards = parseCardTokens(body.cardsToken ?? "");
-    if (!cards.length) {
+    
+    // Check for Esiimsi fake token
+    const isEsiimsi = body.cardsToken?.startsWith("esiimsi_");
+    
+    if (!cards.length && !isEsiimsi) {
       return NextResponse.json({ error: "invalid_cards" }, { status: 400 });
     }
 
@@ -61,28 +65,49 @@ export async function POST(req: Request) {
 
     // --- RAG (local-file prototype) ---
     const intent = guessIntentsFromText(question ?? "")[0];
-    const ragQuery = [
-      question ?? "",
-      ...cards.map((c) => c.card.nameTh ?? c.card.name),
-    ]
-      .filter(Boolean)
-      .join("\n");
+    const ragQuery = isEsiimsi 
+      ? question ?? ""
+      : [
+          question ?? "",
+          ...cards.map((c) => c.card.nameTh ?? c.card.name),
+        ]
+        .filter(Boolean)
+        .join("\n");
 
     const rag = retrieveRag({
       query: ragQuery,
-      systemId: "tarot_th",
+      systemId: isEsiimsi ? "esiimsi" : "tarot_th",
       intent,
       limit: 6,
     });
 
     // Build prompt using prompt builder + attach retrieved context + examples
-    const prompt =
-      buildTarotPrompt({
-        cards,
-        count: body.count ?? cards.length,
-        question,
-        spreadType,
-      }) + formatRagContext(rag.chunks);
+    let prompt = "";
+    if (isEsiimsi) {
+      const num = body.cardsToken?.split("_")[1]?.split(".")[0];
+      prompt = `คุณเป็นผู้เชี่ยวชาญการถอดรหัสเซียมซี
+โจทย์: ทำนายเซียมซีหมายเลข ${num}
+คำถามผู้ใช้: ${question}
+
+รูปแบบการตอบกลับ (JSON):
+{
+  "summary": "คำทำนายแบบร้อยแก้วที่สละสลวย",
+  "opportunities": ["เรื่องดีๆ 1", "เรื่องดีๆ 2"],
+  "risks": ["เรื่องควรระวัง 1"],
+  "actions": ["สิ่งที่ควรทำ"]
+}
+
+อ้างอิงข้อมูลจาก Knowledge Base ต่อไปนี้:
+${formatRagContext(rag.chunks)}`;
+    } else {
+      prompt =
+        buildTarotPrompt({
+          cards,
+          count: body.count ?? cards.length,
+          question,
+          spreadType,
+        }) + formatRagContext(rag.chunks);
+    }
 
 
     const fallbackStructure = cards
