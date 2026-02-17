@@ -12,7 +12,7 @@ import { buildSavedTarotReading, removeReading, upsertReading } from "@/lib/libr
 import { HeartSave } from "@/components/ui/HeartSave";
 import { Button } from "@/components/ui/Button";
 import { ShareButton } from "@/components/ui/ShareButton";
-import { ShareableCard } from "@/components/ui/ShareableCard";
+import { TarotShareableCard } from "@/components/share/tarot/TarotShareableCard";
 import { cn } from "@/lib/cn";
 
 function normalizeText(value: unknown): string {
@@ -372,16 +372,24 @@ export default function ResultClient() {
           <p className="mt-1 text-xs text-fg-subtle">บันทึกหรือแชร์ผลไพ่เป็นรูปภาพสวยงาม</p>
           
           <div className="mt-4 flex justify-center">
-            <ShareableCard
+            <TarotShareableCard
               data={{
-                cardName: drawnCards[0].card.name,
-                cardNameTh: drawnCards[0].card.nameTh,
-                cardImage: drawnCards[0].card.image,
-                orientation: drawnCards[0].orientation,
-                meaning: drawnCards[0].orientation === "upright" 
-                  ? drawnCards[0].card.meaningUpright 
-                  : drawnCards[0].card.meaningReversed,
-                reading: aiReading.summary.slice(0, 200) + "...",
+                vertical: "tarot",
+                cards: drawnCards.map(d => ({
+                  name: d.card.name,
+                  nameTh: d.card.nameTh,
+                  image: d.card.image,
+                  orientation: d.orientation,
+                  meaning: d.orientation === "upright" 
+                    ? d.card.meaningUpright 
+                    : d.card.meaningReversed,
+                  position: count === 3 
+                    ? ["อดีต", "ปัจจุบัน", "อนาคต"][drawnCards.indexOf(d)]
+                    : count === 10
+                    ? ["สถานการณ์", "อุปสรรค", "รากฐาน", "อดีต", "เป้าหมาย", "อนาคต", "ตัวคุณ", "สิ่งแวดล้อม", "ความหวัง", "ผลลัพธ์"][drawnCards.indexOf(d)]
+                    : undefined,
+                })),
+                reading: aiReading.summary,
                 question: question || undefined,
                 date: new Date().toLocaleDateString("th-TH", { 
                   day: "numeric", 
@@ -389,10 +397,11 @@ export default function ResultClient() {
                   year: "numeric" 
                 }),
                 brand: "REFFORTUNE",
+                spreadType: count === 1 ? "ไพ่รายวัน" : count === 3 ? "ไพ่ 3 ใบ" : count === 10 ? "Celtic Cross" : `${count} ใบ`,
               }}
               onShare={() => trackEvent("share_card_generated", { 
                 vertical: "tarot", 
-                card: drawnCards[0].card.name,
+                card: drawnCards[0]?.card.name,
                 count,
               })}
             />
