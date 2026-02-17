@@ -46,6 +46,28 @@ export const TAROT_DECK: TarotCard[] = FORTUNE_DECK.map((entry) => {
   const keywords = baseKeywords(entry.id);
   const suit = inferSuit(entry.id);
 
+  let imagePath = "";
+  
+  if (entry.id.startsWith("maj")) {
+    const num = entry.id.slice(3); // "00", "21"
+    imagePath = `/card/${num}.png`;
+  } else {
+    // Minor Arcana: wan01 -> w1.png, cup10 -> c10.png
+    const prefixMap: Record<string, string> = {
+      wan: "w",
+      cup: "c",
+      swo: "s",
+      pen: "p",
+    };
+    
+    const suitPrefix = entry.id.slice(0, 3);
+    const numStr = entry.id.slice(3);
+    const num = parseInt(numStr, 10); // Remove leading zero: "01" -> 1
+    
+    const shortPrefix = prefixMap[suitPrefix] || "w"; // Default fallback
+    imagePath = `/card/${shortPrefix}${num}.png`;
+  }
+
   return {
     id: entry.id,
     name: entry.name,
@@ -56,7 +78,7 @@ export const TAROT_DECK: TarotCard[] = FORTUNE_DECK.map((entry) => {
     keywordsReversed: ["ทบทวน", "ชะลอ", ...keywords],
     meaningUpright: entry.dailyAdvice,
     meaningReversed: `มุมเงา: ${entry.dailyAdvice}`,
-    image: `https://www.reffortune.com/${entry.img}`,
+    image: imagePath,
     source: "fortune",
   };
 });
