@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 import { BottomTabBar } from "@/components/nav/BottomTabBar";
 import { ThemeProvider } from "@/lib/theme/ThemeProvider";
@@ -133,6 +135,8 @@ export default function RootLayout({
         <ThemeProvider>
           <MemphisBackground />
           {children}
+          <SpeedInsights />
+          <Analytics />
           <BottomTabBar />
         </ThemeProvider>
       </body>
