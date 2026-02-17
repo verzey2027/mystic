@@ -26,6 +26,7 @@ const FILES = {
   kb_complete: "mysticflow-knowledge-complete.md",
   handbook: "mystical-knowledge-handbook.md",
   summary: "mysticflow_ai_knowledge_summary_th.md",
+  esiimsi: "esiimsi_knowledge_th.md",
 } as const;
 
 // Lightweight, dependency-free retrieval for prototype (lexical scoring).
@@ -70,6 +71,7 @@ function guessSystemIdFromHeadingPath(headingPath: string[]): string | undefined
   if (joined.includes("นักษัตร") || joined.includes("chinese zodiac")) return "chinese_zodiac";
   if (joined.includes("ลายมือ")) return "palmistry";
   if (joined.includes("โหงวเฮ้ง")) return "physiognomy";
+  if (joined.includes("เซียมซี") || joined.includes("esiimsi")) return "esiimsi";
   return undefined;
 }
 
@@ -156,12 +158,14 @@ export function loadRagChunks(): RagChunk[] {
   const kbComplete = readText(FILES.kb_complete);
   const handbook = readText(FILES.handbook);
   const summary = readText(FILES.summary);
+  const esiimsi = readText(FILES.esiimsi);
 
   const chunks = [
     ...chunkMarkdown(kb, FILES.kb, "kb"),
     ...chunkMarkdown(kbComplete, FILES.kb_complete, "kb"),
     ...chunkMarkdown(handbook, FILES.handbook, "kb"),
     ...chunkMarkdown(summary, FILES.summary, "kb"),
+    ...chunkMarkdown(esiimsi, FILES.esiimsi, "kb"),
     ...chunkExamples(examples, FILES.examples),
   ];
 
