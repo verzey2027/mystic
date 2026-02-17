@@ -13,6 +13,8 @@ import { ChevronLeft, RefreshCcw } from "lucide-react";
 
 const allowedCounts = new Set([1, 2, 3, 4, 5, 6, 10]);
 
+const CardBackImage = "/card/birth.webp"; // Use local asset
+
 export default function PickClient() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -131,7 +133,7 @@ export default function PickClient() {
       </div>
 
       {/* ── Grid Wall ── */}
-      <div ref={containerRef} className="flex-1 relative w-full h-full p-1">
+      <div ref={containerRef} className="flex-1 relative w-full h-full p-1 pb-32 overflow-hidden">
         {isShuffling ? (
              <div className="absolute inset-0 flex items-center justify-center">
                  <div className="flex flex-col items-center gap-4">
@@ -171,7 +173,10 @@ export default function PickClient() {
                                 isSelected ? "ring-2 ring-accent border-transparent" : "bg-[#2a2a2a]"
                             )}>
                                 {/* Card Back Pattern */}
-                                <div className="w-full h-full bg-[url('https://www.reffortune.com/icon/backcard.png')] bg-cover bg-center opacity-80" />
+                                <div 
+                                    className="w-full h-full bg-cover bg-center opacity-80" 
+                                    style={{ backgroundImage: `url(${CardBackImage})` }}
+                                />
                                 
                                 {isSelected && (
                                     <div className="absolute inset-0 flex items-center justify-center bg-accent/40 backdrop-blur-[1px]">
@@ -189,13 +194,16 @@ export default function PickClient() {
       </div>
 
       {/* ── Bottom Controls ── */}
-      <div className="p-4 bg-gradient-to-t from-black/80 to-transparent z-20">
+      <div className="fixed bottom-24 left-0 right-0 p-4 z-50 flex justify-center pointer-events-none">
          {selected.length === count ? (
-             <Button onClick={submitReading} className="w-full h-12 rounded-full text-lg shadow-xl shadow-accent/20 animate-in slide-in-from-bottom-4">
-                 ทำนายผล
+             <Button 
+                onClick={submitReading} 
+                className="w-full max-w-sm h-14 rounded-full text-lg shadow-[0_0_40px_rgba(139,92,246,0.5)] bg-accent hover:bg-accent-hover text-white animate-in slide-in-from-bottom-8 duration-300 pointer-events-auto border-2 border-white/20"
+             >
+                 ดูผลทำนาย
              </Button>
          ) : (
-             <div className="w-full h-12 flex items-center justify-center text-white/50 text-sm bg-white/5 rounded-full backdrop-blur-sm border border-white/5">
+             <div className="bg-black/60 backdrop-blur-md px-6 py-2 rounded-full border border-white/10 text-white/80 text-sm pointer-events-auto shadow-lg animate-pulse">
                  เลือกอีก {count - selected.length} ใบ
              </div>
          )}
