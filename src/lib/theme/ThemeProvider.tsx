@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react";
 
-type Theme = "light" | "pastel" | "rainbow";
+type Theme = "light" | "pastel" | "rainbow" | "soft";
 
 interface ThemeContextType {
   theme: Theme;
@@ -20,7 +20,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     setMounted(true);
     // Load theme from localStorage
     const savedTheme = localStorage.getItem("mysticflow-theme") as Theme;
-    if (savedTheme && ["light", "dark", "rainbow"].includes(savedTheme)) {
+    if (savedTheme && ["light", "soft", "pastel", "rainbow"].includes(savedTheme)) {
       setThemeState(savedTheme);
     }
   }, []);
@@ -43,7 +43,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   };
 
   const toggleTheme = () => {
-    const themes: Theme[] = ["light", "pastel", "rainbow"];
+    const themes: Theme[] = ["light", "soft", "pastel", "rainbow"];
     const currentIndex = themes.indexOf(theme);
     const nextIndex = (currentIndex + 1) % themes.length;
     setThemeState(themes[nextIndex]);
@@ -235,6 +235,104 @@ function applyThemeVariables(theme: Theme) {
           }
           [data-theme="rainbow"] .magical-float {
             animation: magical-float 3s ease-in-out infinite;
+          }
+        `;
+        document.head.appendChild(style);
+      }
+      break;
+
+    case "soft":
+      // Soft Neumorphism theme - based on UI Kit reference
+      root.style.setProperty("--bg", "#e8e4f0");
+      root.style.setProperty("--bg-elevated", "#f0ecf5");
+      root.style.setProperty("--bg-soft", "#e5e1ec");
+      root.style.setProperty("--bg-muted", "#d8d4e0");
+      root.style.setProperty("--text", "#2d2a35");
+      root.style.setProperty("--text-muted", "#5a5665");
+      root.style.setProperty("--text-subtle", "#8a8695");
+      root.style.setProperty("--accent", "#7c3aed");
+      root.style.setProperty("--accent-hover", "#6d28d9");
+      root.style.setProperty("--accent-light", "#a78bfa");
+      root.style.setProperty("--border", "rgba(255, 255, 255, 0.5)");
+      root.style.setProperty("--border-mystical", "rgba(124, 58, 237, 0.3)");
+      root.style.setProperty("--surface-1", "linear-gradient(145deg, #f0ecf5, #e2dee8)");
+      root.style.setProperty("--surface-2", "linear-gradient(145deg, #e8e4f0, #dad6e2)");
+      root.style.setProperty("--surface-3", "#d1cde0");
+      root.style.setProperty("--shadow-soft", "8px 8px 16px #d1cdd8, -8px -8px 16px #ffffff");
+      root.style.setProperty("--shadow-card", "12px 12px 24px #d1cdd8, -12px -12px 24px #ffffff");
+      root.style.setProperty("--shadow-card-hover", "16px 16px 32px #c9c5d0, -16px -16px 32px #ffffff");
+      root.style.setProperty("--shadow-inset", "inset 6px 6px 12px #d1cdd8, inset -6px -6px 12px #ffffff");
+      root.style.setProperty("--bg-gradient", "linear-gradient(135deg, #e8e4f0 0%, #f0ecf5 50%, #e5e1ec 100%)");
+      
+      // Add soft neumorphism styles
+      if (!document.getElementById("soft-styles")) {
+        const style = document.createElement("style");
+        style.id = "soft-styles";
+        style.textContent = `
+          [data-theme="soft"] {
+            background: linear-gradient(135deg, #e8e4f0 0%, #f0ecf5 50%, #e5e1ec 100%);
+            min-height: 100vh;
+          }
+          [data-theme="soft"] .neumorph-card {
+            background: linear-gradient(145deg, #f0ecf5, #e2dee8);
+            border-radius: 24px;
+            box-shadow: 12px 12px 24px #d1cdd8, -12px -12px 24px #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+          }
+          [data-theme="soft"] .neumorph-button {
+            background: linear-gradient(145deg, #f0ecf5, #e2dee8);
+            border-radius: 50px;
+            box-shadow: 8px 8px 16px #d1cdd8, -8px -8px 16px #ffffff;
+            border: none;
+            color: #7c3aed;
+            font-weight: 600;
+            transition: all 0.3s ease;
+          }
+          [data-theme="soft"] .neumorph-button:hover {
+            box-shadow: 12px 12px 24px #c9c5d0, -12px -12px 24px #ffffff;
+            transform: translateY(-2px);
+          }
+          [data-theme="soft"] .neumorph-button:active {
+            box-shadow: inset 6px 6px 12px #d1cdd8, inset -6px -6px 12px #ffffff;
+            transform: translateY(0);
+          }
+          [data-theme="soft"] .neumorph-inset {
+            background: #e8e4f0;
+            border-radius: 20px;
+            box-shadow: inset 6px 6px 12px #d1cdd8, inset -6px -6px 12px #ffffff;
+          }
+          [data-theme="soft"] .gradient-button {
+            background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 50%, #7c3aed 100%);
+            border-radius: 50px;
+            box-shadow: 6px 6px 12px rgba(124, 58, 237, 0.3), -6px -6px 12px rgba(255, 255, 255, 0.8);
+            color: white;
+            font-weight: 600;
+            border: none;
+            transition: all 0.3s ease;
+          }
+          [data-theme="soft"] .gradient-button:hover {
+            box-shadow: 8px 8px 16px rgba(124, 58, 237, 0.4), -8px -8px 16px rgba(255, 255, 255, 0.9);
+            transform: translateY(-2px);
+          }
+          [data-theme="soft"] .gradient-text {
+            background: linear-gradient(90deg, #8b5cf6, #ec4899, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+          }
+          [data-theme="soft"] .soft-glow {
+            box-shadow: 0 0 30px rgba(139, 92, 246, 0.3), 0 0 60px rgba(236, 72, 153, 0.15);
+          }
+          [data-theme="soft"] .floating-card {
+            animation: soft-float 6s ease-in-out infinite;
+          }
+          @keyframes soft-float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+          }
+          [data-theme="soft"] h1, [data-theme="soft"] h2, [data-theme="soft"] h3 {
+            color: #2d2a35;
+            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8);
           }
         `;
         document.head.appendChild(style);
