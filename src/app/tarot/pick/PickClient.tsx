@@ -1,14 +1,15 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/cn";
 import { TAROT_DECK } from "@/lib/tarot/deck";
-import { randomOrientation, shuffleCards } from "@/lib/tarot/engine";
+import { shuffleCards } from "@/lib/tarot/engine";
 import { trackEvent } from "@/lib/analytics/tracking";
+import { ChevronLeft, RefreshCcw } from "lucide-react";
 
 const allowedCounts = new Set([1, 2, 3, 4, 5, 6, 10]);
 
@@ -21,43 +22,75 @@ export default function PickClient() {
   const [shuffled, setShuffled] = useState<typeof TAROT_DECK>([]);
   const [selected, setSelected] = useState<string[]>([]);
   const [question, setQuestion] = useState("");
-  const [shufflePhase, setShufflePhase] = useState<'stack' | 'mix' | 'fan'>('stack');
+  const [isShuffling, setIsShuffling] = useState(true);
   
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [cardSize, setCardSize] = useState({ width: 0, height: 0 });
+
   const canSelectMore = selected.length < count;
 
-  // Realistic shuffle sequence
+  // Initialize and Shuffle
   useEffect(() => {
-    setShuffled(shuffleCards(TAROT_DECK));
-    
-    // 1. Start stacked
-    const t1 = setTimeout(() => setShufflePhase('mix'), 200);
-    // 2. Mix around in center
-    const t2 = setTimeout(() => setShufflePhase('fan'), 1000);
-    
-    return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-    };
+    handleShuffle();
   }, []);
+
+  const handleShuffle = () => {
+    setIsShuffling(true);
+    setSelected([]);
+    // Simulate shuffle time
+    setTimeout(() => {
+        setShuffled(shuffleCards(TAROT_DECK));
+        setIsShuffling(false);
+    }, 800);
+  };
 
   useEffect(() => {
     trackEvent("reading_start", { vertical: "tarot", step: "pick_view", count });
   }, [count]);
 
+  // Calculate card size to fit screen
+  useEffect(() => {
+    if (!containerRef.current) return;
+    
+    const updateSize = () => {
+        const { clientWidth, clientHeight } = containerRef.current!;
+        // Try to fit 78 cards in a grid
+        // Approx ratio for tarot card is 2:3.5
+        // Let's find best cols/rows
+        const totalCards = 78;
+        
+        // Simple heuristic for mobile: 6 cols x 13 rows
+        // Desktop: 13 cols x 6 rows
+        const isMobile = window.innerWidth < 768;
+        const cols = isMobile ? 6 : 13;
+        const rows = Math.ceil(totalCards / cols);
+        
+        const w = (clientWidth / cols) - 2; // -2 for gap
+        const h = (clientHeight / rows) - 2;
+        
+        setCardSize({ width: w, height: h });
+    };
+
+    updateSize();
+    window.addEventListener('resize', updateSize);
+    return () => window.removeEventListener('resize', updateSize);
+  }, [containerRef.current]);
+
   const onToggleSelect = useCallback(
     (cardId: string) => {
+      if (isShuffling) return;
       const pickedIndex = selected.findIndex((token) => token.startsWith(`${cardId}.`));
       
       if (pickedIndex >= 0) {
         // Deselect
         setSelected((prev) => prev.filter((_, i) => i !== pickedIndex));
       } else {
-        // Select - Always use upright (no reversed cards)
+        // Select
         if (!canSelectMore) return;
         setSelected((prev) => [...prev, `${cardId}.upright`]);
       }
     },
-    [canSelectMore, selected]
+    [canSelectMore, selected, isShuffling]
   );
 
   function submitReading() {
@@ -73,224 +106,107 @@ export default function PickClient() {
     router.push(`/tarot/result?${params.toString()}`);
   }
 
-  // Split 78 cards into 5 rows (approx 15-16 cards each)
-  const rows = useMemo(() => {
-    const r = [];
-    const size = 16;
-    for (let i = 0; i < shuffled.length; i += size) {
-      r.push(shuffled.slice(i, i + size));
-    }
-    return r;
-  }, [shuffled]);
-
-  const steps = [
-    { num: 1, label: "เลือกสเปรด" },
-    { num: 2, label: "เลือกไพ่" },
-    { num: 3, label: "ผลลัพธ์" },
-  ];
-
   return (
-    <main className="mx-auto w-full max-w-lg px-5 py-4 overflow-hidden flex flex-col min-h-screen">
-      {/* ── Top bar ── */}
-      <div className="flex items-center justify-between">
-        <Link
-          href="/tarot"
-          className="flex h-9 w-9 items-center justify-center rounded-full bg-surface"
-          aria-label="Back"
-        >
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            className="text-fg"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <polyline points="15 18 9 12 15 6" />
-          </svg>
+    <main className="fixed inset-0 bg-[#1a1a1a] text-white overflow-hidden flex flex-col">
+      {/* ── Top Bar (Minimal) ── */}
+      <div className="flex items-center justify-between px-4 py-3 bg-black/20 backdrop-blur-sm z-20">
+        <Link href="/tarot" className="p-2 rounded-full hover:bg-white/10 transition">
+          <ChevronLeft className="w-6 h-6" />
         </Link>
-        <p className="text-sm font-semibold text-fg">MysticFlow</p>
-        <Link href="/library/saved" className="flex items-center gap-1 text-xs font-medium text-fg-muted">
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-          </svg>
-        </Link>
-      </div>
-
-      {/* ── Step indicator ── */}
-      <div className="mt-5 flex items-center justify-center gap-0">
-        {steps.map((step, i) => {
-          const isActive = step.num === 2;
-          const isDone = step.num < 2;
-
-          return (
-            <div key={step.num} className="flex items-center">
-              <div className="flex flex-col items-center">
-                <div
-                  className={cn(
-                    "flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold",
-                    isActive
-                      ? "bg-accent text-accent-ink"
-                      : isDone
-                        ? "bg-accent-soft text-accent border border-border"
-                        : "bg-surface text-fg-subtle border border-border"
-                  )}
-                >
-                  {step.num}
-                </div>
-                <span
-                  className={cn(
-                    "mt-1 text-[10px] font-medium",
-                    isActive ? "text-accent" : "text-fg-subtle"
-                  )}
-                >
-                  {step.label}
-                </span>
-              </div>
-              {i < steps.length - 1 && (
-                <div
-                  className={cn(
-                    "mx-3 mb-4 h-[2px] w-12",
-                    i === 0 ? "bg-accent" : "bg-border"
-                  )}
-                />
-              )}
+        
+        <div className="flex flex-col items-center">
+            <h1 className="text-sm font-semibold tracking-wide">
+                เลือกไพ่ {selected.length}/{count} ใบ
+            </h1>
+            <div className="flex gap-1 mt-1">
+                {Array.from({ length: count }).map((_, i) => (
+                    <div key={i} className={cn("w-1.5 h-1.5 rounded-full transition-all", i < selected.length ? "bg-accent scale-125" : "bg-white/20")} />
+                ))}
             </div>
-          );
-        })}
+        </div>
+
+        <button onClick={handleShuffle} disabled={isShuffling} className="p-2 rounded-full hover:bg-white/10 transition">
+          <RefreshCcw className={cn("w-5 h-5", isShuffling && "animate-spin")} />
+        </button>
       </div>
 
-      {/* ── Title ── */}
-      <h1 className="mt-5 text-center text-lg font-bold text-fg">แตะเลือกไพ่ {count} ใบ</h1>
-
-      {/* ── Question (optional) ── */}
-      <div className="mt-3">
-        <input
-          type="text"
-          value={question}
-          onChange={(e) => setQuestion(e.target.value)}
-          placeholder="คำถามของคุณ (ไม่บังคับ)"
-          className="w-full rounded-xl border border-border bg-bg-elevated px-4 py-2.5 text-sm text-fg outline-none transition focus:ring-2 focus:ring-ring"
-        />
-      </div>
-
-      {/* ── 5-6 Rows of Overlapping Cards ── */}
-      <div className="mt-8 relative h-[420px] w-full select-none overflow-hidden rounded-3xl border border-white/10 bg-black/5 p-4">
-        {shufflePhase === 'fan' ? (
-          <div className="flex flex-col gap-1 h-full overflow-y-auto no-scrollbar py-2">
-            {rows.map((row, rowIndex) => (
-              <div 
-                key={rowIndex} 
-                className="flex -space-x-12 px-8 py-2 animate-[tarot-fade-up_0.6s_ease-out_both]"
-                style={{ animationDelay: `${rowIndex * 100}ms` }}
-              >
-                {row.map((card, idx) => {
-                  const pickedIndex = selected.findIndex((token) => token.startsWith(`${card.id}.`));
-                  const isPicked = pickedIndex >= 0;
-
-                  return (
-                    <button
-                      key={`${card.id}-${idx}`}
-                      type="button"
-                      onClick={() => onToggleSelect(card.id)}
-                      className={cn(
-                        "relative w-16 aspect-[2.5/4] flex-shrink-0 transition-all duration-300 transform",
-                        isPicked ? "z-50 -translate-y-4 scale-125" : "hover:z-10 hover:-translate-y-2 shadow-sm",
-                        !canSelectMore && !isPicked ? "opacity-40" : "opacity-100"
-                      )}
-                    >
-                      <div className={cn(
-                        "h-full w-full rounded-lg border overflow-hidden bg-bg-elevated shadow-md",
-                        isPicked ? "border-accent ring-2 ring-accent/30" : "border-border"
-                      )}>
-                        <Image
-                          src="https://www.reffortune.com/icon/backcard.png"
-                          alt="Card back"
-                          fill
-                          sizes="64px"
-                          className="object-cover"
-                        />
-                        {isPicked && (
-                          <div className="absolute inset-0 flex items-center justify-center bg-accent/20 backdrop-blur-[1px]">
-                            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-accent text-[10px] font-black text-accent-ink shadow-md">
-                              {pickedIndex + 1}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            ))}
-          </div>
+      {/* ── Grid Wall ── */}
+      <div ref={containerRef} className="flex-1 relative w-full h-full p-1">
+        {isShuffling ? (
+             <div className="absolute inset-0 flex items-center justify-center">
+                 <div className="flex flex-col items-center gap-4">
+                     <div className="relative w-24 h-40">
+                         {[1, 2, 3].map((i) => (
+                             <div key={i} className="absolute inset-0 border border-white/20 bg-[#2a2a2a] rounded-lg animate-pulse" 
+                                  style={{ animationDelay: `${i * 150}ms`, transform: `rotate(${i * 5}deg)` }} 
+                             />
+                         ))}
+                     </div>
+                     <p className="text-xs font-medium tracking-widest uppercase text-white/50 animate-pulse">Shuffling...</p>
+                 </div>
+             </div>
         ) : (
-          /* Shuffle Animation View */
-          <div className="relative h-full w-full flex items-center justify-center">
-            {shuffled.slice(0, 40).map((card, idx) => (
-              <div
-                key={idx}
-                className="absolute w-20 aspect-[2.5/4] rounded-lg border-2 border-white/20 overflow-hidden bg-bg-elevated shadow-2xl transition-all duration-500"
-                style={{
-                  transform: shufflePhase === 'stack' 
-                    ? `translateY(${idx * 0.2}px) rotate(${idx * 0.5}deg)`
-                    : `translate(${(Math.random() - 0.5) * 100}px, ${(Math.random() - 0.5) * 50}px) rotate(${(Math.random() - 0.5) * 30}deg)`,
-                  zIndex: idx,
-                  opacity: 1 - (idx * 0.02),
-                }}
-              >
-                <Image
-                  src="https://www.reffortune.com/icon/backcard.png"
-                  alt="Shuffling"
-                  fill
-                  sizes="80px"
-                  className="object-cover"
-                />
-              </div>
-            ))}
-            <div className="absolute bottom-10 animate-bounce text-xs font-bold text-accent uppercase tracking-widest">
-              Shuffling Deck...
+            <div className="w-full h-full grid grid-cols-6 md:grid-cols-13 gap-0.5 content-center justify-items-center">
+                {shuffled.map((card, idx) => {
+                    const isSelected = selected.some(s => s.startsWith(card.id));
+                    const isDimmed = !isSelected && !canSelectMore;
+
+                    return (
+                        <div 
+                            key={card.id}
+                            onClick={() => onToggleSelect(card.id)}
+                            className={cn(
+                                "relative cursor-pointer transition-all duration-300 ease-out",
+                                isSelected ? "z-10 scale-110 brightness-110" : "hover:scale-105 hover:z-10",
+                                isDimmed && "opacity-30 grayscale scale-95"
+                            )}
+                            style={{ 
+                                width: `${cardSize.width}px`, 
+                                height: `${cardSize.height}px`,
+                                animation: `fadeIn 0.5s ease-out ${idx * 0.005}s backwards`
+                            }}
+                        >
+                            <div className={cn(
+                                "w-full h-full rounded-sm border border-white/10 overflow-hidden shadow-sm",
+                                isSelected ? "ring-2 ring-accent border-transparent" : "bg-[#2a2a2a]"
+                            )}>
+                                {/* Card Back Pattern */}
+                                <div className="w-full h-full bg-[url('https://www.reffortune.com/icon/backcard.png')] bg-cover bg-center opacity-80" />
+                                
+                                {isSelected && (
+                                    <div className="absolute inset-0 flex items-center justify-center bg-accent/40 backdrop-blur-[1px]">
+                                        <span className="text-xs font-bold text-white drop-shadow-md">
+                                            {selected.findIndex(s => s.startsWith(card.id)) + 1}
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    );
+                })}
             </div>
-          </div>
         )}
       </div>
 
-      {/* ── Card slots (Indicators) ── */}
-      <div className="mt-auto pt-6 flex items-center justify-center gap-3">
-        {Array.from({ length: count }, (_, i) => (
-          <div key={i} 
-            className={cn(
-              "h-2.5 rounded-full transition-all duration-500",
-              i < selected.length ? "w-8 bg-accent" : "w-2.5 bg-border"
-            )} 
-          />
-        ))}
+      {/* ── Bottom Controls ── */}
+      <div className="p-4 bg-gradient-to-t from-black/80 to-transparent z-20">
+         {selected.length === count ? (
+             <Button onClick={submitReading} className="w-full h-12 rounded-full text-lg shadow-xl shadow-accent/20 animate-in slide-in-from-bottom-4">
+                 ทำนายผล
+             </Button>
+         ) : (
+             <div className="w-full h-12 flex items-center justify-center text-white/50 text-sm bg-white/5 rounded-full backdrop-blur-sm border border-white/5">
+                 เลือกอีก {count - selected.length} ใบ
+             </div>
+         )}
       </div>
 
-      {/* ── CTA Button ── */}
-      <div className="mt-6 mb-4">
-        <Button
-          type="button"
-          disabled={selected.length !== count || shufflePhase !== 'fan'}
-          onClick={submitReading}
-          className="w-full rounded-full"
-          size="lg"
-        >
-          {shufflePhase !== 'fan' ? "กำลังสับไพ่..." : "ดูผลคำทำนาย"}
-        </Button>
-      </div>
+      <style jsx global>{`
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+      `}</style>
     </main>
   );
 }
