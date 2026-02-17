@@ -23,6 +23,9 @@ const FILES = {
   glossary: "mysticg_divination_glossary_th.json",
   examples: "mysticg_examples_pack_th.md",
   schema: "mysticg_divination_dataset_schema_full_th.json",
+  kb_complete: "mysticflow-knowledge-complete.md",
+  handbook: "mystical-knowledge-handbook.md",
+  summary: "mysticflow_ai_knowledge_summary_th.md",
 } as const;
 
 // Lightweight, dependency-free retrieval for prototype (lexical scoring).
@@ -31,7 +34,12 @@ const FILES = {
 let cachedChunks: RagChunk[] | null = null;
 
 function readText(fileName: string): string {
-  return fs.readFileSync(path.join(DOCS_DIR, fileName), "utf8");
+  const fullPath = path.join(DOCS_DIR, fileName);
+  if (!fs.existsSync(fullPath)) {
+    console.warn(`RAG file not found: ${fileName}`);
+    return "";
+  }
+  return fs.readFileSync(fullPath, "utf8");
 }
 
 function normalize(s: string): string {
@@ -77,6 +85,7 @@ export function guessIntentsFromText(text: string): string[] {
 }
 
 function chunkMarkdown(md: string, source: string, kind: RagDocKind): RagChunk[] {
+  if (!md) return [];
   const lines = md.split(/\r?\n/);
   const chunks: RagChunk[] = [];
 
@@ -144,9 +153,15 @@ export function loadRagChunks(): RagChunk[] {
 
   const kb = readText(FILES.kb);
   const examples = readText(FILES.examples);
+  const kbComplete = readText(FILES.kb_complete);
+  const handbook = readText(FILES.handbook);
+  const summary = readText(FILES.summary);
 
   const chunks = [
     ...chunkMarkdown(kb, FILES.kb, "kb"),
+    ...chunkMarkdown(kbComplete, FILES.kb_complete, "kb"),
+    ...chunkMarkdown(handbook, FILES.handbook, "kb"),
+    ...chunkMarkdown(summary, FILES.summary, "kb"),
     ...chunkExamples(examples, FILES.examples),
   ];
 
