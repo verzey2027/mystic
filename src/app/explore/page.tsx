@@ -71,6 +71,12 @@ const categories = [
     href: "/name-numerology",
     icon: FileText,
   },
+  {
+    title: "เซียมซีเสี่ยงทาย",
+    description: "เขย่าติ้วรับคำทำนายจากศาสตร์โบราณ",
+    href: "/esiimsi",
+    icon: Sparkles,
+  },
 ];
 
 export default function ExplorePage() {
