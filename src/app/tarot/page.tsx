@@ -50,6 +50,14 @@ const spreads = [
     eta: "15 นาที",
     icon: LayoutGrid,
   },
+  {
+    count: 0, // Special case for Esiimsi
+    title: "เซียมซีเสี่ยงทาย",
+    description: "เขย่าติ้วรับคำทำนายจากศาสตร์โบราณ",
+    eta: "2 นาที",
+    icon: Sparkles,
+    href: "/esiimsi"
+  },
 ];
 
 export default function TarotHomePage() {
@@ -69,10 +77,10 @@ export default function TarotHomePage() {
       {/* Title Section */}
       <section className="px-5 pt-4 pb-3">
         <h1 className={cn("font-serif text-3xl font-semibold tracking-tight", isPastel ? "text-white" : "text-gray-900")}>
-          ทาโรต์
+          เลือกศาสตร์การทำนาย
         </h1>
         <p className={cn("mt-1 text-sm", isPastel ? "text-white/70" : "text-gray-500")}>
-          เลือกสเปรดที่เหมาะกับคำถามของคุณ
+          เลือกสเปรดหรือศาสตร์ที่เหมาะกับคำถามของคุณ
         </p>
 
         {/* Category Chips */}
@@ -102,8 +110,8 @@ export default function TarotHomePage() {
         <div className="flex flex-col gap-3">
           {spreads.map((spread) => (
             <Link
-              key={spread.count}
-              href={`/tarot/pick?count=${spread.count}`}
+              key={spread.title}
+              href={spread.href || `/tarot/pick?count=${spread.count}`}
               className="block"
             >
               <div className={cn(
