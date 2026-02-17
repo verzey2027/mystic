@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/Button";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/cn";
 
@@ -10,191 +10,235 @@ export default function EsiimsiClient() {
   const [isShaking, setIsShaking] = useState(false);
   const [result, setResult] = useState<number | null>(null);
   const [showResult, setShowResult] = useState(false);
-  const [sticksOut, setSticksOut] = useState(false);
+  const [isReading, setIsReading] = useState(false);
+  const [interpretation, setInterpretation] = useState<any>(null);
 
   const startShake = () => {
     if (isShaking) return;
     setIsShaking(true);
     setResult(null);
     setShowResult(false);
-    setSticksOut(false);
+    setInterpretation(null);
 
-    // Vibration API for mobile
-    if (navigator.vibrate) {
-      navigator.vibrate([100, 50, 100, 50, 200]);
+    // Vibration API
+    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+      navigator.vibrate([100, 50, 100, 50, 200, 50, 150]);
     }
 
-    // Simulate shaking phases
-    setTimeout(() => {
-        setSticksOut(true);
-    }, 1500);
-
+    // Sequence of animations
     setTimeout(() => {
       const num = Math.floor(Math.random() * 28) + 1;
       setResult(num);
       setIsShaking(false);
       setShowResult(true);
-    }, 3000);
+    }, 2800);
+  };
+
+  const fetchInterpretation = async () => {
+    if (!result || isReading) return;
+    setIsReading(true);
+
+    try {
+      const res = await fetch("/api/ai/tarot", { // Reusing tarot engine with Esiimsi context
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          cardsToken: `esiimsi_${result}.upright`, 
+          count: 1, 
+          question: `ทำนายเซียมซีหมายเลข ${result}` 
+        }),
+      });
+
+      const data = await res.json();
+      if (data.ok) {
+        setInterpretation(data.ai);
+      }
+    } catch (err) {
+      console.error("Failed to fetch interpretation:", err);
+    } finally {
+      setIsReading(false);
+    }
   };
 
   return (
-    <main className="fixed inset-0 bg-[#0f172a] text-white overflow-hidden flex flex-col items-center justify-center p-6">
-      <div className="absolute inset-0 opacity-20 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/dark-matter.png')]" />
+    <main className="fixed inset-0 bg-[#0a0a0a] text-white overflow-hidden flex flex-col items-center justify-center p-6">
+      <div className="absolute inset-0 opacity-30 pointer-events-none bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-red-900/20 via-transparent to-black" />
 
       <div className="absolute top-0 left-0 right-0 p-4 flex items-center z-50">
-        <Link href="/explore" className="p-2 rounded-full bg-white/10 backdrop-blur-md">
+        <Link href="/explore" className="p-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
           <ChevronLeft className="w-6 h-6" />
         </Link>
-        <h1 className="flex-1 text-center font-bold tracking-widest text-yellow-500 drop-shadow-sm">ESIIMSI • เซียมซี</h1>
+        <h1 className="flex-1 text-center font-bold tracking-[0.3em] text-yellow-500 text-sm uppercase">Esiimsi Oracle</h1>
       </div>
 
-      <div className="relative flex flex-col items-center justify-center w-full max-w-sm">
+      <div className="relative flex flex-col items-center justify-center w-full max-w-md">
         
-        {/* Shaking Animation Layer */}
+        {/* Shaking Container with Perspective */}
         <div className={cn(
-          "relative transition-all duration-300",
-          isShaking ? "animate-complex-shake" : "hover:rotate-1"
-        )}>
+          "relative transition-all duration-100",
+          isShaking && "animate-physical-shake"
+        )} style={{ perspective: '1000px' }}>
           
-          {/* Sticks Container (Behind Cylinder) */}
-          <div className="absolute -top-16 left-1/2 -translate-x-1/2 w-32 h-40 flex justify-center items-end">
-             {[...Array(15)].map((_, i) => (
+          {/* Rattle Sticks (Behind) */}
+          <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-24 h-40 flex justify-center items-end overflow-visible">
+             {[...Array(12)].map((_, i) => (
                 <div 
                     key={i} 
                     className={cn(
-                        "absolute w-2 bg-[#b45309] rounded-t-sm border-t-2 border-red-500/50 shadow-sm",
-                        isShaking ? "animate-sticks-rattle" : "h-32"
+                        "absolute w-2 bg-[#8b4513] rounded-t-full border-t-2 border-orange-400/30",
+                        isShaking ? "animate-rattle" : "h-32"
                     )}
                     style={{ 
-                        left: `${(i * 6)}%`,
-                        transform: `rotate(${(i - 7) * 4}deg) translateY(${isShaking ? '-10px' : '0'})`,
+                        left: `${(i * 8)}%`,
+                        transform: `rotate(${(i - 6) * 5}deg)`,
                         transformOrigin: 'bottom center',
-                        animationDelay: `${i * 30}ms`
+                        animationDelay: `${i * 40}ms`,
+                        boxShadow: '0 -2px 10px rgba(0,0,0,0.5)'
                     }}
                 />
             ))}
           </div>
 
-          {/* Cylinder (The Body) */}
-          <div className="relative w-44 h-72 z-20">
-            <div className="absolute inset-0 bg-gradient-to-r from-red-900 via-red-600 to-red-900 rounded-b-[40px] border-x-4 border-b-8 border-yellow-600/40 shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden">
-                <div className="absolute inset-0 opacity-40 bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')]" />
-                <div className="absolute top-12 left-1/2 -translate-x-1/2 flex flex-col items-center">
-                    <div className="text-yellow-400 font-serif text-5xl font-bold opacity-80 select-none drop-shadow-glow">福</div>
-                    <div className="mt-4 w-12 h-0.5 bg-yellow-500/30" />
-                    <div className="mt-2 text-[10px] tracking-[0.3em] text-yellow-500/50 uppercase">Tradition</div>
+          {/* Cylinder (Premium Design) */}
+          <div className="relative w-40 h-64 z-20">
+             {/* Body */}
+            <div className="absolute inset-0 bg-gradient-to-b from-[#7f1d1d] via-[#b91c1c] to-[#450a0a] rounded-b-[50px] border-x-[3px] border-b-[6px] border-[#fbbf24]/30 shadow-[0_30px_60px_-12px_rgba(0,0,0,0.8)] overflow-hidden">
+                {/* Visual Ornaments */}
+                <div className="absolute top-10 left-1/2 -translate-x-1/2 flex flex-col items-center">
+                    <div className="text-[#fbbf24] font-serif text-6xl font-bold opacity-90 drop-shadow-[0_0_15px_rgba(251,191,36,0.5)]">福</div>
+                    <div className="mt-2 text-[8px] tracking-[0.4em] text-yellow-500/40 uppercase font-black">Ref Fortune</div>
                 </div>
-                {/* Highlights */}
-                <div className="absolute top-0 left-4 w-2 h-full bg-white/10 blur-sm" />
+                {/* Shine Effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
             </div>
+            {/* Top Rim */}
+            <div className="absolute -top-1 left-0 right-0 h-4 bg-[#450a0a] rounded-full border-2 border-[#fbbf24]/20 shadow-inner" />
           </div>
 
-          {/* The Result Stick (Popping out) */}
+          {/* Winning Stick (The Pop-Out) */}
           {showResult && (
-            <div className="absolute -top-48 left-1/2 -translate-x-1/2 z-30 animate-stick-pop">
-                 <div className="w-4 h-56 bg-gradient-to-b from-yellow-300 to-yellow-500 rounded-lg shadow-2xl flex flex-col items-center py-6 border-2 border-yellow-600 relative">
-                    <div className="absolute top-2 w-full text-center">
-                         <span className="text-red-900 font-black text-2xl drop-shadow-sm">{result}</span>
+            <div className="absolute -top-56 left-1/2 -translate-x-1/2 z-30 animate-stick-emergence">
+                 <div className="w-5 h-64 bg-gradient-to-b from-[#fbbf24] via-[#f59e0b] to-[#d97706] rounded-xl shadow-[0_20px_40px_rgba(0,0,0,0.6)] flex flex-col items-center py-8 border-2 border-white/20 relative">
+                    <div className="absolute top-4 w-full text-center">
+                         <span className="text-[#450a0a] font-black text-3xl drop-shadow-sm">{result}</span>
                     </div>
-                    <div className="mt-8 flex-1 w-px bg-red-900/20" />
-                    <div className="w-full text-center pb-2 opacity-50">
-                        <div className="text-[8px] text-red-900 font-bold uppercase rotate-90">Esiimsi</div>
+                    <div className="mt-12 flex-1 w-[1px] bg-[#450a0a]/20" />
+                    <div className="absolute bottom-4 rotate-90 whitespace-nowrap">
+                        <span className="text-[10px] text-[#450a0a] font-bold tracking-[0.2em] uppercase opacity-60">Lucky Stick</span>
                     </div>
                  </div>
             </div>
           )}
         </div>
 
-        {/* Action UI */}
-        <div className="mt-24 w-full text-center z-40 px-4">
+        {/* Dynamic UI Content */}
+        <div className="mt-20 w-full text-center z-40">
           {!showResult ? (
-              <div className="space-y-8">
-                  <p className="text-lg font-medium text-white/70">
-                      {isShaking ? "กำลังสื่อจิตถึงสิ่งศักดิ์สิทธิ์..." : "ตั้งจิตอธิษฐานแล้วเริ่มเขย่า"}
-                  </p>
+              <div className="space-y-12">
+                  <div className="space-y-2">
+                    <p className="text-xl font-serif text-yellow-500/90 italic">
+                        {isShaking ? "โชคชะตากำลังเคลื่อนไหว..." : "ตั้งจิตอธิษฐาน"}
+                    </p>
+                    <p className="text-xs text-white/40 tracking-widest uppercase">ถอดรหัสความลับผ่านติ้วเซียมซี</p>
+                  </div>
                   
                   <button 
                     disabled={isShaking}
                     onClick={startShake}
                     className={cn(
-                        "group relative w-32 h-32 mx-auto rounded-full transition-all duration-500",
-                        isShaking ? "scale-90" : "hover:scale-110"
+                        "group relative w-32 h-32 mx-auto rounded-full transition-all duration-500 outline-none",
+                        isShaking ? "scale-95 opacity-50" : "hover:scale-110 active:scale-90"
                     )}
                   >
-                    {/* Ring animation */}
-                    <div className="absolute inset-0 rounded-full border-2 border-red-500 animate-ping opacity-20" />
-                    <div className="absolute inset-[-8px] rounded-full border border-yellow-500/30 rotate-45" />
-                    
-                    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-red-500 to-red-800 shadow-[0_0_30px_rgba(220,38,38,0.4)] flex items-center justify-center overflow-hidden border-4 border-yellow-600/50">
-                        <span className="text-xl font-bold tracking-tighter text-white drop-shadow-md">
-                            {isShaking ? "..." : "เขย่าติ้ว"}
+                    <div className="absolute inset-0 rounded-full bg-red-600 animate-ping opacity-10" />
+                    <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-[#991b1b] to-[#dc2626] border-4 border-yellow-500/50 shadow-[0_0_40px_rgba(220,38,38,0.4)] flex items-center justify-center">
+                        <span className="text-xl font-black tracking-widest text-white uppercase drop-shadow-md">
+                            {isShaking ? "..." : "เขย่า"}
                         </span>
-                        <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
                   </button>
               </div>
           ) : (
-              <div className="animate-in fade-in slide-in-from-bottom-10 duration-700">
-                  <p className="text-sm text-yellow-500 uppercase tracking-[0.4em] mb-4 font-bold">ผลเสี่ยงทายหมายเลข</p>
-                  <h2 className="text-8xl font-black text-white drop-shadow-glow-large mb-10">{result}</h2>
-                  
-                  <div className="flex flex-col gap-3">
-                    <Button size="lg" className="w-full bg-yellow-600 hover:bg-yellow-700 text-white rounded-2xl h-16 text-xl font-bold shadow-[0_10px_30px_rgba(202,138,4,0.3)] border-b-4 border-yellow-800 active:border-b-0 active:translate-y-1 transition-all">
-                        เปิดคำทำนาย
-                    </Button>
-                    <button 
-                        onClick={() => setShowResult(false)} 
-                        className="text-white/40 text-sm hover:text-white transition-colors py-2"
-                    >
-                        เสี่ยงทายใหม่
-                    </button>
-                  </div>
+              <div className="animate-in fade-in slide-in-from-bottom-10 duration-700 w-full">
+                  {!interpretation ? (
+                    <>
+                      <p className="text-sm text-yellow-500 uppercase tracking-[0.5em] mb-4 font-bold">หมายเลขมงคล</p>
+                      <h2 className="text-9xl font-black text-white drop-shadow-[0_0_30px_rgba(255,255,255,0.3)] mb-12">{result}</h2>
+                      
+                      <Button 
+                        size="lg" 
+                        onClick={fetchInterpretation}
+                        disabled={isReading}
+                        className="w-full max-w-xs bg-yellow-500 hover:bg-yellow-400 text-black rounded-2xl h-16 text-xl font-black shadow-[0_15px_40px_rgba(234,179,8,0.3)] transition-all"
+                      >
+                        {isReading ? <Loader2 className="animate-spin" /> : "อ่านคำทำนาย"}
+                      </Button>
+                    </>
+                  ) : (
+                    <div className="bg-white/5 border border-white/10 rounded-[32px] p-8 backdrop-blur-xl text-left max-h-[60vh] overflow-y-auto custom-scrollbar">
+                        <div className="flex items-center justify-between mb-6">
+                            <h3 className="text-2xl font-bold text-yellow-500">ใบที่ {result}</h3>
+                            <div className="h-px flex-1 bg-yellow-500/20 mx-4" />
+                        </div>
+                        <p className="text-lg leading-relaxed text-white/90 mb-6 font-medium whitespace-pre-line">
+                            {interpretation.summary}
+                        </p>
+                        <div className="space-y-4 pt-4 border-t border-white/10">
+                             {interpretation.opportunities?.map((o: string, i: number) => (
+                                <div key={i} className="flex gap-3 text-sm text-white/70">
+                                    <span className="text-yellow-500">✨</span> {o}
+                                </div>
+                             ))}
+                        </div>
+                        <Button 
+                            variant="ghost" 
+                            onClick={() => setShowResult(false)} 
+                            className="mt-8 w-full text-white/30 hover:text-white"
+                        >
+                            เขย่าใหม่อีกครั้ง
+                        </Button>
+                    </div>
+                  )}
               </div>
           )}
         </div>
       </div>
 
       <style jsx global>{`
-        @keyframes complex-shake {
-            0% { transform: rotate(0deg) translate(0, 0); }
-            10% { transform: rotate(8deg) translate(2px, -4px); }
-            20% { transform: rotate(-8deg) translate(-2px, 4px); }
-            30% { transform: rotate(12deg) translate(4px, -8px); }
-            40% { transform: rotate(-12deg) translate(-4px, 8px); }
-            50% { transform: rotate(10deg) translate(3px, -6px); }
-            60% { transform: rotate(-10deg) translate(-3px, 6px); }
-            70% { transform: rotate(6deg) translate(2px, -3px); }
-            80% { transform: rotate(-6deg) translate(-2px, 3px); }
-            90% { transform: rotate(3deg) translate(1px, -1px); }
-            100% { transform: rotate(0deg) translate(0, 0); }
+        @keyframes physical-shake {
+            0%, 100% { transform: rotate(0deg) translateY(0); }
+            15% { transform: rotate(12deg) translateY(-10px) translateX(5px); }
+            30% { transform: rotate(-12deg) translateY(10px) translateX(-5px); }
+            45% { transform: rotate(15deg) translateY(-15px) translateX(8px); }
+            60% { transform: rotate(-15deg) translateY(15px) translateX(-8px); }
+            75% { transform: rotate(8deg) translateY(-5px); }
+            90% { transform: rotate(-8deg) translateY(5px); }
         }
-        .animate-complex-shake {
-            animation: complex-shake 0.4s infinite ease-in-out;
+        .animate-physical-shake {
+            animation: physical-shake 0.3s infinite ease-in-out;
         }
 
-        @keyframes sticks-rattle {
-            0%, 100% { transform: translateY(0) rotate(0); }
-            50% { transform: translateY(-15px) rotate(2deg); }
+        @keyframes rattle {
+            0%, 100% { transform: translateY(0) rotate(var(--rot)); }
+            50% { transform: translateY(-25px) rotate(calc(var(--rot) + 2deg)); }
         }
-        .animate-sticks-rattle {
-            animation: sticks-rattle 0.15s infinite;
-        }
-
-        @keyframes stick-pop {
-            0% { transform: translate(-50%, 100px) scale(0.5); opacity: 0; }
-            60% { transform: translate(-50%, -20px) scale(1.1); opacity: 1; }
-            100% { transform: translate(-50%, 0) scale(1); opacity: 1; }
-        }
-        .animate-stick-pop {
-            animation: stick-pop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        .animate-rattle {
+            animation: rattle 0.15s infinite alternate ease-in-out;
         }
 
-        .drop-shadow-glow {
-            filter: drop-shadow(0 0 8px rgba(234, 179, 8, 0.6));
+        @keyframes stick-emergence {
+            0% { transform: translate(-50%, 150px) scaleY(0.5); opacity: 0; }
+            40% { transform: translate(-50%, -40px) scaleY(1.1); opacity: 1; }
+            70% { transform: translate(-50%, 10px) scaleY(0.95); opacity: 1; }
+            100% { transform: translate(-50%, 0) scaleY(1); opacity: 1; }
         }
-        .drop-shadow-glow-large {
-            filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.4)) drop-shadow(0 0 40px rgba(234, 179, 8, 0.2));
+        .animate-stick-emergence {
+            animation: stick-emergence 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
         }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(251, 191, 36, 0.2); border-radius: 10px; }
       `}</style>
     </main>
   );
