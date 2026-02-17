@@ -4,7 +4,8 @@ export type FunnelEventName =
   | "reading_submitted"
   | "reading_result_viewed"
   | "paywall_shown"
-  | "paywall_cta_clicked";
+  | "paywall_cta_clicked"
+  | "share_card_generated";
 
 export interface FunnelEventPayload {
   vertical?: "tarot" | "spirit-card" | "numerology" | "daily-card";
@@ -14,6 +15,7 @@ export interface FunnelEventPayload {
   sessionId?: string;
   reason?: string;
   ctaVariant?: string;
+  card?: string;
 }
 
 declare global {

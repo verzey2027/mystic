@@ -12,6 +12,7 @@ import { buildSavedTarotReading, removeReading, upsertReading } from "@/lib/libr
 import { HeartSave } from "@/components/ui/HeartSave";
 import { Button } from "@/components/ui/Button";
 import { ShareButton } from "@/components/ui/ShareButton";
+import { ShareableCard } from "@/components/ui/ShareableCard";
 import { cn } from "@/lib/cn";
 
 function normalizeText(value: unknown): string {
@@ -359,6 +360,43 @@ export default function ResultClient() {
           <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-fg-muted">
             {aiReading.cardStructure}
           </p>
+        </section>
+      )}
+
+      {/* ── Shareable Result Card ── */}
+      {drawnCards.length > 0 && aiReading && (
+        <section className="mt-6 rounded-2xl border border-accent/30 bg-gradient-to-br from-accent-soft to-purple-50 p-4">
+          <h2 className="text-sm font-bold text-fg flex items-center gap-2">
+            <span>✨</span> แชร์ผลคำทำนาย
+          </h2>
+          <p className="mt-1 text-xs text-fg-subtle">บันทึกหรือแชร์ผลไพ่เป็นรูปภาพสวยงาม</p>
+          
+          <div className="mt-4 flex justify-center">
+            <ShareableCard
+              data={{
+                cardName: drawnCards[0].card.name,
+                cardNameTh: drawnCards[0].card.nameTh,
+                cardImage: drawnCards[0].card.image,
+                orientation: drawnCards[0].orientation,
+                meaning: drawnCards[0].orientation === "upright" 
+                  ? drawnCards[0].card.meaningUpright 
+                  : drawnCards[0].card.meaningReversed,
+                reading: aiReading.summary.slice(0, 200) + "...",
+                question: question || undefined,
+                date: new Date().toLocaleDateString("th-TH", { 
+                  day: "numeric", 
+                  month: "short", 
+                  year: "numeric" 
+                }),
+                brand: "REFFORTUNE",
+              }}
+              onShare={() => trackEvent("share_card_generated", { 
+                vertical: "tarot", 
+                card: drawnCards[0].card.name,
+                count,
+              })}
+            />
+          </div>
         </section>
       )}
 
