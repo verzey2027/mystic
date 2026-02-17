@@ -13,7 +13,7 @@ import { ChevronLeft, RefreshCcw } from "lucide-react";
 
 const allowedCounts = new Set([1, 2, 3, 4, 5, 6, 10]);
 
-const CardBackImage = "/card/draw.webp"; // Use 'draw' or 'birth' as requested (user mentioned 'bg', let's stick to draw/birth for now)
+const CardBackImage = "/card/backcard.png"; // Use user-provided asset
 
 export default function PickClient() {
   const searchParams = useSearchParams();
