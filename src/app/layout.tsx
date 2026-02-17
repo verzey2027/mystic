@@ -21,9 +21,9 @@ const playfair = Playfair_Display({
 
 const SITE_URL = "https://tarot.reffortune.com";
 const SITE_NAME = "MysticFlow";
-const DEFAULT_TITLE = "MysticFlow — Tarot, Daily Card & Spiritual Guidance";
+const DEFAULT_TITLE = "MysticFlow — ดูดวงไพ่ทาโรต์ออนไลน์ แม่นยำ ทันใจ";
 const DEFAULT_DESCRIPTION =
-  "ดูดวงกับ MysticFlow บริการดูดวงไพ่ทาโรต์ ไพ่ Oracle ไพ่รายวัน และ Numerology รับคำแนะนำแม่นยำ เข้าใจง่าย ใช้ได้จริง";
+  "ค้นหาคำตอบของชีวิตด้วยไพ่ทาโรต์และโหราศาสตร์ไทย ดูดวงรายวัน ความรัก การงาน การเงิน ฟรี! พร้อมเจาะลึกทุกคำถามที่คุณอยากรู้";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -45,10 +45,12 @@ export const metadata: Metadata = {
     "ดูดวงการเงิน",
     "ดูดวงการงาน",
     "MysticFlow",
+    "Reffortune",
   ],
-  authors: [{ name: "MysticFlow", url: SITE_URL }],
-  creator: "MysticFlow",
-  publisher: "MysticFlow",
+  authors: [{ name: "Reffortune", url: "https://www.facebook.com/reffortune" }],
+  creator: "Reffortune Team",
+  publisher: "MysticFlow by Reffortune",
+  applicationName: "MysticFlow",
   formatDetection: {
     email: false,
     address: false,
@@ -77,6 +79,8 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: DEFAULT_TITLE,
     description: DEFAULT_DESCRIPTION,
+    creator: "@reffortune",
+    site: "@reffortune",
     images: ["/tarot.jpg"],
   },
   robots: {
@@ -91,10 +95,18 @@ export const metadata: Metadata = {
     },
   },
   icons: {
-    icon: "/favicon.ico",
-    apple: "/favicon.ico",
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+    other: {
+      rel: "apple-touch-icon-precomposed",
+      url: "/logo.png",
+    },
   },
   category: "lifestyle",
+  other: {
+    "facebook-domain-verification": "your-verification-code", // Placeholder for future
+  },
 };
 
 export default function RootLayout({
