@@ -16,6 +16,8 @@ import { getContextForDivinationType } from '../cultural/thai-context';
 import { CHAT_EXAMPLES } from '../examples/chat-examples';
 import { cardMeaning } from '@/lib/tarot/engine';
 
+import { retrieveRag, formatRagContext } from "@/lib/rag/retriever";
+
 /**
  * Build a complete chat prompt with conversation history and card context
  * 
@@ -40,6 +42,13 @@ export function buildChatPrompt(params: ChatPromptParams): string {
   // Format user data (cards, history, and question)
   const userData = formatChatUserData(params);
 
+  // Retrieve RAG context
+  const ragResult = retrieveRag({
+    query: followUpQuestion,
+    limit: 5
+  });
+  const knowledgeBase = formatRagContext(ragResult.chunks);
+
   // Compose the complete prompt
   return new PromptBuilder()
     .withRole(role)
@@ -47,6 +56,7 @@ export function buildChatPrompt(params: ChatPromptParams): string {
     .withFewShotExamples(examples)
     .withInstructions(instructions)
     .withUserData(userData)
+    .withKnowledgeBase(knowledgeBase)
     .build();
 }
 

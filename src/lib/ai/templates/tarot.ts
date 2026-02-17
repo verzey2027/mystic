@@ -14,6 +14,7 @@ import { PromptBuilder } from './base';
 import { getContextForDivinationType } from '../cultural/thai-context';
 import { TAROT_EXAMPLES_BY_SPREAD } from '../examples/tarot-examples';
 import { cardMeaning } from '@/lib/tarot/engine';
+import { retrieveRag, formatRagContext } from "@/lib/rag/retriever";
 
 /**
  * Build a complete tarot reading prompt with spread-specific instructions
@@ -39,9 +40,17 @@ export function buildTarotPrompt(params: TarotPromptParams): string {
   // Format user data (cards and question)
   const userData = formatTarotUserData(params);
 
+  // Retrieve RAG context
+  const ragResult = retrieveRag({
+    query: question || "ดูดวงทั่วไป",
+    limit: 5
+  });
+  const knowledgeBase = formatRagContext(ragResult.chunks);
+
   // Compose the complete prompt
   return new PromptBuilder()
     .withRole(role)
+    .withKnowledgeBase(knowledgeBase)
     .withCulturalContext(culturalContext)
     .withFewShotExamples(examples)
     .withInstructions(instructions)

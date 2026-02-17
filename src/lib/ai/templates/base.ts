@@ -25,7 +25,7 @@ import type { PromptSection, FewShotExample } from '@/lib/ai/types';
  * ```
  */
 export class PromptBuilder {
-  private sections: PromptSection = {
+  private sections: PromptSection & { knowledgeBase?: string } = {
     instructions: '',
     userData: '',
   };
@@ -38,6 +38,17 @@ export class PromptBuilder {
    */
   withRole(role: string): this {
     this.sections.role = role;
+    return this;
+  }
+
+  /**
+   * Add Knowledge Base context to the prompt
+   * 
+   * @param kb - Formatted knowledge base content from RAG
+   * @returns This builder instance for chaining
+   */
+  withKnowledgeBase(kb: string): this {
+    this.sections.knowledgeBase = kb;
     return this;
   }
 
@@ -98,17 +109,21 @@ export class PromptBuilder {
 /**
  * Build a complete prompt from sections in consistent order
  * 
- * Order: role → cultural context → few-shot examples → instructions → user data
+ * Order: role → knowledge base → cultural context → few-shot examples → instructions → user data
  * 
  * @param sections - Prompt sections to compose
  * @returns Formatted prompt string
  */
-export function buildBasePrompt(sections: PromptSection): string {
+export function buildBasePrompt(sections: PromptSection & { knowledgeBase?: string }): string {
   const parts: string[] = [];
 
   // Add sections in consistent order
   if (sections.role) {
     parts.push(sections.role);
+  }
+
+  if (sections.knowledgeBase) {
+    parts.push(sections.knowledgeBase);
   }
 
   if (sections.culturalContext) {
