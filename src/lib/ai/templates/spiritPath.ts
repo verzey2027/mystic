@@ -7,6 +7,7 @@
 
 import { PromptBuilder } from "./base";
 import { getContextForDivinationType } from "../cultural/thai-context";
+import { retrieveRag, formatRagContext } from "@/lib/rag/retriever";
 
 export interface SpiritPathPromptParams {
   zodiacCardName: string;
@@ -67,8 +68,17 @@ export function buildSpiritPathPrompt(params: SpiritPathPromptParams): string {
 ไพ่จิตวิญญาณ (Soul Card): ${params.soulCardName}
 ความหมายโดยย่อ: ${params.soulCardMeaning ?? "(ไม่ระบุ)"}`;
 
+  // Retrieve RAG context for spirit path
+  const ragResult = retrieveRag({
+    query: `ไพ่ราศี ${params.zodiacCardName} ไพ่จิตวิญญาณ ${params.soulCardName}`,
+    systemId: "tarot_th",
+    limit: 4
+  });
+  const knowledgeBase = formatRagContext(ragResult.chunks);
+
   return new PromptBuilder()
     .withRole(role)
+    .withKnowledgeBase(knowledgeBase)
     .withCulturalContext(culturalContext)
     .withInstructions(instructions)
     .withUserData(userData)
