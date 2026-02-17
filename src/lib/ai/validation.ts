@@ -65,7 +65,7 @@ const REQUIRED_SECTIONS = [
  * validateMinimumLength('สวัสดีครับ', 5) // true
  * validateMinimumLength('Hello', 5) // false
  */
-export function validateMinimumLength(text: string, minChars: number = 50): boolean {
+export function validateMinimumLength(text: string, minChars: number = 100): boolean {
   if (!text) return false;
   
   // Count Thai characters (Unicode range: 0E00-0E7F)
@@ -170,9 +170,11 @@ export function validateAIResponse(
   if (!response.summary) {
     errors.push('Summary is missing');
     trackError('summary_missing', type);
-  } else if (!validateMinimumLength(response.summary, 50)) {
-    errors.push('Summary contains fewer than 50 Thai characters');
+  } else if (!validateMinimumLength(response.summary, 100)) {
+    errors.push('Summary contains fewer than 100 Thai characters - need more comprehensive overview');
     trackError('summary_too_short', type);
+  } else if (response.summary.length < 200) {
+    warnings.push('Summary is quite short (less than 200 characters) - consider adding more depth');
   }
   
   // Validate cardStructure exists and has required sections
@@ -182,15 +184,24 @@ export function validateAIResponse(
   } else if (!validateStructureSections(response.cardStructure)) {
     errors.push('CardStructure is missing one or more required sections (ภาพรวมสถานการณ์, จุดที่ควรระวัง, แนวทางที่ควรทำ)');
     trackError('cardstructure_incomplete_sections', type);
+  } else if (!validateMinimumLength(response.cardStructure, 300)) {
+    errors.push('CardStructure is too short (less than 300 Thai characters) - need more comprehensive analysis');
+    trackError('cardstructure_too_short', type);
   }
   
-  // Add warnings for edge cases
-  if (response.summary && response.summary.length < 100) {
-    warnings.push('Summary is quite short (less than 100 characters)');
+  // Add warnings for edge cases and depth checks
+  if (response.cardStructure && response.cardStructure.length < 500) {
+    warnings.push('CardStructure could be more detailed (less than 500 characters) - consider adding psychological insights, symbolic meanings, or energy patterns');
   }
   
-  if (response.cardStructure && response.cardStructure.length < 200) {
-    warnings.push('CardStructure is quite short (less than 200 characters)');
+  // Check for depth indicators
+  const depthIndicators = ['เพราะว่า', 'เนื่องจาก', 'ซึ่งหมายความว่า', 'ดังนั้น', 'อย่างไรก็ตาม', 'นอกจากนี้'];
+  const hasDepthIndicators = depthIndicators.some(indicator => 
+    response.cardStructure?.includes(indicator) || response.summary?.includes(indicator)
+  );
+  
+  if (!hasDepthIndicators) {
+    warnings.push('Response may lack depth - consider adding more explanations and connections between ideas');
   }
   
   // Update metrics based on validation result
