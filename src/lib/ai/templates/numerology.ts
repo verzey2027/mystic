@@ -14,6 +14,8 @@ import { PromptBuilder } from './base';
 import { getContextForDivinationType } from '../cultural/thai-context';
 import { NUMEROLOGY_EXAMPLES_BY_SCORE } from '../examples/numerology-examples';
 
+import { retrieveRag, formatRagContext } from "@/lib/rag/retriever";
+
 /**
  * Build a complete numerology reading prompt with score-specific instructions
  * 
@@ -38,9 +40,18 @@ export function buildNumerologyPrompt(params: NumerologyPromptParams): string {
   // Format user data (phone number and analysis)
   const userData = formatNumerologyUserData(params);
 
+  // Retrieve RAG context for numerology
+  const ragResult = retrieveRag({
+    query: `วิเคราะห์เบอร์โทรศัพท์ เลขรวม ${total} เลขราก ${root}`,
+    systemId: "numerology_th",
+    limit: 4
+  });
+  const knowledgeBase = formatRagContext(ragResult.chunks);
+
   // Compose the complete prompt
   return new PromptBuilder()
     .withRole(role)
+    .withKnowledgeBase(knowledgeBase)
     .withCulturalContext(culturalContext)
     .withFewShotExamples(examples)
     .withInstructions(instructions)
