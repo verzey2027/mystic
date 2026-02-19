@@ -108,7 +108,7 @@ export default function TarotHomePage() {
                     </div>
                   </div>
                 </div>
-                <p className={cn("mt-3 text-sm leading-relaxed", isPastel ? "text-white/70" : "text-gray-500")}>{spread.description}</p>
+                {/* Description intentionally hidden – show only spread title and time */}
               </div>
             </Link>
           ))}
