@@ -72,6 +72,7 @@ export function TarotShareableCard({ data, onShare, className }: TarotShareableC
   }, [data, generateImage, onShare]);
 
   const isMultiCard = data.cards.length > 1;
+  const isTenCardSpread = isMultiCard && data.cards.length === 10;
 
   return (
     <div className={cn("space-y-4", className)}>
@@ -108,7 +109,11 @@ export function TarotShareableCard({ data, onShare, className }: TarotShareableC
         {/* Cards Display - Multi card layout */}
         <div className={cn(
           "mb-5",
-          isMultiCard ? "grid grid-cols-3 gap-3" : "flex justify-center"
+          isMultiCard
+            ? isTenCardSpread
+              ? "grid grid-cols-5 gap-3"
+              : "grid grid-cols-3 gap-3"
+            : "flex justify-center"
         )}>
           {data.cards.map((card, index) => (
             <div
@@ -150,20 +155,7 @@ export function TarotShareableCard({ data, onShare, className }: TarotShareableC
           ))}
         </div>
 
-        {/* Cards Info */}
-        <div className={cn(
-          "mb-5",
-          isMultiCard ? "grid grid-cols-3 gap-2 text-center" : "text-center"
-        )}>
-          {data.cards.map((card, index) => (
-            <div key={index}>
-              <h3 className="text-violet-800 font-bold text-sm">
-                {card.nameTh || card.name}
-              </h3>
-              {!isMultiCard && <p className="text-violet-400 text-xs mt-0.5">{card.name}</p>}
-            </div>
-          ))}
-        </div>
+        {/* Card names intentionally hidden for share image (only show visual cards) */}
 
         {/* Spread Type */}
         <div className="flex items-center justify-center gap-2 mb-4">
