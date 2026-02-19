@@ -313,21 +313,10 @@ export default function ResultClient() {
 
       {/* ── Bottom actions ── */}
       <div className="mt-6 flex flex-col gap-3">
-        <div className="grid grid-cols-2 gap-3">
-          <Button className="w-full" size="lg" onClick={toggleSaved}>
-            {savedId ? "Saved" : "Save to Library"}
-          </Button>
-          <ShareButton
-            variant="secondary"
-            size="lg"
-            className="w-full"
-            shareData={{
-              title: "ผลการเปิดไพ่ทาโรต์",
-              text: "ดูดวงไพ่ทาโรต์กับ MysticFlow (ไม่มีคำทำนายอัตโนมัติ)",
-              url: typeof window !== "undefined" ? window.location.href : "",
-            }}
-          />
-        </div>
+        {/* Keep only library save + new reading to avoid duplicate share buttons */}
+        <Button className="w-full" size="lg" onClick={toggleSaved}>
+          {savedId ? "Saved" : "Save to Library"}
+        </Button>
         <Link href="/tarot" className="block">
           <Button className="w-full" size="lg" variant="ghost">
             New Reading
