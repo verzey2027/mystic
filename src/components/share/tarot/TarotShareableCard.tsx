@@ -57,8 +57,8 @@ export function TarotShareableCard({ data, onShare, className }: TarotShareableC
       
       if (navigator.share && navigator.canShare({ files: [file] })) {
         await navigator.share({
-          title: "ผลคำทำนายไพ่ทาโรต์ — REFFORTUNE",
-          text: `เปิดไพ่${data.spreadType} — ${data.cards.map(c => c.nameTh || c.name).join(", ")}`,
+          title: "ผลการเปิดไพ่ทาโรต์ — REFFORTUNE",
+          text: `เปิดไพ่ ${data.cards.length} ใบ — ${data.cards.map(c => c.nameTh || c.name).join(", ")}`,
           files: [file],
         });
         onShare?.();
@@ -157,14 +157,9 @@ export function TarotShareableCard({ data, onShare, className }: TarotShareableC
 
         {/* Card names intentionally hidden for share image (only show visual cards) */}
 
-        {/* Spread Type */}
-        <div className="flex items-center justify-center gap-2 mb-4">
-          <span className="px-4 py-1.5 bg-violet-500 text-white text-xs font-bold rounded-full shadow-md">
-            {data.spreadType}
-          </span>
-        </div>
+        {/* Spread Type intentionally hidden to avoid extra text like "Celtic Cross" */}
 
-        {/* Tarot AI prediction intentionally omitted: image showsเฉพาะไพ่ + คำถาม */}
+        {/* Tarot AI prediction intentionally omitted: image shows เฉพาะไพ่ + คำถาม */}
 
         {/* Footer CTA */}
         <div className="mt-5 pt-4 border-t border-violet-200/50 text-center">

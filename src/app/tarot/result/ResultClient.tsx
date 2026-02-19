@@ -283,11 +283,8 @@ export default function ResultClient() {
                   meaning: d.orientation === "upright" 
                     ? d.card.meaningUpright 
                     : d.card.meaningReversed,
-                  position: count === 3 
-                    ? ["อดีต", "ปัจจุบัน", "อนาคต"][drawnCards.indexOf(d)]
-                    : count === 10
-                    ? ["สถานการณ์", "อุปสรรค", "รากฐาน", "อดีต", "เป้าหมาย", "อนาคต", "ตัวคุณ", "สิ่งแวดล้อม", "ความหวัง", "ผลลัพธ์"][drawnCards.indexOf(d)]
-                    : undefined,
+                  // Card positions (สถานการณ์/อุปสรรค/... etc.) are intentionally omitted
+                  // to avoid showing extra text on the result/share image.
                 })),
                 reading: aiReading.summary,
                 question: question || undefined,
