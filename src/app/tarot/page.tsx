@@ -5,8 +5,6 @@ import { Sparkles, Clock, Layers, Grid3X3, LayoutGrid } from "lucide-react";
 import { useTheme } from "@/lib/theme/ThemeProvider";
 import { cn } from "@/lib/cn";
 
-const categories = ["ทั้งหมด", "ความรัก", "การงาน", "การเงิน"];
-
 const spreads = [
   {
     count: 1,
@@ -14,6 +12,13 @@ const spreads = [
     description: "ดูดวงรายวัน โฟกัสพลังงานวันนี้",
     eta: "2 นาที",
     icon: Layers,
+  },
+  {
+    count: 2,
+    title: "ไพ่ 2 ใบ",
+    description: "ดูสองพลังงานหลัก เปรียบเทียบทางเลือกหรือสถานการณ์",
+    eta: "4 นาที",
+    icon: Grid3X3,
   },
   {
     count: 3,
@@ -43,13 +48,6 @@ const spreads = [
     eta: "12 นาที",
     icon: LayoutGrid,
   },
-  {
-    count: 10,
-    title: "ไพ่ 10 ใบ เซลติกครอส",
-    description: "ดูภาพรวมชีวิตแบบเจาะลึกที่สุด",
-    eta: "15 นาที",
-    icon: LayoutGrid,
-  },
 ];
 
 export default function TarotHomePage() {
@@ -58,7 +56,6 @@ export default function TarotHomePage() {
 
   return (
     <main className={cn("min-h-screen", isPastel ? "bg-transparent" : "bg-white")}>
-      {/* Header */}
       <header className="flex items-center justify-between px-5 pt-4 pb-2">
         <Link href="/" className="flex items-center gap-2">
           <Sparkles className={cn("w-5 h-5", isPastel ? "text-white" : "text-violet-600")} />
@@ -66,38 +63,15 @@ export default function TarotHomePage() {
         </Link>
       </header>
 
-      {/* Title Section */}
       <section className="px-5 pt-4 pb-3">
         <h1 className={cn("font-serif text-3xl font-semibold tracking-tight", isPastel ? "text-white" : "text-gray-900")}>
           ทาโรต์
         </h1>
         <p className={cn("mt-1 text-sm", isPastel ? "text-white/70" : "text-gray-500")}>
-          เลือกสเปรดที่เหมาะกับคำถามของคุณ
+          เลือกจำนวนไพ่ที่ต้องการทำนาย
         </p>
-
-        {/* Category Chips */}
-        <div className="mt-4 flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-          {categories.map((cat, i) => (
-            <button
-              key={cat}
-              className={cn(
-                "flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all",
-                i === 0
-                  ? isPastel 
-                    ? "bg-white/30 text-white border border-white/50"
-                    : "bg-violet-600 text-white"
-                  : isPastel
-                    ? "bg-white/20 text-white/80 hover:bg-white/30"
-                    : "bg-gray-100 text-gray-600 hover:bg-violet-50 hover:text-violet-600"
-              )}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
       </section>
 
-      {/* Spread Cards */}
       <section className="px-5 pb-6">
         <div className="flex flex-col gap-3">
           {spreads.map((spread) => (

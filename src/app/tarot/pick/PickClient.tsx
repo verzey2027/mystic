@@ -11,7 +11,7 @@ import { shuffleCards } from "@/lib/tarot/engine";
 import { trackEvent } from "@/lib/analytics/tracking";
 import { ChevronLeft, RefreshCcw } from "lucide-react";
 
-const allowedCounts = new Set([1, 2, 3, 4, 5, 6, 10]);
+const allowedCounts = new Set([1, 2, 3, 4, 5, 6]);
 
 const CardBackImage = "/card/backcard.png"; // Use user-provided asset
 
