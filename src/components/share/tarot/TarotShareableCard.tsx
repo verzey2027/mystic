@@ -172,28 +172,7 @@ export function TarotShareableCard({ data, onShare, className }: TarotShareableC
           </span>
         </div>
 
-        {/* Reading */}
-        <div className="bg-white/80 rounded-2xl p-5 border border-violet-100 shadow-sm">
-          <div className="flex items-center gap-2 mb-3">
-            <Sparkles className="w-4 h-4 text-violet-500" />
-            <p className="text-violet-600 text-xs font-bold uppercase tracking-wider">คำทำนาย</p>
-          </div>
-          <p className="text-violet-900 text-sm leading-relaxed">{data.reading}</p>
-        </div>
-
-        {/* Individual Card Meanings for multi-card */}
-        {isMultiCard && (
-          <div className="mt-4 space-y-3">
-            {data.cards.slice(0, 3).map((card, index) => (
-              <div key={index} className="bg-violet-50/70 rounded-xl p-3 border border-violet-100">
-                <p className="text-violet-600 text-[10px] font-bold mb-1">
-                  {card.position || `ไพ่ใบที่ ${index + 1}`} — {card.nameTh || card.name}
-                </p>
-                <p className="text-violet-700 text-xs leading-relaxed line-clamp-2">{card.meaning}</p>
-              </div>
-            ))}
-          </div>
-        )}
+        {/* Tarot AI prediction intentionally omitted: image showsเฉพาะไพ่ + คำถาม */}
 
         {/* Footer CTA */}
         <div className="mt-5 pt-4 border-t border-violet-200/50 text-center">

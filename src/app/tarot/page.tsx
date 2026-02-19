@@ -48,6 +48,13 @@ const spreads = [
     eta: "12 นาที",
     icon: LayoutGrid,
   },
+  {
+    count: 10,
+    title: "ไพ่ 10 ใบ",
+    description: "Celtic Cross เจาะลึกภาพรวมชีวิตแบบเต็มกระดาน",
+    eta: "15 นาที",
+    icon: LayoutGrid,
+  },
 ];
 
 export default function TarotHomePage() {
