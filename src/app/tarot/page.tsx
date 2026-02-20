@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Sparkles, Clock, Layers, Grid3X3, LayoutGrid } from "lucide-react";
+import { Sparkles, Layers, Grid3X3, LayoutGrid } from "lucide-react";
 import { useTheme } from "@/lib/theme/ThemeProvider";
 import { cn } from "@/lib/cn";
 
@@ -9,49 +9,44 @@ const spreads = [
   {
     count: 1,
     title: "ไพ่ 1 ใบ",
-    description: "ดูดวงรายวัน โฟกัสพลังงานวันนี้",
+    description: "เพื่อคำตอบที่ ชัดเจน ตรงประเด็น",
     eta: "",
     icon: Layers,
   },
   {
     count: 2,
     title: "ไพ่ 2 ใบ",
-    description: "ดูสองพลังงานหลัก เปรียบเทียบทางเลือกหรือสถานการณ์",
+    description: "เปิดไพ่เปรียบเทียบหรือ เปิดไพ่ คำตอบ + ไพ่ขยายความ",
     eta: "",
     icon: Grid3X3,
   },
   {
     count: 3,
     title: "ไพ่ 3 ใบ",
-    description: "อดีต ปัจจุบัน อนาคต เห็นภาพรวมชัดเจน",
+    description: "ดู ทิศทางชีวิตปัจจุบัน • อนาคต • ผลสรุป",
     eta: "",
     icon: Grid3X3,
   },
   {
     count: 4,
     title: "ไพ่ 4 ใบ",
-    description: "แผนปฏิบัติการ - สถานการณ์ อุปสรรค คำแนะนำ ผลลัพธ์",
+    description: "ปิดไพ่ตัวแทนความรัก • การเงิน • การงาน • สุขภาพหรือเลือกหัวข้ออื่นตามต้องการ",
     eta: "",
     icon: LayoutGrid,
   },
   {
     count: 5,
     title: "ไพ่ 5 ใบ",
-    description: "วิเคราะห์เจาะลึกสำหรับคำถามซับซ้อน",
+    description: "เปิดไพ่โครงสร้างตรวจดวงลึก ครบทุกมิติ
+",
     eta: "",
     icon: LayoutGrid,
   },
-  {
-    count: 6,
-    title: "ไพ่ 6 ใบ",
-    description: "ความสัมพันธ์เชิงลึก - คุณ เขา อดีต ปัจจุบัน อนาคต ผลลัพธ์",
-    eta: "",
-    icon: LayoutGrid,
-  },
+ 
   {
     count: 10,
     title: "ไพ่ 10 ใบ",
-    description: "Celtic Cross เจาะลึกภาพรวมชีวิตแบบเต็มกระดาน",
+    description: "Celtic Cross การอ่านไพ่ตาม ราศีจักรวิเคราะห์เชิงลึกแบบมืออาชีพ",
     eta: "",
     icon: LayoutGrid,
   },
@@ -102,13 +97,12 @@ export default function TarotHomePage() {
                   </div>
                   <div className="flex-1">
                     <h3 className={cn("text-base font-semibold", isPastel ? "text-white" : "text-gray-900")}>{spread.title}</h3>
-                    <div className={cn("mt-0.5 flex items-center gap-1.5 text-xs", isPastel ? "text-white/60" : "text-gray-400")}>
-                      <Clock className="w-3 h-3" />
-                      {spread.eta}
+                    <div className={cn("mt-1 text-sm", isPastel ? "text-white/70" : "text-gray-500")}>
+                      {spread.description}
                     </div>
                   </div>
                 </div>
-                {/* Description intentionally hidden – show only spread title and time */}
+                {/* Now showing description instead of time */}
               </div>
             </Link>
           ))}
